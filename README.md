@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -63,7 +62,7 @@
 
   /* ============ 侧边样式面板 ============ */
   .style-panel {
-    position: fixed; top: 60px; right: 16px; z-index: 9999; /* 提升层级 */
+    position: fixed; top: 60px; right: 16px; z-index: 9999; 
     width: 280px; padding: 16px; border-radius: 16px;
     background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -98,7 +97,7 @@
   .nav-link.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 
   /* ============ 主容器 ============ */
-  .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+  .container { max-width: 640px; margin: 0 auto; padding: 16px; position: relative; }
 
   .glass-card {
     background-color: var(--card-bg-color);
@@ -116,7 +115,7 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
   
-  /* 封面图：边缘渐变融合增强 */
+  /* 封面图：边缘渐变融合 */
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
@@ -127,7 +126,7 @@
     mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
   }
 
-  /* 个人信息区：左对齐 */
+  /* 个人信息区 */
   .profile-info { padding: 16px 24px 0; text-align: left; position: relative; z-index: 2; }
   .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
   
@@ -174,28 +173,43 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* ============ 浮动文本框（fixed定位，绝对可见） ============ */
+  /* ============ 浮动文本框层 ============ */
+  #float-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 997;
+  }
   .float-text-block {
-    position: fixed; z-index: 9998; min-width: 160px; min-height: 50px;
+    position: absolute; z-index: 998; min-width: 100px; min-height: 40px;
     padding: 14px; border-radius: 12px; border: 2px dashed var(--accent);
     background: rgba(20, 20, 25, 0.85); backdrop-filter: blur(12px);
     color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
     cursor: move; outline: none; box-sizing: border-box; display: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: auto;
+    overflow: hidden; /* 防止内容溢出 */
   }
   body.editing .float-text-block { display: block; }
   .float-text-block:focus { cursor: text; border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(74, 158, 255, 0.6); }
+  
   .float-text-block .drag-handle {
-    position: absolute; top: 4px; right: 4px; width: 28px; height: 28px;
+    position: absolute; top: 2px; right: 2px; width: 26px; height: 26px;
     background: var(--accent); color: var(--accent-text); border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; cursor: move; opacity: 0.8;
+    font-size: 14px; cursor: move; opacity: 0.7; z-index: 2;
   }
   .float-text-block .drag-handle:hover { opacity: 1; }
+  
+  /* 右下角调整大小手柄 */
+  .float-text-block .resize-handle {
+    position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
+    background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
+    cursor: se-resize; z-index: 3; border-bottom-right-radius: 10px;
+  }
+
   .float-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
     background: #e5484d; color: #fff; border-radius: 50%; border: none;
     font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center;
+    z-index: 4;
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
 
@@ -378,6 +392,9 @@
 
 <!-- 主容器 -->
 <div class="container" id="app">
+  
+  <!-- 浮动文本框图层（修复：将浮动元素存入此层，确保能被保存） -->
+  <div id="float-layer"></div>
 
   <!-- ===== 面板 0 ===== -->
   <div id="panel-0" class="panel active">
@@ -490,7 +507,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v7';
+  var KEY_CONTENT = 'myPage.glass.v8';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -701,23 +718,32 @@
     }
   });
 
-  // ============ 自由浮动文本框（修复版） ============
+  // ============ 浮动文本框（修复保存、位置、增加大小调整） ============
   var floatIdCounter = 0;
   document.getElementById('btnAddFloat').addEventListener('click', function(){
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
     floatBlock.id = 'float-' + (++floatIdCounter);
-    // 默认出现在屏幕正中央
-    floatBlock.style.left = (window.innerWidth / 2 - 100) + 'px';
-    floatBlock.style.top = (window.innerHeight / 2 - 50) + 'px';
+    // 默认出现在页面可视区域中央
+    floatBlock.style.left = '50px';
+    floatBlock.style.top = (window.scrollY + 150) + 'px'; // 相对于文档的位置
+    floatBlock.style.width = '150px';
+    floatBlock.style.height = 'auto';
     floatBlock.setAttribute('contenteditable', 'true');
-    floatBlock.innerHTML = '自由文本框<br>拖动我移动';
+    floatBlock.innerHTML = '自由文本框<br>拖拽移动 · 右下角缩放';
     
+    // 拖拽手柄
     var dragHandle = document.createElement('div');
     dragHandle.className = 'drag-handle';
     dragHandle.innerHTML = '≡';
     floatBlock.appendChild(dragHandle);
 
+    // 缩放手柄
+    var resizeHandle = document.createElement('div');
+    resizeHandle.className = 'resize-handle';
+    floatBlock.appendChild(resizeHandle);
+
+    // 删除按钮
     var delBtn = document.createElement('button');
     delBtn.className = 'float-del';
     delBtn.innerHTML = '×';
@@ -730,7 +756,7 @@
     };
     floatBlock.appendChild(delBtn);
 
-    // 拖拽逻辑（修复）
+    // 拖拽逻辑
     dragHandle.addEventListener('mousedown', startDrag);
     dragHandle.addEventListener('touchstart', startDrag, {passive: false});
 
@@ -746,10 +772,8 @@
       startX = clientX;
       startY = clientY;
       
-      // 获取当前的精确坐标
-      var rect = floatBlock.getBoundingClientRect();
-      startLeft = rect.left;
-      startTop = rect.top;
+      startLeft = floatBlock.offsetLeft;
+      startTop = floatBlock.offsetTop;
       
       document.addEventListener('mousemove', onDrag);
       document.addEventListener('touchmove', onDrag, {passive: false});
@@ -778,15 +802,62 @@
       scheduleSave();
     }
 
+    // 缩放逻辑
+    resizeHandle.addEventListener('mousedown', startResize);
+    resizeHandle.addEventListener('touchstart', startResize, {passive: false});
+
+    var isResizing = false;
+    var startW, startH, startResX, startResY;
+
+    function startResize(e) {
+      if(!editMode) return;
+      e.preventDefault();
+      e.stopPropagation(); // 防止触发拖拽
+      isResizing = true;
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      startResX = clientX;
+      startResY = clientY;
+      startW = floatBlock.offsetWidth;
+      startH = floatBlock.offsetHeight;
+      
+      document.addEventListener('mousemove', onResize);
+      document.addEventListener('touchmove', onResize, {passive: false});
+      document.addEventListener('mouseup', stopResize);
+      document.addEventListener('touchend', stopResize);
+    }
+
+    function onResize(e) {
+      if(!isResizing) return;
+      e.preventDefault();
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      var dx = clientX - startResX;
+      var dy = clientY - startResY;
+      
+      floatBlock.style.width = Math.max(100, startW + dx) + 'px';
+      floatBlock.style.height = Math.max(40, startH + dy) + 'px';
+    }
+
+    function stopResize() {
+      isResizing = false;
+      document.removeEventListener('mousemove', onResize);
+      document.removeEventListener('touchmove', onResize);
+      document.removeEventListener('mouseup', stopResize);
+      document.removeEventListener('touchend', stopResize);
+      scheduleSave();
+    }
+
     floatBlock.addEventListener('focusin', function() {
       activeTextEl = floatBlock;
       updateTextStyleUI();
     });
 
-    document.body.appendChild(floatBlock);
+    // 追加到图层
+    document.getElementById('float-layer').appendChild(floatBlock);
     floatBlock.focus();
     
-    toast('浮动文本框已添加到屏幕中央');
+    toast('浮动文本框已添加，可拖拽移动和缩放');
     scheduleSave();
   });
 
@@ -797,9 +868,7 @@
     if(el) {
       activeTextEl = el;
       updateTextStyleUI();
-      // 自动弹出样式面板
       document.getElementById('stylePanel').classList.add('show');
-      // 添加闪烁提示
       el.style.transition = 'box-shadow 0.3s';
       el.style.boxShadow = '0 0 0 4px var(--accent)';
       setTimeout(function(){ el.style.boxShadow = 'none'; }, 500);
@@ -871,7 +940,6 @@
 
   // ============ 点击发布框跳转到第二个界面 ============
   document.getElementById('postBoxTrigger').addEventListener('click', function(e) {
-    // 如果点击的是可编辑文字，且处于编辑模式，不触发跳转
     if(editMode && e.target.closest('[data-edit]')) return; 
     switchTab('panel-1');
     toast('已跳转到个人信息页');
