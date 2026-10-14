@@ -44,7 +44,6 @@
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
 
-  /* 工具栏 */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 16px;
@@ -66,7 +65,6 @@
   body.editing .edit-only{display: flex !important;}
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
-  /* 侧边样式面板 */
   .style-panel {
     position: fixed; top: 60px; right: 16px; z-index: 9999; 
     width: 280px; padding: 16px; border-radius: 16px;
@@ -85,7 +83,6 @@
   .style-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
   .font-select { width: 100%; padding: 4px; border-radius: 4px; background: #333; color: #fff; border: 1px solid #555; font-size: 11px; }
 
-  /* 形状选择面板 */
   .shape-picker {
     position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
     z-index: 10000; background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur);
@@ -103,7 +100,6 @@
   .shape-pick-item svg { width: 30px; height: 30px; }
   .shape-picker-title { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); }
 
-  /* 顶部导航栏 */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px; padding: 12px 16px;
     position: sticky; top: 50px; z-index: 998;
@@ -129,7 +125,6 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word;
   }
-
   .main-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
@@ -137,7 +132,6 @@
     padding: 0 0 24px 0; overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
-  
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
@@ -147,7 +141,6 @@
     -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
   }
-
   .profile-info { padding: 16px 24px 0; text-align: left; position: relative; z-index: 2; }
   .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
   .avatar-wrap { 
@@ -189,7 +182,6 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; position: relative; padding-right: 20px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* 卡片内行列布局 */
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
   .card-col {
     flex: 1; min-width: 60px; padding: 8px; border: 1px dashed var(--glass-border);
@@ -201,7 +193,6 @@
   body.editing .card-col { display: block; text-align: left; }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* 全宽文本块 */
   .text-block {
     padding: 12px; border: 1px dashed var(--glass-border);
     border-radius: 12px; background: rgba(255,255,255,0.02); 
@@ -212,26 +203,30 @@
   body.editing .text-block { display: block; text-align: left; }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* 图形/图片框 */
+  /* 图形/图片框：关键修复 pointer-events */
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
     box-sizing: border-box; display: none; cursor: move;
-    overflow: visible; touch-action: none;
+    overflow: visible;
+    pointer-events: auto;  /* 关键：修复拖不动问题 */
+    touch-action: none;    /* 关键：修复手机端拖拽时页面滚动 */
+    user-select: none;
   }
   body.editing .shape-block, body.editing .image-frame-block { display: block; }
   .shape-block {
     color: var(--accent);
     filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
   }
+  .shape-block.selected { outline: 2px solid var(--accent); outline-offset: 4px; }
   .shape-block svg { width: 100%; height: 100%; display: block; pointer-events: none; }
   .image-frame-block {
     overflow: hidden; background: #333;
     border: 2px solid var(--glass-border);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
+  .image-frame-block.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,158,255,0.3); }
   .image-frame-block img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
 
-  /* 元素删除按钮 */
   .element-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
     background: #e5484d; color: #fff; border-radius: 50%; border: none;
@@ -241,17 +236,17 @@
   body.editing .shape-block:hover .element-del,
   body.editing .image-frame-block:hover .element-del { display: flex; }
 
-  /* 拖拽缩放手柄 */
+  /* 关键：给缩放手柄加 touch-action: none */
   .resize-handle {
-    position: absolute; bottom: -2px; right: -2px; width: 22px; height: 22px;
+    position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px;
     background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
-    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px; opacity: 0.8;
+    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px; opacity: 0.85;
     touch-action: none;
+    user-select: none;
   }
   .resize-handle:hover { opacity: 1; }
   body:not(.editing) .resize-handle { display: none !important; }
 
-  /* 浮动文本框 */
   #float-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 997; }
   .float-text-block {
     position: absolute; z-index: 998; min-width: 100px; min-height: 40px;
@@ -269,7 +264,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 14px; cursor: move; opacity: 0.7; z-index: 2; touch-action: none;
   }
-  .float-text-block .drag-handle:hover { opacity: 1; }
   .float-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
     background: #e5484d; color: #fff; border-radius: 50%; border: none;
@@ -277,7 +271,6 @@
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
 
-  /* 底部导航 */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 998; height: 70px;
     display: flex; justify-content: space-around; align-items: center;
@@ -305,7 +298,6 @@
   .add-card-btn:hover { background: rgba(255,255,255,0.05); }
   body.editing .add-card-btn { display: block; }
 
-  /* 面板底部箭头导航 */
   .panel-nav {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 16px; padding: 8px 0; gap: 16px;
@@ -319,10 +311,8 @@
     font-family: inherit; user-select: none;
   }
   .panel-nav-btn:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); transform: translateY(-2px); }
-  .panel-nav-btn:active { transform: translateY(0); }
   .panel-nav-spacer { min-width: 48px; }
 
-  /* 音乐播放器 */
   .music-player {
     position: fixed; bottom: 85px; right: 20px; z-index: 1000;
     width: 52px; height: 52px; border-radius: 50%;
@@ -337,7 +327,6 @@
   .music-player.playing { animation: spin 4s linear infinite; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
-  /* 编辑状态 */
   body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
   body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(255,255,255,0.03); }
   body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.1); }
@@ -357,7 +346,6 @@
 <audio id="bgMusic" src="" loop preload="none"></audio>
 <div class="music-player" id="musicPlayer" title="播放/暂停音乐"><span id="musicIcon">♪</span></div>
 
-<!-- 顶部工具栏 -->
 <div class="toolbar">
   <button class="tbtn" id="btnEdit"><span class="ico">✎</span><span class="label">编辑</span></button>
   <button class="tbtn edit-only" id="btnStylePanel"><span class="ico">⚙️</span><span class="label">样式</span></button>
@@ -371,7 +359,6 @@
   <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 图形选择面板 -->
 <div class="shape-picker" id="shapePicker">
   <div class="shape-picker-title">选择图形</div>
   <div class="shape-pick-item" data-shape="circle"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg></div>
@@ -386,7 +373,6 @@
   <div class="shape-pick-item" data-shape="cross"><svg viewBox="0 0 100 100"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg></div>
 </div>
 
-<!-- 图片框形状选择面板 -->
 <div class="shape-picker" id="framePicker" style="grid-template-columns: repeat(3, 1fr);">
   <div class="shape-picker-title">选择图片框形状</div>
   <div class="shape-pick-item" data-frame="rounded"><svg viewBox="0 0 100 100"><rect x="8" y="20" width="84" height="60" rx="10" fill="none" stroke="currentColor" stroke-width="6"/></svg></div>
@@ -394,7 +380,6 @@
   <div class="shape-pick-item" data-frame="circle"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="6"/></svg></div>
 </div>
 
-<!-- 样式面板 -->
 <div class="style-panel" id="stylePanel">
   <h4>卡片样式调节</h4>
   <div class="style-item"><span>透明度</span><input type="range" id="opacitySlider" min="0" max="100" value="65"><span id="opacityVal">65%</span></div>
@@ -402,6 +387,16 @@
   <div class="style-item"><span>渐变结束</span><input type="color" id="gradColor2" value="#0d0d10"></div>
   <div class="style-item"><span>渐变角度</span><input type="range" id="gradAngle" min="0" max="360" value="135"><span id="angleVal">135°</span></div>
   <div class="style-item"><span>全局主色</span><input type="color" id="accentColor" value="#4a9eff"></div>
+
+  <!-- 图形/图片框样式区（选中图形后显示） -->
+  <div id="shapeStyleSection" style="display:none;">
+    <h4>图形/图片框样式</h4>
+    <div class="style-item" id="shapeColorRow"><span>图形颜色</span><input type="color" id="shapeColor" value="#4a9eff"></div>
+    <div class="style-item"><span>宽度</span><input type="range" id="shapeWidth" min="20" max="400" value="90"><span id="shapeWidthVal">90px</span></div>
+    <div class="style-item"><span>高度</span><input type="range" id="shapeHeight" min="20" max="400" value="90"><span id="shapeHeightVal">90px</span></div>
+    <div class="style-item"><span>圆角</span><input type="range" id="shapeRadius" min="0" max="200" value="0"><span id="shapeRadiusVal">0px</span></div>
+    <div class="style-item" id="shapeImgRow" style="display:none;"><span>图片</span><button class="style-btn" id="btnChangeShapeImg">更换图片</button></div>
+  </div>
 
   <h4>文字样式（点击文字后激活）</h4>
   <div class="style-item"><span>字体大小</span><input type="range" id="fontSize" min="12" max="48" value="16"><span id="fontSizeVal">16px</span></div>
@@ -419,7 +414,6 @@
   <div class="style-item"><span>边框</span><button class="style-btn" id="btnToggleBorder">添加边框</button></div>
 </div>
 
-<!-- 顶部导航栏 -->
 <div class="top-nav" id="topNav">
   <a class="nav-link active" data-target="panel-0">WELCOME</a>
   <a class="nav-link" data-target="panel-1">PERSONAL INFO</a>
@@ -427,11 +421,9 @@
   <a class="nav-link" data-target="panel-3">CATEGORIES</a>
 </div>
 
-<!-- 主容器 -->
 <div class="container" id="app">
   <div id="float-layer"></div>
 
-  <!-- 面板 0 -->
   <div id="panel-0" class="panel active">
     <div class="main-card">
       <div class="cover-wrap">
@@ -492,7 +484,6 @@
     </div>
   </div>
 
-  <!-- 面板 1 -->
   <div id="panel-1" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -513,7 +504,6 @@
     </div>
   </div>
 
-  <!-- 面板 2 -->
   <div id="panel-2" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -534,7 +524,6 @@
     </div>
   </div>
 
-  <!-- 面板 3 -->
   <div id="panel-3" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -557,7 +546,6 @@
 
 </div>
 
-<!-- 底部导航 -->
 <div class="bottom-nav">
   <div class="bottom-nav-item active"><span class="icon">⊞</span><span>Desk</span></div>
   <div class="bottom-nav-item"><span class="icon">👤</span><span>Space</span></div>
@@ -573,7 +561,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v15';
+  var KEY_CONTENT = 'myPage.glass.v16';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -587,8 +575,8 @@
   var currentImg = null;
   var currentElementImg = null;
   var editMode = false;
-  var activeCard = null;
-  var activeTextEl = null; 
+  var activeTextEl = null;
+  var activeShapeEl = null;   // 当前选中的图形或图片框
   var DEFAULT_HTML = app.innerHTML;
   var customFonts = [];
 
@@ -597,7 +585,6 @@
     angle: 135, accent: '#4a9eff'
   };
 
-  // 初始化
   try {
     var saved = localStorage.getItem(KEY_CONTENT);
     if(saved) app.innerHTML = saved;
@@ -611,7 +598,6 @@
     if(savedBgImg !== 'none'){ document.body.style.backgroundImage = 'url(' + savedBgImg + ')'; }
   } catch(e){}
 
-  // ============ 主题/颜色/滑块 ============
   function applyTheme(dark){
     document.documentElement.classList.toggle('light', !dark);
     document.getElementById('themeIcon').textContent = dark ? '☀' : '◐';
@@ -662,6 +648,79 @@
   document.getElementById('gradAngle').addEventListener('input', function(e){ styleSettings.angle = e.target.value; applySliders(styleSettings); });
   document.getElementById('accentColor').addEventListener('input', function(e){ styleSettings.accent = e.target.value; applyColor(styleSettings.accent); applySliders(styleSettings); });
 
+  // ============ 图形/图片框样式控制 ============
+  function updateShapeStyleUI(){
+    var section = document.getElementById('shapeStyleSection');
+    if(!activeShapeEl){ section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    var isShape = activeShapeEl.classList.contains('shape-block');
+    var isFrame = activeShapeEl.classList.contains('image-frame-block');
+    document.getElementById('shapeColorRow').style.display = isShape ? 'flex' : 'none';
+    document.getElementById('shapeImgRow').style.display = isFrame ? 'flex' : 'none';
+    // 宽高
+    document.getElementById('shapeWidth').value = activeShapeEl.offsetWidth;
+    document.getElementById('shapeWidthVal').textContent = activeShapeEl.offsetWidth + 'px';
+    document.getElementById('shapeHeight').value = activeShapeEl.offsetHeight;
+    document.getElementById('shapeHeightVal').textContent = activeShapeEl.offsetHeight + 'px';
+    // 圆角
+    var radius = parseInt(activeShapeEl.style.borderRadius) || 0;
+    document.getElementById('shapeRadius').value = radius;
+    document.getElementById('shapeRadiusVal').textContent = radius + 'px';
+    // 颜色
+    if(isShape){
+      var c = window.getComputedStyle(activeShapeEl).color;
+      var hex = rgbToHex(c);
+      document.getElementById('shapeColor').value = hex;
+    }
+  }
+  function rgbToHex(rgb){
+    var m = rgb.match(/\d+/g);
+    if(!m) return '#4a9eff';
+    return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
+  }
+  document.getElementById('shapeColor').addEventListener('input', function(e){
+    if(activeShapeEl && activeShapeEl.classList.contains('shape-block')){
+      activeShapeEl.style.color = e.target.value;
+      scheduleSave();
+    }
+  });
+  document.getElementById('shapeWidth').addEventListener('input', function(e){
+    if(activeShapeEl){
+      activeShapeEl.style.width = e.target.value + 'px';
+      document.getElementById('shapeWidthVal').textContent = e.target.value + 'px';
+      scheduleSave();
+    }
+  });
+  document.getElementById('shapeHeight').addEventListener('input', function(e){
+    if(activeShapeEl){
+      activeShapeEl.style.height = e.target.value + 'px';
+      document.getElementById('shapeHeightVal').textContent = e.target.value + 'px';
+      scheduleSave();
+    }
+  });
+  document.getElementById('shapeRadius').addEventListener('input', function(e){
+    if(activeShapeEl){
+      activeShapeEl.style.borderRadius = e.target.value + 'px';
+      document.getElementById('shapeRadiusVal').textContent = e.target.value + 'px';
+      scheduleSave();
+    }
+  });
+  document.getElementById('btnChangeShapeImg').addEventListener('click', function(){
+    if(activeShapeEl && activeShapeEl.classList.contains('image-frame-block')){
+      currentElementImg = activeShapeEl.querySelector('img');
+      elementImageInput.value = '';
+      elementImageInput.click();
+    }
+  });
+
+  function selectShape(el){
+    if(activeShapeEl) activeShapeEl.classList.remove('selected');
+    activeShapeEl = el;
+    if(el) el.classList.add('selected');
+    updateShapeStyleUI();
+    if(el) document.getElementById('stylePanel').classList.add('show');
+  }
+
   // ============ 字体导入 ============
   document.getElementById('fontInput').addEventListener('change', function(e){
     var file = e.target.files[0]; if(!file) return;
@@ -684,7 +743,6 @@
     reader.readAsArrayBuffer(file);
   });
 
-  // ============ 文字样式 UI 同步 ============
   function updateTextStyleUI(){
     if(!activeTextEl) return;
     var style = window.getComputedStyle(activeTextEl);
@@ -703,7 +761,7 @@
     }
     var bgColor = style.backgroundColor;
     if(bgColor && bgColor !== 'rgba(0, 0, 0, 0)'){
-      document.getElementById('textBg').value = bgColor;
+      document.getElementById('textBg').value = rgbToHex(bgColor);
       document.getElementById('bgOpacity').value = 100;
       document.getElementById('bgOpacityVal').textContent = '100%';
     } else {
@@ -722,12 +780,11 @@
       if(anim !== 'none') activeTextEl.classList.add('anim-' + anim);
     }
   });
-  // ====== 修复竖排：使用 text-orientation: upright ======
   document.getElementById('textDir').addEventListener('change', function(e){
     if(!activeTextEl) return;
     if(e.target.value === 'vertical-rl'){
       activeTextEl.style.writingMode = 'vertical-rl';
-      activeTextEl.style.textOrientation = 'upright';  // 让数字、英文都直立
+      activeTextEl.style.textOrientation = 'upright';
     } else {
       activeTextEl.style.writingMode = 'horizontal-tb';
       activeTextEl.style.textOrientation = '';
@@ -824,20 +881,32 @@
       startResX = p.clientX; startResY = p.clientY;
       startW = block.offsetWidth; startH = block.offsetHeight;
       if(block.closest('.card-row')) block.style.flex = 'none';
-      document.addEventListener('mousemove', onResize); document.addEventListener('touchmove', onResize, {passive: false});
-      document.addEventListener('mouseup', stopResize); document.addEventListener('touchend', stopResize);
+      document.addEventListener('mousemove', onResize);
+      document.addEventListener('touchmove', onResize, {passive: false});
+      document.addEventListener('mouseup', stopResize);
+      document.addEventListener('touchend', stopResize);
     }
     function onResize(e){
       if(!isResizing) return;
       e.preventDefault();
       var p = e.touches ? e.touches[0] : e;
-      block.style.width = Math.max(30, startW + (p.clientX - startResX)) + 'px';
-      block.style.height = Math.max(30, startH + (p.clientY - startResY)) + 'px';
+      var newW = Math.max(30, startW + (p.clientX - startResX));
+      var newH = Math.max(30, startH + (p.clientY - startResY));
+      block.style.width = newW + 'px';
+      block.style.height = newH + 'px';
+      if(activeShapeEl === block){
+        document.getElementById('shapeWidth').value = newW;
+        document.getElementById('shapeWidthVal').textContent = newW + 'px';
+        document.getElementById('shapeHeight').value = newH;
+        document.getElementById('shapeHeightVal').textContent = newH + 'px';
+      }
     }
     function stopResize(){
       isResizing = false;
-      document.removeEventListener('mousemove', onResize); document.removeEventListener('touchmove', onResize);
-      document.removeEventListener('mouseup', stopResize); document.removeEventListener('touchend', stopResize);
+      document.removeEventListener('mousemove', onResize);
+      document.removeEventListener('touchmove', onResize);
+      document.removeEventListener('mouseup', stopResize);
+      document.removeEventListener('touchend', stopResize);
       scheduleSave();
     }
     handle.addEventListener('mousedown', startResize);
@@ -853,20 +922,24 @@
     });
   }
 
-  // ============ 通用拖拽（用于图形、图片框、浮动文本） ============
-  function makeDraggable(el, handle){
+  // ============ 通用拖拽 ============
+  function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
-
     function onStart(e){
       if(!editMode) return;
       if(e.target.classList.contains('resize-handle')) return;
       if(e.target.classList.contains('element-del')) return;
-      if(e.target.closest('.drag-handle') && handle) { /* drag handle branch */ }
+      if(e.target.classList.contains('float-del')) return;
+      if(e.target.classList.contains('drag-handle')) { /* drag handle */ }
       e.preventDefault();
       isDragging = true;
       var p = e.touches ? e.touches[0] : e;
       startX = p.clientX; startY = p.clientY;
       startLeft = el.offsetLeft; startTop = el.offsetTop;
+      // 选中此元素
+      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){
+        selectShape(el);
+      }
       document.addEventListener('mousemove', onMove);
       document.addEventListener('touchmove', onMove, {passive: false});
       document.addEventListener('mouseup', onEnd);
@@ -887,8 +960,8 @@
       document.removeEventListener('touchend', onEnd);
       scheduleSave();
     }
-    (handle || el).addEventListener('mousedown', onStart);
-    (handle || el).addEventListener('touchstart', onStart, {passive: false});
+    el.addEventListener('mousedown', onStart);
+    el.addEventListener('touchstart', onStart, {passive: false});
   }
 
   // ============ 图形库 ============
@@ -916,28 +989,23 @@
     shape.style.top = (window.scrollY + 200) + 'px';
     shape.style.width = '90px';
     shape.style.height = '90px';
+    shape.style.color = styleSettings.accent;
     shape.innerHTML = getShapeSVG(type) + '<div class="resize-handle"></div><button class="element-del" contenteditable="false">×</button>';
     var del = shape.querySelector('.element-del');
-    del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); scheduleSave(); } };
-    // 双击改色
-    shape.addEventListener('dblclick', function(e){
-      if(!editMode) return;
-      e.stopPropagation();
-      var color = prompt('输入颜色代码（如 #ff0000）：', '#4a9eff');
-      if(color) shape.style.color = color;
-    });
+    del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); if(activeShapeEl === shape){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     document.getElementById('float-layer').appendChild(shape);
     makeDraggable(shape);
-    bindResizeEvents(shape.parentNode);
+    bindResizeEvents(shape);
+    // 点击选中（避免与拖拽冲突，拖拽已经在 mousedown 里处理选中）
     scheduleSave();
-    toast('已添加图形，可拖动移动，双击可改色');
+    toast('已添加图形，可拖动，面板可调色和大小');
   }
 
   function createImageFrame(shapeType){
     var frame = document.createElement('div');
     frame.className = 'image-frame-block';
     frame.style.left = '40px';
-    frame.style.top = (window.scrollY + 280) + 'px';
+    frame.style.top = (window.scrollY + 300) + 'px';
     frame.style.width = '120px';
     frame.style.height = '120px';
     if(shapeType === 'circle') frame.style.borderRadius = '50%';
@@ -949,35 +1017,15 @@
     frame.appendChild(img);
     var handle = document.createElement('div'); handle.className = 'resize-handle'; frame.appendChild(handle);
     var del = document.createElement('button'); del.className = 'element-del'; del.textContent = '×';
-    del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图片框吗？')){ frame.remove(); scheduleSave(); } };
+    del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图片框吗？')){ frame.remove(); if(activeShapeEl === frame){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     frame.appendChild(del);
-    
-    // 点击换图（编辑模式下）
-    frame.addEventListener('click', function(e){
-      if(!editMode) return;
-      if(e.target.classList.contains('resize-handle') || e.target.classList.contains('element-del')) return;
-      // 单击切换形状
-      currentElementImg = img;
-      elementImageInput.value = '';
-      elementImageInput.click();
-    });
-    frame.addEventListener('dblclick', function(e){
-      e.stopPropagation();
-      // 双击切换圆/方/圆角
-      var cur = frame.style.borderRadius;
-      if(cur === '50%') frame.style.borderRadius = '16px';
-      else if(cur === '16px') frame.style.borderRadius = '0px';
-      else frame.style.borderRadius = '50%';
-    });
-    
     document.getElementById('float-layer').appendChild(frame);
     makeDraggable(frame);
-    bindResizeEvents(frame.parentNode);
+    bindResizeEvents(frame);
     scheduleSave();
-    toast('已添加图片框，点击换图，双击切换形状');
+    toast('已添加图片框，拖动移动，面板可换图');
   }
 
-  // ============ 工具栏事件 ============
   document.getElementById('btnAddShape').addEventListener('click', function(e){
     e.stopPropagation();
     document.getElementById('framePicker').classList.remove('show');
@@ -988,8 +1036,6 @@
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.toggle('show');
   });
-
-  // 形状选择
   document.querySelectorAll('#shapePicker .shape-pick-item').forEach(function(item){
     item.addEventListener('click', function(){
       createShape(this.dataset.shape);
@@ -1040,8 +1086,8 @@
     floatBlock.appendChild(del);
     floatBlock.addEventListener('focusin', function(){ activeTextEl = floatBlock; updateTextStyleUI(); });
     document.getElementById('float-layer').appendChild(floatBlock);
-    makeDraggable(floatBlock, dh);
-    bindResizeEvents(floatBlock.parentNode);
+    makeDraggable(floatBlock);
+    bindResizeEvents(floatBlock);
     floatBlock.focus();
     scheduleSave(); toast('浮动文本已添加');
   });
@@ -1054,6 +1100,7 @@
       document.getElementById('stylePanel').classList.remove('show');
       document.getElementById('shapePicker').classList.remove('show');
       document.getElementById('framePicker').classList.remove('show');
+      if(activeShapeEl){ activeShapeEl.classList.remove('selected'); activeShapeEl = null; updateShapeStyleUI(); }
     }
     document.querySelectorAll('[data-edit], .text-block, .float-text-block, .card-col').forEach(function(el){
       if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
@@ -1069,10 +1116,10 @@
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
   app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
 
-  // ============ 保存 ============
   function serialize(){
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+    clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
     return clone.innerHTML;
   }
   var saveTimer;
@@ -1083,7 +1130,6 @@
     }, 400);
   }
 
-  // ============ 导航 ============
   function switchTab(targetPanelId){
     document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
     var targetNav = document.querySelector('.nav-link[data-target="' + targetPanelId + '"]');
@@ -1093,7 +1139,6 @@
     if(panel) panel.style.display = 'block';
     if(editMode) toast('已跳转');
   }
-  // 关键：挂到 window 上，让 onclick 可以访问
   window.switchTab = switchTab;
 
   document.querySelectorAll('.nav-link').forEach(function(link){
@@ -1104,7 +1149,6 @@
     switchTab('panel-1'); toast('已跳转到个人信息页');
   });
 
-  // ============ 添加卡片 ============
   window.addCard = function(panelId){
     var panel = document.getElementById(panelId); if(!panel) return;
     var card = document.createElement('div'); card.className = 'feed-card glass-card';
@@ -1129,7 +1173,6 @@
     bindResizeEvents(wrapper); scheduleSave(); toast('已添加自由文本块');
   };
 
-  // ============ 背景图 ============
   document.getElementById('btnBgImage').addEventListener('click', function(){ bgInput.value = ''; bgInput.click(); });
   bgInput.addEventListener('change', function(){
     var file = bgInput.files && bgInput.files[0]; if(!file) return;
@@ -1142,7 +1185,6 @@
     reader.readAsDataURL(file);
   });
 
-  // ============ 图片点击替换（卡片内嵌图） ============
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var img = e.target.closest('img[data-edit-img]');
@@ -1167,18 +1209,17 @@
     reader.readAsDataURL(file);
   });
 
-  // ============ 卡片删除按钮 ============
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
     if(!del || !editMode) return; e.preventDefault();
     if(confirm('确定删除这张卡片吗？')){ del.closest('.feed-card').remove(); scheduleSave(); toast('卡片已删除'); }
   });
 
-  // ============ 导出/重置 ============
   document.getElementById('btnExport').addEventListener('click', function(){
     var clone = document.documentElement.cloneNode(true);
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+    clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
@@ -1188,7 +1229,6 @@
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); toast('已重置');
   });
 
-  // ============ 音乐 ============
   var bgMusic = document.getElementById('bgMusic'); var musicPlayer = document.getElementById('musicPlayer'); var musicIcon = document.getElementById('musicIcon');
   musicPlayer.addEventListener('click', function(){
     if(bgMusic.paused){
@@ -1199,11 +1239,14 @@
     }
   });
 
-  // ============ 全局点击收起面板 ============
   document.addEventListener('click', function(e){
     var sp = document.getElementById('stylePanel');
     var spBtn = document.getElementById('btnStylePanel');
-    if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target)) sp.classList.remove('show');
+    if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target)){
+      // 如果点击的是图形/图片框，不收起（因为选中需要用）
+      if(e.target.closest('.shape-block') || e.target.closest('.image-frame-block')) return;
+      sp.classList.remove('show');
+    }
     var shapeP = document.getElementById('shapePicker');
     var shapeBtn = document.getElementById('btnAddShape');
     if(shapeP.classList.contains('show') && !shapeP.contains(e.target) && !shapeBtn.contains(e.target)) shapeP.classList.remove('show');
@@ -1212,7 +1255,6 @@
     if(frameP.classList.contains('show') && !frameP.contains(e.target) && !frameBtn.contains(e.target)) frameP.classList.remove('show');
   });
 
-  // 初始化
   setEdit(false);
   bindAllResizeEvents();
 })();
