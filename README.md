@@ -100,11 +100,13 @@
   .shape-pick-item svg { width: 30px; height: 30px; }
   .shape-picker-title { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); }
 
+  /* ===== 顶部导航栏 ===== */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px; padding: 12px 16px;
     position: sticky; top: 50px; z-index: 998;
     background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
+    align-items: center;
   }
   html.light .top-nav { background: rgba(255, 255, 255, 0.75); }
   .top-nav::-webkit-scrollbar { display: none; }
@@ -115,6 +117,42 @@
     transition: all 0.2s ease; cursor: pointer; white-space: nowrap;
   }
   .nav-link.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+  /* 合集按钮 */
+  .nav-collection {
+    flex: 0 0 auto !important; display: flex; align-items: center; justify-content: center;
+    padding: 8px 12px !important; min-width: 40px;
+    color: var(--text) !important;
+  }
+  .nav-collection.active { background: var(--accent) !important; color: var(--accent-text) !important; border-color: var(--accent) !important; }
+  .nav-collection svg { display: block; }
+
+  /* 合集下拉菜单 */
+  .collection-menu {
+    position: fixed; top: 108px; left: 16px;
+    z-index: 10001;
+    background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    display: none; min-width: 180px; max-width: 80vw; max-height: 60vh; overflow-y: auto;
+  }
+  html.light .collection-menu { background: rgba(255, 255, 255, 0.98); }
+  .collection-menu.show { display: block; animation: fadeIn 0.2s ease; }
+  .collection-menu-title {
+    font-size: 10px; color: var(--accent); padding: 4px 10px 8px; 
+    border-bottom: 1px solid var(--glass-border); margin-bottom: 4px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-family: monospace;
+  }
+  .collection-item {
+    display: block; padding: 8px 12px; border-radius: 8px; color: var(--text);
+    text-decoration: none; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    font-family: monospace;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .collection-item:hover { background: rgba(255,255,255,0.08); }
+  .collection-item.active { background: var(--accent); color: var(--accent-text); }
+  .collection-empty { padding: 8px 12px; font-size: 12px; color: var(--text-sub); text-align: center; }
 
   .container { max-width: 640px; margin: 0 auto; padding: 16px; position: relative; }
 
@@ -184,7 +222,6 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
-  /* 修复1：移除 min-height，允许手柄拖动缩小；块本身用 overflow hidden 保持内容不溢出 */
   .card-col {
     flex: 1; min-width: 40px; padding: 8px 22px 8px 8px; 
     border: 1px dashed var(--glass-border);
@@ -241,7 +278,6 @@
   body.editing .shape-block:hover .element-del,
   body.editing .image-frame-block:hover .element-del { display: flex; }
 
-  /* 修复2：缩放手柄独立于块，放在 block-wrapper 上 */
   .block-wrapper { position: relative; }
   .block-wrapper > .resize-handle { display: none; }
   body.editing .block-wrapper > .resize-handle { display: block; }
@@ -258,7 +294,6 @@
   }
   .resize-handle:hover { opacity: 1; }
   
-  /* shape/image-frame/float 的手柄仍在自身内部 */
   .shape-block > .resize-handle,
   .image-frame-block > .resize-handle,
   .float-text-block > .resize-handle { display: none; }
@@ -359,7 +394,6 @@
   .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* 块操作按钮（增删行列） */
   .block-actions {
     position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
     background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
@@ -450,11 +484,25 @@
   <div class="style-item"><span>边框</span><button class="style-btn" id="btnToggleBorder">添加边框</button></div>
 </div>
 
+<!-- 顶部导航栏（合集按钮 + 四个主页面） -->
 <div class="top-nav" id="topNav">
+  <a class="nav-link nav-collection" id="navCollection" title="合集">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </a>
   <a class="nav-link active" data-target="panel-0">WELCOME</a>
   <a class="nav-link" data-target="panel-1">PERSONAL INFO</a>
   <a class="nav-link" data-target="panel-2">MY STYLE</a>
   <a class="nav-link" data-target="panel-3">CATEGORIES</a>
+</div>
+
+<!-- 合集下拉菜单 -->
+<div class="collection-menu" id="collectionMenu">
+  <div class="collection-menu-title">合集</div>
+  <div id="collectionList"></div>
 </div>
 
 <div class="container" id="app">
@@ -597,7 +645,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v18';
+  var KEY_CONTENT = 'myPage.glass.v19';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -910,17 +958,13 @@
     scheduleSave(); toast('已删除');
   };
 
-  // ========= 缩放核心（修复：手柄在 block-wrapper 上） =========
   function bindResizeEvents(host){
     if(!host) return;
-    var block;
-    var handle;
+    var block, handle;
     if(host.classList && (host.classList.contains('card-col') || host.classList.contains('text-block') || host.classList.contains('shape-block') || host.classList.contains('image-frame-block') || host.classList.contains('float-text-block'))){
-      // host 是块本身（shape/image-frame/float）
       block = host;
       handle = host.querySelector(':scope > .resize-handle');
     } else {
-      // host 是 block-wrapper
       block = host.querySelector('.card-col, .text-block');
       handle = host.querySelector(':scope > .resize-handle');
     }
@@ -946,7 +990,6 @@
       if(!isResizing) return;
       e.preventDefault();
       var p = e.touches ? e.touches[0] : e;
-      // 最小 16px，可以拖得非常小
       var newW = Math.max(16, startW + (p.clientX - startResX));
       var newH = Math.max(16, startH + (p.clientY - startResY));
       block.style.width = newW + 'px';
@@ -971,7 +1014,6 @@
   }
 
   function bindAllResizeEvents(){
-    // card-col / text-block 在 block-wrapper 里
     document.querySelectorAll('.block-wrapper').forEach(function(w){
       var block = w.querySelector('.card-col, .text-block');
       if(!block) return;
@@ -980,7 +1022,6 @@
       }
       bindResizeEvents(w);
     });
-    // shape / image-frame / float 手柄在内部
     document.querySelectorAll('.shape-block, .image-frame-block, .float-text-block').forEach(function(block){
       if(!block.querySelector('.resize-handle')){
         var h = document.createElement('div'); h.className = 'resize-handle'; block.appendChild(h);
@@ -989,7 +1030,6 @@
     });
   }
 
-  // ========= 拖拽 =========
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
@@ -1155,27 +1195,30 @@
     scheduleSave(); toast('浮动文本已添加');
   });
 
-  // ========= 新增页面 =========
+  // ========= 新增页面：折叠进合集 =========
   document.getElementById('btnAddPanel').addEventListener('click', function(){
-    var name = prompt('请输入新页面的名称（将显示在顶部导航栏）：', '新页面');
+    var name = prompt('请输入新页面的名称（将保存在「合集」中）：', '新页面');
     if(!name) return;
     name = name.trim();
     if(!name) return;
 
-    // 找出当前已有的面板和最后一个 ID
+    // 生成唯一 ID
     var panels = document.querySelectorAll('#app .panel');
-    var lastPanelId = panels.length ? panels[panels.length - 1].id : '';
-    // 生成新 ID
-    var newIndex = 0;
     var usedIds = {};
     panels.forEach(function(p){ usedIds[p.id] = true; });
+    var newIndex = 0;
     while(usedIds['panel-' + newIndex]) newIndex++;
     var newPanelId = 'panel-' + newIndex;
 
-    // 创建新面板
+    // 找出最后一张主面板的 ID（用于上一页跳转）
+    var lastPanelId = panels.length ? panels[panels.length - 1].id : 'panel-0';
+
+    // 创建新面板，标记 data-collection="true" 并保存名称
     var newPanel = document.createElement('div');
     newPanel.id = newPanelId;
     newPanel.className = 'panel';
+    newPanel.dataset.collection = 'true';
+    newPanel.dataset.name = name;
     newPanel.style.display = 'none';
     newPanel.innerHTML =
       '<div class="feed-card glass-card">' +
@@ -1192,17 +1235,10 @@
       '<button class="add-card-btn" onclick="addCard(\'' + newPanelId + '\')" style="margin-bottom:8px;">＋ 添加动态卡片</button>' +
       '<button class="add-card-btn" onclick="addTextBlock(\'' + newPanelId + '\')">＋ 添加自由文本块</button>' +
       '<div class="panel-nav">' +
-        (lastPanelId ? '<button class="panel-nav-btn" onclick="window.switchTab(\'' + lastPanelId + '\')" title="上一页">←</button>' : '<div class="panel-nav-spacer"></div>') +
+        '<button class="panel-nav-btn" onclick="window.switchTab(\'' + lastPanelId + '\')" title="上一页">←</button>' +
         '<div class="panel-nav-spacer"></div>' +
       '</div>';
     document.getElementById('app').appendChild(newPanel);
-
-    // 在导航栏添加新链接
-    var newLink = document.createElement('a');
-    newLink.className = 'nav-link';
-    newLink.setAttribute('data-target', newPanelId);
-    newLink.textContent = name;
-    document.getElementById('topNav').appendChild(newLink);
 
     // 如果当前是编辑模式，应用可编辑状态
     if(editMode){
@@ -1212,8 +1248,49 @@
       });
     }
 
+    refreshCollectionMenu();
     scheduleSave();
-    toast('已添加新页面：' + name);
+    toast('已添加到合集：' + name);
+  });
+
+  // ========= 合集菜单 =========
+  function refreshCollectionMenu(){
+    var list = document.getElementById('collectionList');
+    list.innerHTML = '';
+    var items = document.querySelectorAll('#app .panel[data-collection="true"]');
+    if(items.length === 0){
+      list.innerHTML = '<div class="collection-empty">暂无页面</div>';
+      return;
+    }
+    items.forEach(function(p){
+      var item = document.createElement('a');
+      item.className = 'collection-item';
+      item.setAttribute('data-target', p.id);
+      item.textContent = p.dataset.name || p.id;
+      item.addEventListener('click', function(){
+        switchTab(p.id);
+        document.getElementById('collectionMenu').classList.remove('show');
+      });
+      list.appendChild(item);
+    });
+  }
+
+  var navCollection = document.getElementById('navCollection');
+  var collectionMenu = document.getElementById('collectionMenu');
+
+  navCollection.addEventListener('click', function(e){
+    e.stopPropagation();
+    // 关闭其他面板
+    document.getElementById('shapePicker').classList.remove('show');
+    document.getElementById('framePicker').classList.remove('show');
+    document.getElementById('stylePanel').classList.remove('show');
+    // 切换菜单
+    if(collectionMenu.classList.contains('show')){
+      collectionMenu.classList.remove('show');
+    } else {
+      refreshCollectionMenu();
+      collectionMenu.classList.add('show');
+    }
   });
 
   // ========= 编辑模式 =========
@@ -1224,6 +1301,7 @@
       document.getElementById('stylePanel').classList.remove('show');
       document.getElementById('shapePicker').classList.remove('show');
       document.getElementById('framePicker').classList.remove('show');
+      document.getElementById('collectionMenu').classList.remove('show');
       if(activeShapeEl){ activeShapeEl.classList.remove('selected'); activeShapeEl = null; updateShapeStyleUI(); }
     }
     document.querySelectorAll('[data-edit], .text-block, .float-text-block, .card-col').forEach(function(el){
@@ -1256,19 +1334,31 @@
 
   function switchTab(targetPanelId){
     document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
-    var targetNav = document.querySelector('.nav-link[data-target="' + targetPanelId + '"]');
-    if(targetNav) targetNav.classList.add('active');
-    document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
+    document.querySelectorAll('#collectionList .collection-item').forEach(function(l){ l.classList.remove('active'); });
+    
     var panel = document.getElementById(targetPanelId);
-    if(panel) panel.style.display = 'block';
+    if(!panel) return;
+    var isCollection = panel.getAttribute('data-collection') === 'true';
+    
+    if(isCollection){
+      document.getElementById('navCollection').classList.add('active');
+      var collectionItem = document.querySelector('#collectionList .collection-item[data-target="' + targetPanelId + '"]');
+      if(collectionItem) collectionItem.classList.add('active');
+    } else {
+      var targetNav = document.querySelector('.nav-link[data-target="' + targetPanelId + '"]');
+      if(targetNav) targetNav.classList.add('active');
+    }
+    
+    document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
+    panel.style.display = 'block';
     if(editMode) toast('已跳转');
   }
   window.switchTab = switchTab;
 
-  // 导航栏使用事件委托，动态新增的链接也能响应
   document.getElementById('topNav').addEventListener('click', function(e){
     var link = e.target.closest('.nav-link');
     if(!link) return;
+    if(link.id === 'navCollection') return; // 合集按钮单独处理
     switchTab(link.getAttribute('data-target'));
   });
 
@@ -1351,13 +1441,14 @@
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
+    clone.querySelectorAll('.collection-menu').forEach(function(el){ el.classList.remove('show'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
   });
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
-    app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); toast('已重置');
+    app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); toast('已重置');
   });
 
   var bgMusic = document.getElementById('bgMusic'); var musicPlayer = document.getElementById('musicPlayer'); var musicIcon = document.getElementById('musicIcon');
@@ -1370,6 +1461,7 @@
     }
   });
 
+  // 全局点击：关闭下拉菜单/面板
   document.addEventListener('click', function(e){
     var sp = document.getElementById('stylePanel');
     var spBtn = document.getElementById('btnStylePanel');
@@ -1384,10 +1476,15 @@
     var frameP = document.getElementById('framePicker');
     var frameBtn = document.getElementById('btnAddImageFrame');
     if(frameP.classList.contains('show') && !frameP.contains(e.target) && !frameBtn.contains(e.target)) frameP.classList.remove('show');
+    // 合集菜单：点击外部关闭
+    if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){
+      collectionMenu.classList.remove('show');
+    }
   });
 
   setEdit(false);
   bindAllResizeEvents();
+  refreshCollectionMenu();
 })();
 </script>
 </body>
