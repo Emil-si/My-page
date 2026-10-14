@@ -2064,39 +2064,72 @@ html.light .img-picker {
 
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
+    var downTime = 0, hasMoved = false;
+    var MOVE_THRESHOLD = 8;
+
     function onStart(e){
       if(!editMode || isReadonly) return;
       if(e.target.classList.contains('resize-handle')) return;
       if(e.target.classList.contains('element-del')) return;
       if(e.target.classList.contains('float-del')) return;
-      e.preventDefault();
+
       isDragging = true;
+      hasMoved = false;
+      downTime = Date.now();
       var p = e.touches ? e.touches[0] : e;
       startX = p.clientX; startY = p.clientY;
       startLeft = el.offsetLeft; startTop = el.offsetTop;
-      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){ selectShape(el); }
+
+      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){
+        selectShape(el);
+      }
+
       document.addEventListener('mousemove', onMove);
       document.addEventListener('touchmove', onMove, {passive: false});
       document.addEventListener('mouseup', onEnd);
       document.addEventListener('touchend', onEnd);
     }
+
     function onMove(e){
       if(!isDragging) return;
-      e.preventDefault();
       var p = e.touches ? e.touches[0] : e;
-      el.style.left = (startLeft + (p.clientX - startX)) + 'px';
-      el.style.top = (startTop + (p.clientY - startY)) + 'px';
+      var dx = p.clientX - startX;
+      var dy = p.clientY - startY;
+
+      if(!hasMoved && (Math.abs(dx) > MOVE_THRESHOLD || Math.abs(dy) > MOVE_THRESHOLD)){
+        hasMoved = true;
+      }
+
+      if(hasMoved){
+        e.preventDefault();
+        el.style.left = (startLeft + dx) + 'px';
+        el.style.top = (startTop + dy) + 'px';
+      }
     }
+
     function onEnd(){
+      if(!isDragging) return;
       isDragging = false;
+
+      var upTime = Date.now();
+      var isTap = !hasMoved && (upTime - downTime) < 600;
+
+      if(isTap && el.classList.contains('image-frame-block')){
+        var img = el.querySelector('img');
+        if(img){
+          setTimeout(function(){ openImgPicker(img, 'normal'); }, 10);
+        }
+      }
+
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('mouseup', onEnd);
       document.removeEventListener('touchend', onEnd);
       scheduleSave();
     }
+
     el.addEventListener('mousedown', onStart);
-    el.addEventListener('touchstart', onStart, {passive: false});
+    el.addEventListener('touchstart', onStart, {passive: true});
   }
 
   function getShapeSVG(type){
