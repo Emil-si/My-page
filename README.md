@@ -105,9 +105,9 @@
     background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 24px; 
-    padding: 16px; /* 内部 padding */
+    padding: 16px; 
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
-    height: auto !important; /* 高度自适应 */
+    min-height: 40px; word-break: break-all; overflow-wrap: break-word;
   }
 
   .main-card {
@@ -117,7 +117,6 @@
     border: 1px solid var(--glass-border); border-radius: 24px; 
     padding: 0 0 24px 0; overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
-    height: auto !important; /* 高度自适应 */
   }
   
   /* 封面图 */
@@ -169,7 +168,7 @@
     background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); 
     border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative; 
-    height: auto !important; /* 高度自适应 */
+    min-height: 40px; word-break: break-all; overflow-wrap: break-word;
   }
   .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .feed-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #333; }
@@ -177,21 +176,37 @@
   .feed-name { font-size: 14px; font-weight: 600; }
   .feed-handle { font-size: 12px; color: var(--text-sub); font-family: monospace; }
   .feed-time { font-size: 12px; color: var(--text-sub); margin-left: auto; }
-  .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
+  .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; position: relative; padding-right: 20px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
   /* ============ 卡片内行列布局 ============ */
   .card-row {
-    display: flex; gap: 10px; margin-top: 12px; width: 100%;
-    flex-wrap: wrap;
+    display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap;
   }
   .card-col {
     flex: 1; min-width: 120px; padding: 8px; border: 1px dashed var(--glass-border);
     border-radius: 8px; background: rgba(255,255,255,0.02); min-height: 40px;
-    height: auto !important; word-break: break-all; overflow-wrap: break-word;
+    word-break: break-all; overflow-wrap: break-word; position: relative;
+    padding-right: 20px;
   }
-  .card-col[contenteditable="true"]:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
-  .card-col[contenteditable="true"]:focus { outline: 2px solid var(--accent); border-style: solid; }
+  .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+  /* 任意位置插入行列的悬浮按钮 */
+  .block-actions {
+    position: absolute; top: -10px; right: 0; display: none; gap: 4px; z-index: 20;
+  }
+  body.editing .card-col:hover .block-actions, 
+  body.editing .feed-text:hover .block-actions,
+  body.editing .card-col:focus .block-actions,
+  body.editing .feed-text:focus .block-actions {
+    display: flex;
+  }
+  .block-action-btn {
+    width: 24px; height: 24px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
+    border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  }
+  .block-action-btn:hover { transform: scale(1.1); }
 
   /* ============ 浮动文本框层 ============ */
   #float-layer {
@@ -205,7 +220,6 @@
     color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
     cursor: move; outline: none; box-sizing: border-box; display: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: auto;
-    height: auto !important; /* 高度自适应 */
   }
   body.editing .float-text-block { display: block; }
   .float-text-block:focus { cursor: text; border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(74, 158, 255, 0.6); }
@@ -261,17 +275,6 @@
   }
   .add-card-btn:hover { background: rgba(255,255,255,0.05); }
   body.editing .add-card-btn { display: block; }
-
-  /* 卡片内操作按钮 */
-  .card-actions {
-    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
-  }
-  .card-action-btn {
-    padding: 4px 10px; border-radius: 6px; border: 1px solid var(--glass-border);
-    background: rgba(255,255,255,0.05); color: var(--text-sub); cursor: pointer;
-    font-size: 11px; transition: all 0.2s;
-  }
-  .card-action-btn:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 
   /* ============ 音乐播放器 ============ */
   .music-player {
@@ -491,15 +494,15 @@
         </div>
         <div class="feed-time" data-edit>7小时前</div>
       </div>
-      <div class="feed-text" data-edit>这里是暗网吗</div>
+      <!-- 文本块，自带悬浮按钮 -->
+      <div class="feed-text" data-edit>这里是暗网吗
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+        </div>
+      </div>
       <div class="feed-footer">
         <span>💬 评论</span>
-      </div>
-      
-      <!-- 卡片内操作按钮 -->
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="addCardRow(this)">＋ 添加行</button>
-        <button class="card-action-btn" onclick="addCardCol(this)">＋ 添加分列</button>
       </div>
     </div>
 
@@ -511,10 +514,11 @@
   <div id="panel-1" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。</div>
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="addCardRow(this)">＋ 添加行</button>
-        <button class="card-action-btn" onclick="addCardCol(this)">＋ 添加分列</button>
+      <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+        </div>
       </div>
     </div>
     <button class="add-card-btn" onclick="addCard('panel-1')">＋ 添加动态卡片</button>
@@ -525,10 +529,11 @@
   <div id="panel-2" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="addCardRow(this)">＋ 添加行</button>
-        <button class="card-action-btn" onclick="addCardCol(this)">＋ 添加分列</button>
+      <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+        </div>
       </div>
     </div>
     <button class="add-card-btn" onclick="addCard('panel-2')">＋ 添加动态卡片</button>
@@ -539,10 +544,11 @@
   <div id="panel-3" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="addCardRow(this)">＋ 添加行</button>
-        <button class="card-action-btn" onclick="addCardCol(this)">＋ 添加分列</button>
+      <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+        </div>
       </div>
     </div>
     <button class="add-card-btn" onclick="addCard('panel-3')">＋ 添加动态卡片</button>
@@ -566,7 +572,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v9';
+  var KEY_CONTENT = 'myPage.glass.v10';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -654,7 +660,8 @@
     localStorage.setItem(KEY_STYLE, JSON.stringify(settings));
   }
 
-  document.getElementById('btnStylePanel').addEventListener('click', function(){
+  document.getElementById('btnStylePanel').addEventListener('click', function(e){
+    e.stopPropagation();
     document.getElementById('stylePanel').classList.toggle('show');
   });
 
@@ -691,21 +698,18 @@
       font.load().then(function(loadedFont) {
         document.fonts.add(loadedFont);
         customFonts.push(fontName);
-        // 添加到下拉菜单
         var select = document.getElementById('fontFamilySelect');
         var option = document.createElement('option');
         option.value = fontName;
         option.textContent = '自定义字体 ' + customFonts.length;
         select.appendChild(option);
         toast('字体导入成功');
-        // 自动选中刚导入的字体
         if(activeTextEl) {
           activeTextEl.style.fontFamily = fontName;
           select.value = fontName;
         }
       }).catch(function(err) {
         toast('字体导入失败，请检查文件格式');
-        console.error(err);
       });
     };
     reader.readAsArrayBuffer(file);
@@ -724,20 +728,15 @@
     document.getElementById('borderRadius').value = parseInt(style.borderRadius) || 0;
     document.getElementById('borderRadiusVal').textContent = (parseInt(style.borderRadius) || 0) + 'px';
     
-    // 字体同步
     var select = document.getElementById('fontFamilySelect');
     var currentFont = style.fontFamily.split(',')[0].replace(/['"]/g, '');
     var found = false;
     for(var i=0; i<select.options.length; i++){
       if(select.options[i].value === currentFont || (currentFont === 'default' && select.options[i].value === 'default')) {
-        select.value = select.options[i].value;
-        found = true;
-        break;
+        select.value = select.options[i].value; found = true; break;
       }
     }
-    if(!found && currentFont !== 'default') {
-      select.value = 'default';
-    }
+    if(!found && currentFont !== 'default') select.value = 'default';
 
     var bgColor = style.backgroundColor;
     if(bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
@@ -755,11 +754,7 @@
   });
   document.getElementById('fontFamilySelect').addEventListener('change', function(e){
     if(activeTextEl) {
-      if(e.target.value === 'default') {
-        activeTextEl.style.fontFamily = 'inherit';
-      } else {
-        activeTextEl.style.fontFamily = e.target.value;
-      }
+      activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value;
     }
   });
   document.getElementById('textDir').addEventListener('change', function(e){
@@ -833,6 +828,44 @@
     }
   });
 
+  // ============ 任意位置增加行列 ============
+  window.addRowHere = function(btn) {
+    var block = btn.closest('.feed-text, .card-col');
+    var card = block.closest('.feed-card, .main-card');
+    var newRow = document.createElement('div');
+    newRow.className = 'card-row';
+    newRow.innerHTML = '<div class="card-col" contenteditable="' + editMode + '">新行内容</div>';
+    // 将新行插入到当前块的后面
+    block.parentNode.insertBefore(newRow, block.nextSibling);
+    if(editMode) newRow.querySelector('.card-col').focus();
+    scheduleSave();
+    toast('已在此处添加行');
+  };
+
+  window.addColHere = function(btn) {
+    var block = btn.closest('.feed-text, .card-col');
+    var card = block.closest('.feed-card, .main-card');
+    var lastRow = block.closest('.card-row');
+    
+    if(!lastRow) {
+      // 如果当前块不在行内，创建新行并包裹当前块
+      lastRow = document.createElement('div');
+      lastRow.className = 'card-row';
+      block.parentNode.insertBefore(lastRow, block);
+      lastRow.appendChild(block);
+    }
+    
+    var newCol = document.createElement('div');
+    newCol.className = 'card-col';
+    newCol.setAttribute('contenteditable', editMode);
+    newCol.textContent = '新列内容';
+    // 在当前块后面添加列
+    lastRow.insertBefore(newCol, block.nextSibling);
+    if(editMode) newCol.focus();
+    scheduleSave();
+    toast('已在此处添加列');
+  };
+
   // ============ 浮动文本框 ============
   var floatIdCounter = 0;
   document.getElementById('btnAddFloat').addEventListener('click', function(){
@@ -902,7 +935,7 @@
       scheduleSave();
     }
 
-    // 缩放
+    // 缩放 (修复：不再强制高度auto)
     resizeHandle.addEventListener('mousedown', startResize);
     resizeHandle.addEventListener('touchstart', startResize, {passive: false});
     var isResizing = false;
@@ -925,8 +958,10 @@
       e.preventDefault();
       var clientX = e.clientX || e.touches[0].clientX;
       var clientY = e.clientY || e.touches[0].clientY;
-      floatBlock.style.width = Math.max(100, startW + (clientX - startResX)) + 'px';
-      floatBlock.style.height = 'auto'; // 高度自动
+      var newW = Math.max(100, startW + (clientX - startResX));
+      var newH = Math.max(40, startH + (clientY - startResY));
+      floatBlock.style.width = newW + 'px';
+      floatBlock.style.height = newH + 'px'; // 自由设定高度
     }
     function stopResize() {
       isResizing = false;
@@ -947,39 +982,6 @@
     toast('浮动文本框已添加');
     scheduleSave();
   });
-
-  // ============ 卡片内增加行列 ============
-  window.addCardRow = function(btn) {
-    var card = btn.closest('.feed-card, .main-card');
-    var actions = card.querySelector('.card-actions');
-    var row = document.createElement('div');
-    row.className = 'card-row';
-    row.innerHTML = '<div class="card-col" contenteditable="' + editMode + '">新行内容</div>';
-    card.insertBefore(row, actions);
-    if(editMode) { row.querySelector('.card-col').focus(); }
-    scheduleSave();
-    toast('已添加行');
-  };
-
-  window.addCardCol = function(btn) {
-    var card = btn.closest('.feed-card, .main-card');
-    var actions = card.querySelector('.card-actions');
-    // 检查最后一行是否已经存在，如果存在则在最后一行追加列，否则创建新行
-    var lastRow = card.querySelector('.card-row:last-of-type');
-    if(!lastRow) {
-      lastRow = document.createElement('div');
-      lastRow.className = 'card-row';
-      card.insertBefore(lastRow, actions);
-    }
-    var col = document.createElement('div');
-    col.className = 'card-col';
-    col.setAttribute('contenteditable', editMode);
-    col.textContent = '新列内容';
-    lastRow.appendChild(col);
-    if(editMode) { col.focus(); }
-    scheduleSave();
-    toast('已添加列');
-  };
 
   // ============ 文本编辑状态跟踪 ============
   document.addEventListener('focusin', function(e){
@@ -1074,18 +1076,18 @@
         </div>
         <div class="feed-time" data-edit>刚刚</div>
       </div>
-      <div class="feed-text" data-edit>点击这里输入内容...</div>
-      <div class="feed-footer"><span>💬 评论</span></div>
-      <div class="card-actions">
-        <button class="card-action-btn" onclick="addCardRow(this)">＋ 添加行</button>
-        <button class="card-action-btn" onclick="addCardCol(this)">＋ 添加分列</button>
+      <div class="feed-text" data-edit>点击这里输入内容...
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+        </div>
       </div>
+      <div class="feed-footer"><span>💬 评论</span></div>
     `;
     var addBtn = panel.querySelector('.add-card-btn');
     panel.insertBefore(card, addBtn);
     if(editMode){
       card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
-      card.querySelectorAll('.card-col').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
     }
     scheduleSave();
     toast('已添加新卡片');
@@ -1155,6 +1157,10 @@
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
+    // 强制收起样式面板
+    if(!on) {
+      document.getElementById('stylePanel').classList.remove('show');
+    }
     document.querySelectorAll('[data-edit], .text-block, .float-text-block, .card-col').forEach(function(el){
       if(on) { el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
       else el.removeAttribute('contenteditable');
@@ -1165,16 +1171,23 @@
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
     
     if(on) { 
-      toast('编辑已开启，点击文字可调样式'); 
+      toast('编辑已开启，悬停文本可见增删行列按钮'); 
     } else { 
-      // 修复：退出编辑模式时自动收起样式面板
-      document.getElementById('stylePanel').classList.remove('show');
       scheduleSave(); 
-      toast('已保存，样式面板已收起'); 
+      toast('已保存'); 
     }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
   app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
+
+  // 全局点击收起样式面板
+  document.addEventListener('click', function(e) {
+    var panel = document.getElementById('stylePanel');
+    var btn = document.getElementById('btnStylePanel');
+    if(panel.classList.contains('show') && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.classList.remove('show');
+    }
+  });
 
   setEdit(false);
 })();
