@@ -30,10 +30,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
-  html, body {
-    max-width: 100vw;
-    overflow-x: hidden;
-  }
+  html, body { max-width: 100vw; overflow-x: hidden; }
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-color);
@@ -105,6 +102,83 @@
   .style-btn.active { background: var(--accent); color: var(--accent-text); }
   .style-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
   .font-select { width: 100%; padding: 4px; border-radius: 4px; background: #333; color: #fff; border: 1px solid #555; font-size: 11px; }
+
+  /* ===== 自定义音乐输入框面板 ===== */
+  .music-panel {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    z-index: 10002;
+    width: min(92vw, 380px);
+    padding: 22px 20px;
+    border-radius: 20px;
+    background: rgba(20, 20, 25, 0.98);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+    color: #fff; font-size: 13px;
+    display: none;
+    flex-direction: column; gap: 14px;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  html.light .music-panel { background: rgba(255, 255, 255, 0.98); color: #111; }
+  .music-panel.show {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .music-panel-title {
+    font-size: 15px; color: var(--accent); text-align: center;
+    font-family: monospace; letter-spacing: 0.1em;
+    padding-bottom: 10px; border-bottom: 1px solid var(--glass-border);
+  }
+  .music-panel-tip {
+    font-size: 11px; color: var(--text-sub); line-height: 1.6;
+    font-family: monospace;
+  }
+  .music-panel-input {
+    width: 100%; padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font-size: 13px;
+    font-family: monospace;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  html.light .music-panel-input { background: rgba(0,0,0,0.04); }
+  .music-panel-input:focus { border-color: var(--accent); }
+  .music-panel-btns {
+    display: flex; gap: 8px;
+  }
+  .music-panel-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .music-panel-btn:hover { background: rgba(255,255,255,0.08); }
+  .music-panel-btn.confirm { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .music-panel-btn.danger { color: #e5484d; border-color: rgba(229,72,77,0.4); }
+  .music-panel-btn.danger:hover { background: rgba(229,72,77,0.15); }
+
+  /* 背景遮罩 */
+  .music-panel-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10001;
+    display: none;
+  }
+  .music-panel-backdrop.show { display: block; }
 
   .shape-picker {
     position: fixed;
@@ -402,6 +476,9 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.3s;
     color: var(--text); font-size: 22px;
+    touch-action: none; user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   html.light .music-player { background: rgba(255, 255, 255, 0.8); }
   .music-player.playing { animation: spin 4s linear infinite; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
@@ -443,7 +520,6 @@
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
-  /* ===== 图片位置选择器 ===== */
   .img-pos-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -453,50 +529,29 @@
     box-sizing: border-box;
   }
   .img-pos-overlay.show { display: flex; }
-  .img-pos-title {
-    color: #fff; font-size: 15px; margin-bottom: 14px;
-    font-family: monospace; letter-spacing: 0.1em;
-    text-align: center;
-  }
+  .img-pos-title { color: #fff; font-size: 15px; margin-bottom: 14px; font-family: monospace; letter-spacing: 0.1em; text-align: center; }
   .img-pos-preview {
     width: min(92vw, 500px);
     height: min(60vh, 500px);
     border-radius: 14px;
     background-color: #1a1a1a;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    cursor: grab;
-    touch-action: none;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-    user-select: none;
+    background-size: cover; background-repeat: no-repeat; background-position: 50% 50%;
+    cursor: grab; touch-action: none;
+    position: relative; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7); user-select: none;
   }
   .img-pos-preview:active { cursor: grabbing; }
   .img-pos-preview::after {
     content: ""; position: absolute; inset: 0;
     border: 2px dashed rgba(255,255,255,0.35);
-    border-radius: 14px;
-    pointer-events: none;
+    border-radius: 14px; pointer-events: none;
   }
-  .img-pos-crosshair {
-    position: absolute; inset: 0;
-    pointer-events: none;
-  }
-  .img-pos-crosshair::before,
-  .img-pos-crosshair::after {
-    content: ""; position: absolute; background: rgba(255,255,255,0.25);
-  }
+  .img-pos-crosshair { position: absolute; inset: 0; pointer-events: none; }
+  .img-pos-crosshair::before, .img-pos-crosshair::after { content: ""; position: absolute; background: rgba(255,255,255,0.25); }
   .img-pos-crosshair::before { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-0.5px); }
   .img-pos-crosshair::after { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-0.5px); }
-  .img-pos-tip {
-    color: rgba(255,255,255,0.7); font-size: 12px;
-    margin-top: 14px; font-family: monospace; text-align: center; line-height: 1.6;
-  }
-  .img-pos-btns {
-    display: flex; gap: 12px; margin-top: 18px;
-  }
+  .img-pos-tip { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 14px; font-family: monospace; text-align: center; line-height: 1.6; }
+  .img-pos-btns { display: flex; gap: 12px; margin-top: 18px; }
   .img-pos-btn {
     padding: 10px 28px; border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -515,7 +570,6 @@
     font-family: monospace; backdrop-filter: blur(8px);
   }
 
-  /* ===== 手机适配 ===== */
   @media (max-width: 640px) {
     body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); }
     .toolbar { height: calc(46px + var(--safe-top)); padding: 0 10px; padding-top: var(--safe-top); gap: 5px; }
@@ -571,6 +625,7 @@
     .add-card-btn { padding: 12px; font-size: 12px; }
     .card-del { width: 26px; height: 26px; font-size: 14px; }
     .img-pos-preview { width: 92vw; height: 55vh; }
+    .music-panel { width: min(94vw, 360px); padding: 18px 16px; }
   }
 
   @media (max-width: 480px) {
@@ -602,13 +657,31 @@
     .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(62px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
     .style-panel { width: calc(100vw - 20px); right: calc(10px + var(--safe-right)); padding: 10px; max-height: calc(100dvh - 100px); }
     .img-pos-preview { width: 94vw; height: 50vh; }
+    .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
   }
 </style>
 </head>
 <body>
 
 <audio id="bgMusic" src="" loop preload="none"></audio>
-<div class="music-player" id="musicPlayer" title="播放/暂停音乐"><span id="musicIcon">♪</span></div>
+<div class="music-player" id="musicPlayer" title="短按播放/暂停 · 长按换歌"><span id="musicIcon">♪</span></div>
+
+<!-- 音乐输入面板（自定义，不用系统 prompt） -->
+<div class="music-panel-backdrop" id="musicPanelBackdrop"></div>
+<div class="music-panel" id="musicPanel">
+  <div class="music-panel-title">更换音乐</div>
+  <div class="music-panel-tip">
+    • 上传 mp3 到 GitHub 仓库后填文件名，例如 <b>music.mp3</b><br>
+    • 或填完整的 https 链接（以 .mp3 结尾）<br>
+    • 清空并点「清空」可移除音乐
+  </div>
+  <input type="text" class="music-panel-input" id="musicUrlInput" placeholder="music.mp3 或 https://.../song.mp3" autocomplete="off" spellcheck="false">
+  <div class="music-panel-btns">
+    <button class="music-panel-btn danger" id="musicClearBtn">清空</button>
+    <button class="music-panel-btn" id="musicCancelBtn">取消</button>
+    <button class="music-panel-btn confirm" id="musicConfirmBtn">确定</button>
+  </div>
+</div>
 
 <div class="toolbar">
   <button class="tbtn" id="btnEdit"><span class="ico">✎</span><span class="label">编辑</span></button>
@@ -724,7 +797,7 @@
         <div class="profile-header-row">
           <div class="avatar-wrap"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23222'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像"></div>
           <div class="name-handle">
-            <div class="name" data-edit>水水</div>
+            <div class="name" data-edit>肆</div>
             <div class="handle" data-edit>@InfernalBeyond.com</div>
           </div>
         </div>
@@ -757,11 +830,11 @@
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
       <div class="feed-header">
         <div class="feed-avatar"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23555'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EW%3C/text%3E%3C/svg%3E"></div>
-        <div><div class="feed-name" data-edit>水水</div><div class="feed-handle" data-edit>@InfernalBeyond.com</div></div>
+        <div><div class="feed-name" data-edit>肆</div><div class="feed-handle" data-edit>@InfernalBeyond.com</div></div>
         <div class="feed-time" data-edit>7小时前</div>
       </div>
       <div class="block-wrapper">
-        <div class="feed-text" data-edit>这里是暗网吗</div>
+        <div class="feed-text" data-edit>我要搓死了</div>
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
@@ -860,7 +933,6 @@
   <div class="bottom-nav-item"><span class="icon">⚙️</span><span>设置</span></div>
 </div>
 
-<!-- ===== 图片位置选择器 ===== -->
 <div class="img-pos-overlay" id="imgPosOverlay">
   <div class="img-pos-title">选择展示位置</div>
   <div class="img-pos-preview" id="imgPosPreview">
@@ -882,12 +954,13 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v24';
+  var KEY_CONTENT = 'myPage.glass.v25';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
   var KEY_BG_POS  = 'myPage.bgPos.v1';
   var KEY_STYLE   = 'myPage.styleSettings.v1';
+  var KEY_MUSIC   = 'myPage.musicUrl.v2';
 
   var app = document.getElementById('app');
   var fileInput = document.getElementById('fileInput');
@@ -982,21 +1055,125 @@
     return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
   }
 
-  // ========== 图片位置选择器 ==========
+  // ================= 音乐播放器（自定义面板） =================
+  var bgMusic = document.getElementById('bgMusic');
+  var musicPlayer = document.getElementById('musicPlayer');
+  var musicIcon = document.getElementById('musicIcon');
+  var musicPanel = document.getElementById('musicPanel');
+  var musicPanelBackdrop = document.getElementById('musicPanelBackdrop');
+  var musicUrlInput = document.getElementById('musicUrlInput');
+  var musicConfirmBtn = document.getElementById('musicConfirmBtn');
+  var musicCancelBtn = document.getElementById('musicCancelBtn');
+  var musicClearBtn = document.getElementById('musicClearBtn');
+
+  try {
+    var savedMusicUrl = localStorage.getItem(KEY_MUSIC);
+    if(savedMusicUrl){ bgMusic.src = savedMusicUrl; }
+  } catch(e){}
+
+  function playMusic(){
+    if(!bgMusic.src || bgMusic.src === window.location.href){
+      toast('请长按音乐按钮设置音乐');
+      return;
+    }
+    bgMusic.play().then(function(){
+      musicPlayer.classList.add('playing');
+      musicIcon.textContent = '❚❚';
+    }).catch(function(){ toast('播放失败，链接可能无效'); });
+  }
+  function pauseMusic(){
+    bgMusic.pause();
+    musicPlayer.classList.remove('playing');
+    musicIcon.textContent = '♪';
+  }
+
+  function openMusicPanel(){
+    musicPanelBackdrop.classList.add('show');
+    musicPanel.classList.add('show');
+    try { musicUrlInput.value = localStorage.getItem(KEY_MUSIC) || ''; } catch(e){ musicUrlInput.value = ''; }
+    setTimeout(function(){ musicUrlInput.focus(); }, 250);
+  }
+  function closeMusicPanel(){
+    musicPanelBackdrop.classList.remove('show');
+    musicPanel.classList.remove('show');
+  }
+
+  musicPanelBackdrop.addEventListener('click', closeMusicPanel);
+  musicCancelBtn.addEventListener('click', closeMusicPanel);
+
+  musicConfirmBtn.addEventListener('click', function(){
+    var url = (musicUrlInput.value || '').trim();
+    if(!url){
+      toast('请输入音乐链接');
+      return;
+    }
+    try { localStorage.setItem(KEY_MUSIC, url); } catch(e){}
+    bgMusic.src = url;
+    bgMusic.load();
+    closeMusicPanel();
+    playMusic();
+    toast('音乐已更换');
+  });
+
+  musicClearBtn.addEventListener('click', function(){
+    try { localStorage.removeItem(KEY_MUSIC); } catch(e){}
+    bgMusic.pause();
+    bgMusic.removeAttribute('src');
+    bgMusic.load();
+    musicPlayer.classList.remove('playing');
+    musicIcon.textContent = '♪';
+    closeMusicPanel();
+    toast('已清空音乐');
+  });
+
+  musicUrlInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.keyCode === 13){
+      e.preventDefault();
+      musicConfirmBtn.click();
+    }
+  });
+
+  // 长按检测
+  var musicPressTimer = null;
+  var musicLongPressed = false;
+  var MUSIC_LONG_PRESS_MS = 600;
+
+  function startMusicPress(){
+    musicLongPressed = false;
+    clearTimeout(musicPressTimer);
+    musicPressTimer = setTimeout(function(){
+      musicLongPressed = true;
+      openMusicPanel();
+    }, MUSIC_LONG_PRESS_MS);
+  }
+  function cancelMusicPress(){
+    clearTimeout(musicPressTimer);
+  }
+  function onMusicRelease(e){
+    cancelMusicPress();
+    if(!musicLongPressed){
+      if(e && e.cancelable) e.preventDefault();
+      if(bgMusic.paused) playMusic(); else pauseMusic();
+    }
+  }
+
+  musicPlayer.addEventListener('mousedown', function(e){ e.preventDefault(); startMusicPress(); });
+  musicPlayer.addEventListener('mouseup', onMusicRelease);
+  musicPlayer.addEventListener('mouseleave', cancelMusicPress);
+  musicPlayer.addEventListener('touchstart', function(e){ startMusicPress(); }, {passive: true});
+  musicPlayer.addEventListener('touchend', onMusicRelease);
+  musicPlayer.addEventListener('touchcancel', cancelMusicPress);
+  // 阻止右键菜单干扰
+  musicPlayer.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  // ================= 图片位置选择器 =================
   var imgPosOverlay = document.getElementById('imgPosOverlay');
   var imgPosPreview = document.getElementById('imgPosPreview');
   var imgPosReset = document.getElementById('imgPosReset');
   var imgPosCancel = document.getElementById('imgPosCancel');
   var imgPosConfirm = document.getElementById('imgPosConfirm');
 
-  var posState = {
-    image: null,        // dataURL
-    posX: 50,           // 0-100
-    posY: 50,
-    target: null,       // 'background' 或实际 img 元素
-    isBg: false
-  };
-
+  var posState = { image: null, posX: 50, posY: 50, target: null, isBg: false };
   var posDragging = false, posStartX = 0, posStartY = 0, posStartPosX = 50, posStartPosY = 50;
 
   function openPosPicker(imageDataURL, target, isBg, initialX, initialY){
@@ -1009,26 +1186,18 @@
     imgPosPreview.style.backgroundPosition = posState.posX + '% ' + posState.posY + '%';
     imgPosOverlay.classList.add('show');
   }
-
   function closePosPicker(){
     imgPosOverlay.classList.remove('show');
-    posState.image = null;
-    posState.target = null;
-    posState.isBg = false;
+    posState.image = null; posState.target = null; posState.isBg = false;
   }
 
   imgPosReset.addEventListener('click', function(){
     posState.posX = 50; posState.posY = 50;
     imgPosPreview.style.backgroundPosition = '50% 50%';
   });
-
   imgPosCancel.addEventListener('click', closePosPicker);
-
   imgPosConfirm.addEventListener('click', function(){
-    if(!posState.target || !posState.image){
-      closePosPicker();
-      return;
-    }
+    if(!posState.target || !posState.image){ closePosPicker(); return; }
     if(posState.isBg){
       document.body.style.backgroundImage = 'url(' + posState.image + ')';
       document.body.style.backgroundPosition = posState.posX + '% ' + posState.posY + '%';
@@ -1052,8 +1221,7 @@
     posDragging = true;
     var p = e.touches ? e.touches[0] : e;
     posStartX = p.clientX; posStartY = p.clientY;
-    posStartPosX = posState.posX;
-    posStartPosY = posState.posY;
+    posStartPosX = posState.posX; posStartPosY = posState.posY;
   }
   function onPosMove(e){
     if(!posDragging) return;
@@ -1062,13 +1230,11 @@
     var rect = imgPosPreview.getBoundingClientRect();
     var dx = p.clientX - posStartX;
     var dy = p.clientY - posStartY;
-    // 拖动灵敏度：100px 约 40%
     var newX = posStartPosX - (dx / rect.width) * 100;
     var newY = posStartPosY - (dy / rect.height) * 100;
     newX = Math.max(0, Math.min(100, newX));
     newY = Math.max(0, Math.min(100, newY));
-    posState.posX = newX;
-    posState.posY = newY;
+    posState.posX = newX; posState.posY = newY;
     imgPosPreview.style.backgroundPosition = newX + '% ' + newY + '%';
   }
   function onPosEnd(){ posDragging = false; }
@@ -1080,7 +1246,6 @@
   document.addEventListener('mouseup', onPosEnd);
   document.addEventListener('touchend', onPosEnd);
 
-  // 压缩图片为 dataURL
   function compressImage(file, maxSize, quality){
     maxSize = maxSize || 1400;
     quality = quality || 0.85;
@@ -1109,14 +1274,11 @@
     });
   }
 
-  // ========== 背景图上传 ==========
   document.getElementById('btnBgImage').addEventListener('click', function(){
-    bgInput.value = '';
-    bgInput.click();
+    bgInput.value = ''; bgInput.click();
   });
   bgInput.addEventListener('change', function(){
-    var file = bgInput.files && bgInput.files[0];
-    if(!file) return;
+    var file = bgInput.files && bgInput.files[0]; if(!file) return;
     compressImage(file, 1600, 0.82).then(function(dataUrl){
       var savedPos = '50% 50%';
       try { savedPos = localStorage.getItem(KEY_BG_POS) || '50% 50%'; } catch(e){}
@@ -1127,7 +1289,6 @@
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  // ========== 卡片图片上传 ==========
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var img = e.target.closest('img[data-edit-img]');
@@ -1143,7 +1304,6 @@
     if(!file || !currentImg) return;
     var targetImg = currentImg;
     compressImage(file, 1200, 0.85).then(function(dataUrl){
-      // 解析现有 object-position
       var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
       var parts = cur.split(' ');
       var initX = parseFloat(parts[0]) || 50;
@@ -1152,7 +1312,6 @@
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  // 图形/图片框图片上传
   elementImageInput.addEventListener('change', function(){
     var file = elementImageInput.files && elementImageInput.files[0];
     if(!file || !currentElementImg) return;
@@ -1166,7 +1325,7 @@
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  // ========== 其他功能（保留原有） ==========
+  // ================= 样式面板绑定 =================
   function updateShapeStyleUI(){
     var section = document.getElementById('shapeStyleSection');
     if(!activeShapeEl){ section.style.display = 'none'; return; }
@@ -1440,7 +1599,6 @@
 
   // ================= resize 事件委托 =================
   var resizingState = null;
-
   function onResizePointerDown(e){
     if(!editMode) return;
     var handle = e.target.closest && e.target.closest('.resize-handle');
@@ -1912,7 +2070,7 @@
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
     clone.querySelectorAll('.divider-block.active').forEach(function(el){ el.classList.remove('active'); });
-    clone.querySelectorAll('.collection-menu, .img-pos-overlay').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('.collection-menu, .img-pos-overlay, .music-panel, .music-panel-backdrop').forEach(function(el){ el.classList.remove('show'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
@@ -1920,16 +2078,6 @@
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); refreshLinkTargets(); toast('已重置');
-  });
-
-  var bgMusic = document.getElementById('bgMusic'); var musicPlayer = document.getElementById('musicPlayer'); var musicIcon = document.getElementById('musicIcon');
-  musicPlayer.addEventListener('click', function(){
-    if(bgMusic.paused){
-      if(!bgMusic.src || bgMusic.src === window.location.href){ toast('请先设置音乐链接'); return; }
-      bgMusic.play().then(function(){ musicPlayer.classList.add('playing'); musicIcon.textContent = '❚❚'; }).catch(function(){ toast('播放失败'); });
-    } else {
-      bgMusic.pause(); musicPlayer.classList.remove('playing'); musicIcon.textContent = '♪';
-    }
   });
 
   document.addEventListener('click', function(e){
