@@ -183,33 +183,38 @@
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
+
+  /* 关键修复1：overflow 改为 visible，让缩放手柄不被裁剪 */
   .card-col {
-    flex: 1; min-width: 60px; padding: 8px; border: 1px dashed var(--glass-border);
+    flex: 1; min-width: 60px; padding: 8px 20px 8px 8px; 
+    border: 1px dashed var(--glass-border);
     border-radius: 8px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
-    padding-right: 20px; display: flex; align-items: center; justify-content: center;
-    text-align: center; overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; overflow: visible;
+    min-height: 40px;
   }
   body.editing .card-col { display: block; text-align: left; }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
   .text-block {
-    padding: 12px; border: 1px dashed var(--glass-border);
+    padding: 12px 20px 12px 12px; 
+    border: 1px dashed var(--glass-border);
     border-radius: 12px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
-    padding-right: 20px; display: flex; align-items: center; justify-content: center;
-    text-align: center; overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; overflow: visible;
+    min-height: 40px;
   }
   body.editing .text-block { display: block; text-align: left; }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* 图形/图片框：关键修复 pointer-events */
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
     box-sizing: border-box; display: none; cursor: move;
     overflow: visible;
-    pointer-events: auto;  /* 关键：修复拖不动问题 */
-    touch-action: none;    /* 关键：修复手机端拖拽时页面滚动 */
+    pointer-events: auto;
+    touch-action: none;
     user-select: none;
   }
   body.editing .shape-block, body.editing .image-frame-block { display: block; }
@@ -236,11 +241,13 @@
   body.editing .shape-block:hover .element-del,
   body.editing .image-frame-block:hover .element-del { display: flex; }
 
-  /* 关键：给缩放手柄加 touch-action: none */
+  /* 关键修复2：手柄位置改为 bottom:0; right:0，不再被裁剪 */
   .resize-handle {
-    position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px;
-    background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
-    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px; opacity: 0.85;
+    position: absolute; bottom: 0; right: 0; width: 22px; height: 22px;
+    background: linear-gradient(135deg, transparent 48%, var(--accent) 48%);
+    cursor: se-resize; z-index: 10; 
+    border-bottom-right-radius: 8px; 
+    opacity: 0.9;
     touch-action: none;
     user-select: none;
   }
@@ -388,7 +395,6 @@
   <div class="style-item"><span>渐变角度</span><input type="range" id="gradAngle" min="0" max="360" value="135"><span id="angleVal">135°</span></div>
   <div class="style-item"><span>全局主色</span><input type="color" id="accentColor" value="#4a9eff"></div>
 
-  <!-- 图形/图片框样式区（选中图形后显示） -->
   <div id="shapeStyleSection" style="display:none;">
     <h4>图形/图片框样式</h4>
     <div class="style-item" id="shapeColorRow"><span>图形颜色</span><input type="color" id="shapeColor" value="#4a9eff"></div>
@@ -561,7 +567,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v16';
+  var KEY_CONTENT = 'myPage.glass.v17';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -576,7 +582,7 @@
   var currentElementImg = null;
   var editMode = false;
   var activeTextEl = null;
-  var activeShapeEl = null;   // 当前选中的图形或图片框
+  var activeShapeEl = null;
   var DEFAULT_HTML = app.innerHTML;
   var customFonts = [];
 
@@ -648,7 +654,6 @@
   document.getElementById('gradAngle').addEventListener('input', function(e){ styleSettings.angle = e.target.value; applySliders(styleSettings); });
   document.getElementById('accentColor').addEventListener('input', function(e){ styleSettings.accent = e.target.value; applyColor(styleSettings.accent); applySliders(styleSettings); });
 
-  // ============ 图形/图片框样式控制 ============
   function updateShapeStyleUI(){
     var section = document.getElementById('shapeStyleSection');
     if(!activeShapeEl){ section.style.display = 'none'; return; }
@@ -657,20 +662,17 @@
     var isFrame = activeShapeEl.classList.contains('image-frame-block');
     document.getElementById('shapeColorRow').style.display = isShape ? 'flex' : 'none';
     document.getElementById('shapeImgRow').style.display = isFrame ? 'flex' : 'none';
-    // 宽高
-    document.getElementById('shapeWidth').value = activeShapeEl.offsetWidth;
-    document.getElementById('shapeWidthVal').textContent = activeShapeEl.offsetWidth + 'px';
-    document.getElementById('shapeHeight').value = activeShapeEl.offsetHeight;
-    document.getElementById('shapeHeightVal').textContent = activeShapeEl.offsetHeight + 'px';
-    // 圆角
+    var w = activeShapeEl.offsetWidth, h = activeShapeEl.offsetHeight;
+    document.getElementById('shapeWidth').value = w;
+    document.getElementById('shapeWidthVal').textContent = w + 'px';
+    document.getElementById('shapeHeight').value = h;
+    document.getElementById('shapeHeightVal').textContent = h + 'px';
     var radius = parseInt(activeShapeEl.style.borderRadius) || 0;
     document.getElementById('shapeRadius').value = radius;
     document.getElementById('shapeRadiusVal').textContent = radius + 'px';
-    // 颜色
     if(isShape){
       var c = window.getComputedStyle(activeShapeEl).color;
-      var hex = rgbToHex(c);
-      document.getElementById('shapeColor').value = hex;
+      document.getElementById('shapeColor').value = rgbToHex(c);
     }
   }
   function rgbToHex(rgb){
@@ -721,7 +723,6 @@
     if(el) document.getElementById('stylePanel').classList.add('show');
   }
 
-  // ============ 字体导入 ============
   document.getElementById('fontInput').addEventListener('change', function(e){
     var file = e.target.files[0]; if(!file) return;
     var reader = new FileReader();
@@ -748,7 +749,7 @@
     var style = window.getComputedStyle(activeTextEl);
     document.getElementById('fontSize').value = parseInt(style.fontSize) || 16;
     document.getElementById('fontSizeVal').textContent = (parseInt(style.fontSize) || 16) + 'px';
-    document.getElementById('textColor').value = style.color || '#f0f0f0';
+    document.getElementById('textColor').value = rgbToHex(style.color) || '#f0f0f0';
     document.getElementById('textDir').value = style.writingMode && style.writingMode.indexOf('vertical') === 0 ? 'vertical-rl' : 'horizontal-tb';
     document.getElementById('borderWidth').value = parseInt(style.borderWidth) || 1;
     document.getElementById('borderWidthVal').textContent = (parseInt(style.borderWidth) || 1) + 'px';
@@ -825,7 +826,21 @@
     }
   });
 
-  // ============ 行列增删 ============
+  // 关键修复：恢复 focusin 监听，点击文字即激活样式面板
+  document.addEventListener('focusin', function(e){
+    if(!editMode) return;
+    var el = e.target.closest('[contenteditable="true"], .float-text-block');
+    if(el){
+      activeTextEl = el;
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+      // 高亮闪烁
+      el.style.transition = 'box-shadow 0.3s';
+      el.style.boxShadow = '0 0 0 4px var(--accent)';
+      setTimeout(function(){ el.style.boxShadow = ''; }, 600);
+    }
+  });
+
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
@@ -863,14 +878,14 @@
     scheduleSave(); toast('已删除');
   };
 
-  // ============ 通用缩放 ============
   function bindResizeEvents(wrapper){
+    if(!wrapper) return;
     var block = wrapper.querySelector('.card-col, .text-block, .shape-block, .image-frame-block, .float-text-block');
     if(!block) return;
     var handle = block.querySelector('.resize-handle');
     if(!handle) return;
-    if(block.dataset.resizeBound) return;
-    block.dataset.resizeBound = 'true';
+    if(handle.dataset.bound) return;
+    handle.dataset.bound = 'true';
 
     var isResizing = false, startW, startH, startResX, startResY;
     function startResize(e){
@@ -922,7 +937,6 @@
     });
   }
 
-  // ============ 通用拖拽 ============
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
@@ -930,13 +944,11 @@
       if(e.target.classList.contains('resize-handle')) return;
       if(e.target.classList.contains('element-del')) return;
       if(e.target.classList.contains('float-del')) return;
-      if(e.target.classList.contains('drag-handle')) { /* drag handle */ }
       e.preventDefault();
       isDragging = true;
       var p = e.touches ? e.touches[0] : e;
       startX = p.clientX; startY = p.clientY;
       startLeft = el.offsetLeft; startTop = el.offsetTop;
-      // 选中此元素
       if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){
         selectShape(el);
       }
@@ -964,7 +976,6 @@
     el.addEventListener('touchstart', onStart, {passive: false});
   }
 
-  // ============ 图形库 ============
   function getShapeSVG(type){
     var svgs = {
       circle:   '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>',
@@ -995,10 +1006,10 @@
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); if(activeShapeEl === shape){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     document.getElementById('float-layer').appendChild(shape);
     makeDraggable(shape);
-    bindResizeEvents(shape);
-    // 点击选中（避免与拖拽冲突，拖拽已经在 mousedown 里处理选中）
+    bindResizeEvents(shape.parentNode);
+    selectShape(shape);
     scheduleSave();
-    toast('已添加图形，可拖动，面板可调色和大小');
+    toast('已添加图形');
   }
 
   function createImageFrame(shapeType){
@@ -1011,7 +1022,6 @@
     if(shapeType === 'circle') frame.style.borderRadius = '50%';
     else if(shapeType === 'rounded') frame.style.borderRadius = '16px';
     else frame.style.borderRadius = '0px';
-    
     var img = document.createElement('img');
     img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="14" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E';
     frame.appendChild(img);
@@ -1021,9 +1031,10 @@
     frame.appendChild(del);
     document.getElementById('float-layer').appendChild(frame);
     makeDraggable(frame);
-    bindResizeEvents(frame);
+    bindResizeEvents(frame.parentNode);
+    selectShape(frame);
     scheduleSave();
-    toast('已添加图片框，拖动移动，面板可换图');
+    toast('已添加图片框');
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
@@ -1069,7 +1080,6 @@
     reader.readAsDataURL(file);
   });
 
-  // ============ 浮动文本框 ============
   document.getElementById('btnAddFloat').addEventListener('click', function(){
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
@@ -1087,12 +1097,11 @@
     floatBlock.addEventListener('focusin', function(){ activeTextEl = floatBlock; updateTextStyleUI(); });
     document.getElementById('float-layer').appendChild(floatBlock);
     makeDraggable(floatBlock);
-    bindResizeEvents(floatBlock);
+    bindResizeEvents(floatBlock.parentNode);
     floatBlock.focus();
     scheduleSave(); toast('浮动文本已添加');
   });
 
-  // ============ 编辑模式 ============
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
@@ -1120,6 +1129,7 @@
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
+    clone.querySelectorAll('.resize-handle').forEach(function(el){ el.removeAttribute('data-bound'); });
     return clone.innerHTML;
   }
   var saveTimer;
@@ -1243,8 +1253,9 @@
     var sp = document.getElementById('stylePanel');
     var spBtn = document.getElementById('btnStylePanel');
     if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target)){
-      // 如果点击的是图形/图片框，不收起（因为选中需要用）
       if(e.target.closest('.shape-block') || e.target.closest('.image-frame-block')) return;
+      // 不收起：如果点的是内容可编辑区域，也保持打开
+      if(e.target.closest('[contenteditable="true"]')) return;
       sp.classList.remove('show');
     }
     var shapeP = document.getElementById('shapePicker');
