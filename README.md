@@ -63,7 +63,7 @@
 
   /* ============ 侧边样式面板 ============ */
   .style-panel {
-    position: fixed; top: 60px; right: 16px; z-index: 1000;
+    position: fixed; top: 60px; right: 16px; z-index: 9999; /* 提升层级 */
     width: 280px; padding: 16px; border-radius: 16px;
     background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -78,8 +78,6 @@
   .style-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px; }
   .style-btn.active { background: var(--accent); color: var(--accent-text); }
   .style-btn-group { display: flex; gap: 4px; }
-  .style-tag { background: var(--accent); color: var(--accent-text); padding: 2px 6px; border-radius: 4px; font-size: 10px; position: absolute; top: -10px; right: 0; display: none; }
-  body.editing .style-tag.active { display: block; }
 
   /* ============ 顶部导航栏 ============ */
   .top-nav {
@@ -122,7 +120,7 @@
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
-    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 140px;
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
     background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%); 
     z-index: 1; pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
@@ -154,8 +152,9 @@
   .quote-block { margin: 0 24px 24px 24px; padding: 16px; border: 1px solid var(--glass-border); border-radius: 16px; background: rgba(255,255,255,0.02); }
   .quote-block p { font-size: 14px; line-height: 1.8; color: var(--text-sub); font-style: italic; }
 
-  .post-box { margin: 0 24px 16px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .post-input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; resize: none; font-family: inherit; }
+  .post-box { margin: 0 24px 16px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: all 0.2s; }
+  .post-box:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
+  .post-input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; resize: none; font-family: inherit; cursor: pointer; }
   .post-tools { display: flex; justify-content: space-between; align-items: center; }
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
@@ -175,27 +174,28 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* ============ 浮动文本框（自由拖动） ============ */
+  /* ============ 浮动文本框（fixed定位，绝对可见） ============ */
   .float-text-block {
-    position: absolute; z-index: 100; min-width: 120px; min-height: 40px;
-    padding: 12px; border-radius: 12px; border: 1px dashed var(--accent);
-    background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(8px);
+    position: fixed; z-index: 9998; min-width: 160px; min-height: 50px;
+    padding: 14px; border-radius: 12px; border: 2px dashed var(--accent);
+    background: rgba(20, 20, 25, 0.85); backdrop-filter: blur(12px);
     color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
     cursor: move; outline: none; box-sizing: border-box; display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   body.editing .float-text-block { display: block; }
-  .float-text-block:focus { cursor: text; border: 1px solid var(--accent); box-shadow: 0 0 15px rgba(74, 158, 255, 0.5); }
+  .float-text-block:focus { cursor: text; border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(74, 158, 255, 0.6); }
   .float-text-block .drag-handle {
-    position: absolute; top: 2px; right: 2px; width: 24px; height: 24px;
+    position: absolute; top: 4px; right: 4px; width: 28px; height: 28px;
     background: var(--accent); color: var(--accent-text); border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; cursor: move; opacity: 0.6;
+    font-size: 14px; cursor: move; opacity: 0.8;
   }
   .float-text-block .drag-handle:hover { opacity: 1; }
   .float-del {
-    position: absolute; top: -10px; left: -10px; width: 20px; height: 20px;
+    position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
     background: #e5484d; color: #fff; border-radius: 50%; border: none;
-    font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center;
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
 
@@ -244,10 +244,9 @@
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
   /* ============ 编辑状态 ============ */
-  /* 文字编辑状态清晰反馈 */
   body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
   body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(255,255,255,0.03); }
-  body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.08); box-shadow: 0 0 10px rgba(74, 158, 255, 0.2); }
+  body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.1); box-shadow: 0 0 10px rgba(74, 158, 255, 0.3); }
   
   body.editing .cover-wrap:hover::after, 
   body.editing .avatar-wrap:hover::after, 
@@ -412,7 +411,8 @@
         <p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p>
       </div>
 
-      <div class="post-box">
+      <!-- 发帖框：点击触发跳转 -->
+      <div class="post-box" id="postBoxTrigger">
         <input class="post-input" placeholder="说点什么..." data-edit>
         <div class="post-tools">
           <div class="tool-icons">
@@ -490,7 +490,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v6';
+  var KEY_CONTENT = 'myPage.glass.v7';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -503,7 +503,7 @@
   var currentImg = null;
   var editMode = false;
   var activeCard = null;
-  var activeTextEl = null; // 当前选中的文字元素
+  var activeTextEl = null; 
   var DEFAULT_HTML = app.innerHTML;
 
   var styleSettings = {
@@ -616,7 +616,6 @@
     document.getElementById('borderRadius').value = parseInt(style.borderRadius) || 0;
     document.getElementById('borderRadiusVal').textContent = (parseInt(style.borderRadius) || 0) + 'px';
     
-    // 背景色透明度处理
     var bgColor = style.backgroundColor;
     if(bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
       document.getElementById('textBg').value = bgColor;
@@ -652,7 +651,6 @@
     if(activeTextEl) activeTextEl.style.color = e.target.value;
   });
   
-  // 文字背景色与透明度
   document.getElementById('textBg').addEventListener('input', function(e){
     if(activeTextEl) {
       activeTextEl.dataset.bgColor = e.target.value;
@@ -672,7 +670,6 @@
     }
   });
 
-  // 边框控制
   document.getElementById('borderWidth').addEventListener('input', function(e){
     if(activeTextEl) {
       activeTextEl.style.borderWidth = e.target.value + 'px';
@@ -704,17 +701,17 @@
     }
   });
 
-  // ============ 自由浮动文本框 ============
+  // ============ 自由浮动文本框（修复版） ============
   var floatIdCounter = 0;
   document.getElementById('btnAddFloat').addEventListener('click', function(){
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
     floatBlock.id = 'float-' + (++floatIdCounter);
-    floatBlock.style.left = '50%';
-    floatBlock.style.top = '200px';
-    floatBlock.style.transform = 'translateX(-50%)';
+    // 默认出现在屏幕正中央
+    floatBlock.style.left = (window.innerWidth / 2 - 100) + 'px';
+    floatBlock.style.top = (window.innerHeight / 2 - 50) + 'px';
     floatBlock.setAttribute('contenteditable', 'true');
-    floatBlock.innerHTML = '自由文本框，可拖拽到任意位置...';
+    floatBlock.innerHTML = '自由文本框<br>拖动我移动';
     
     var dragHandle = document.createElement('div');
     dragHandle.className = 'drag-handle';
@@ -733,7 +730,7 @@
     };
     floatBlock.appendChild(delBtn);
 
-    // 拖拽逻辑
+    // 拖拽逻辑（修复）
     dragHandle.addEventListener('mousedown', startDrag);
     dragHandle.addEventListener('touchstart', startDrag, {passive: false});
 
@@ -748,11 +745,11 @@
       var clientY = e.clientY || e.touches[0].clientY;
       startX = clientX;
       startY = clientY;
+      
+      // 获取当前的精确坐标
       var rect = floatBlock.getBoundingClientRect();
-      startLeft = rect.left + window.scrollX;
-      startTop = rect.top + window.scrollY;
-      floatBlock.style.transform = 'none';
-      floatBlock.style.cursor = 'grabbing';
+      startLeft = rect.left;
+      startTop = rect.top;
       
       document.addEventListener('mousemove', onDrag);
       document.addEventListener('touchmove', onDrag, {passive: false});
@@ -767,13 +764,13 @@
       var clientY = e.clientY || e.touches[0].clientY;
       var dx = clientX - startX;
       var dy = clientY - startY;
+      
       floatBlock.style.left = (startLeft + dx) + 'px';
       floatBlock.style.top = (startTop + dy) + 'px';
     }
 
     function stopDrag() {
       isDragging = false;
-      floatBlock.style.cursor = 'move';
       document.removeEventListener('mousemove', onDrag);
       document.removeEventListener('touchmove', onDrag);
       document.removeEventListener('mouseup', stopDrag);
@@ -781,7 +778,6 @@
       scheduleSave();
     }
 
-    // 点击聚焦
     floatBlock.addEventListener('focusin', function() {
       activeTextEl = floatBlock;
       updateTextStyleUI();
@@ -789,29 +785,21 @@
 
     document.body.appendChild(floatBlock);
     floatBlock.focus();
-    // 将光标放到末尾
-    if (window.getSelection && document.createRange) {
-      var range = document.createRange();
-      range.selectNodeContents(floatBlock);
-      range.collapse(false);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-    toast('已添加浮动文本框，可拖动');
+    
+    toast('浮动文本框已添加到屏幕中央');
     scheduleSave();
   });
 
   // ============ 文本编辑状态跟踪 ============
-  app.addEventListener('focusin', function(e){
+  document.addEventListener('focusin', function(e){
     if(!editMode) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
     if(el) {
       activeTextEl = el;
       updateTextStyleUI();
-      // 自动弹出样式面板并滚动到文字区域
+      // 自动弹出样式面板
       document.getElementById('stylePanel').classList.add('show');
-      // 添加一个短暂的闪烁提示
+      // 添加闪烁提示
       el.style.transition = 'box-shadow 0.3s';
       el.style.boxShadow = '0 0 0 4px var(--accent)';
       setTimeout(function(){ el.style.boxShadow = 'none'; }, 500);
@@ -861,17 +849,32 @@
     reader.readAsDataURL(file);
   });
 
+  // ============ 导航跳转逻辑 ============
+  function switchTab(targetPanelId) {
+    document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
+    var targetNav = document.querySelector('.nav-link[data-target="' + targetPanelId + '"]');
+    if(targetNav) targetNav.classList.add('active');
+    
+    document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
+    var panel = document.getElementById(targetPanelId);
+    if(panel) panel.style.display = 'block';
+    
+    if(editMode) toast('已跳转至 ' + (targetNav ? targetNav.textContent : targetPanelId));
+  }
+
   document.querySelectorAll('.nav-link').forEach(function(link){
     link.addEventListener('click', function(){
-      document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
-      this.classList.add('active');
       var target = this.getAttribute('data-target');
-      document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
-      var panel = document.getElementById(target);
-      if(panel) panel.style.display = 'block';
-      
-      if(editMode) toast('已跳转至 ' + this.textContent);
+      switchTab(target);
     });
+  });
+
+  // ============ 点击发布框跳转到第二个界面 ============
+  document.getElementById('postBoxTrigger').addEventListener('click', function(e) {
+    // 如果点击的是可编辑文字，且处于编辑模式，不触发跳转
+    if(editMode && e.target.closest('[data-edit]')) return; 
+    switchTab('panel-1');
+    toast('已跳转到个人信息页');
   });
 
   window.addCard = function(panelId){
@@ -911,7 +914,7 @@
     block.className = 'text-block';
     block.setAttribute('contenteditable', 'true');
     block.innerHTML = '点击输入自由文本内容...';
-    var addBtn = panel.querySelectorAll('.add-card-btn')[1]; // 第二个按钮
+    var addBtn = panel.querySelectorAll('.add-card-btn')[1]; 
     panel.insertBefore(block, addBtn);
     if(editMode) block.focus();
     scheduleSave();
