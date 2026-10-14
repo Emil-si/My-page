@@ -659,6 +659,19 @@
     .img-pos-preview { width: 94vw; height: 50vh; }
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
   }
+/* ===== 隐藏底部导航栏 ===== */
+.bottom-nav {
+  display: none !important;
+}
+body {
+  padding-bottom: calc(60px + var(--safe-bottom)) !important;
+}
+.music-player {
+  bottom: calc(20px + var(--safe-bottom)) !important;
+}
+.toast {
+  bottom: calc(40px + var(--safe-bottom)) !important;
+}
 </style>
 </head>
 <body>
