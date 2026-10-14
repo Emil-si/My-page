@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -87,7 +88,6 @@
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
 
-  /* ===== 工具栏 ===== */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     height: calc(50px + var(--safe-top));
@@ -118,7 +118,6 @@
   body.editing .edit-only{display: flex !important;}
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
-  /* ===== 样式面板 ===== */
   .style-panel {
     position: fixed;
     top: calc(60px + var(--safe-top));
@@ -139,7 +138,7 @@
   }
   .style-panel.show { display: flex; }
   .style-panel-drag {
-    display: none; /* 只在手机显示 */
+    display: none;
     width: 44px; height: 5px; border-radius: 3px; background: rgba(127,127,127,0.4);
     margin: 0 auto 8px; cursor: pointer; flex-shrink: 0;
   }
@@ -154,7 +153,6 @@
   .font-select { width: 100%; padding: 4px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--glass-border); font-size: 11px; }
   html.light .font-select { background: rgba(0,0,0,0.04); }
 
-  /* ===== 音乐面板 ===== */
   .music-panel {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0.96);
@@ -211,7 +209,6 @@
   }
   .music-panel-backdrop.show { display: block; }
 
-  /* ===== 图形选择器 ===== */
   .shape-picker {
     position: fixed;
     top: calc(60px + var(--safe-top));
@@ -242,7 +239,6 @@
     color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);
   }
 
-  /* ===== 顶部导航 ===== */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px;
     padding: 12px calc(16px + var(--safe-left)) 12px calc(16px + var(--safe-right));
@@ -271,7 +267,6 @@
   .nav-collection.active { background: var(--accent) !important; color: var(--accent-text) !important; border-color: var(--accent) !important; }
   .nav-collection svg { display: block; }
 
-  /* ===== 合集菜单 ===== */
   .collection-menu {
     position: fixed;
     top: calc(108px + var(--safe-top));
@@ -305,7 +300,6 @@
 
   .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 16px; position: relative; box-sizing: border-box; z-index: 10; }
 
-  /* ===== 卡片 ===== */
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -328,7 +322,7 @@
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
-    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
+   px content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
     background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%);
     z-index: 1; pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
@@ -338,14 +332,14 @@
   .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
   .avatar-wrap {
     width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border);
-    background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.4); flex: none;
+    background: var(--glass-bg); overflow: hidden;; box-shadow: 0 8px 25px rgba(0, }
+0,0,0.4); flex: none;
   }
-  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+  .avatar -wrap img { width .: 100%; heightstats: 100%; object-fit: cover; object-position: 50% 50%; }
   .name-handle { flex: 1; }
   .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 4px; }
   .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; }
-  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; }
-  .stats span { font-weight: 600; color: var(--text); }
+  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14 span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
   .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 24px 24px 24px; }
@@ -380,7 +374,6 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
-  /* ===== 修复：文字对齐（flex 容器也能左右对齐） ===== */
   .card-col {
     flex: 1; min-width: 40px; padding: 8px 30px 8px 8px;
     border: 1px dashed var(--glass-border);
@@ -412,7 +405,6 @@
     box-shadow: 0 0 0 3px rgba(74,158,255,0.3); opacity: 1;
   }
 
-  /* ===== 图片下方添加分隔线按钮 ===== */
   .add-grid-divider {
     display: none;
     margin: -14px 24px 16px 24px;
@@ -431,7 +423,6 @@
   .add-grid-divider:hover { background: rgba(127,127,127,0.08); color: var(--accent); border-color: var(--accent); }
   body.editing .add-grid-divider { display: block; }
 
-  /* ===== 图形 / 图片框 ===== */
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
     box-sizing: border-box; display: none; cursor: move;
@@ -447,7 +438,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
   .image-frame-block.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,158,255,0.3); }
-  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block;  }
+  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
 
   .element-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
@@ -462,7 +453,6 @@
   .block-wrapper > .resize-handle { display: none; }
   body.editing .block-wrapper > .resize-handle { display: block; }
 
-  /* ===== 修复：resize handle 加大点击区域 ===== */
   .resize-handle {
     position: absolute; bottom: 0; right: 0;
     width: 28px; height: 28px;
@@ -470,7 +460,6 @@
     cursor: se-resize; z-index: 10; border-bottom-right-radius: 10px;
     opacity: 0.9; touch-action: none; user-select: none; pointer-events: auto;
   }
-  /* 用伪元素扩大点击范围（不影响视觉） */
   .resize-handle::before {
     content: '';
     position: absolute;
@@ -548,7 +537,6 @@
   .panel-nav-btn:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); transform: translateY(-2px); }
   .panel-nav-spacer { min-width: 48px; }
 
-  /* ===== 音乐播放器 ===== */
   .music-player {
     position: fixed;
     bottom: calc(24px + var(--safe-bottom));
@@ -611,7 +599,6 @@
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
-  /* ===== 图片位置选择器 ===== */
   .img-pos-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.9);
@@ -661,6 +648,59 @@
     font-family: monospace; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   }
 
+  /* ===== 图片库面板 ===== */
+  .img-picker {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 52vh;
+    background: rgba(20, 20, 25, 0.98);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid var(--glass-border);
+    border-radius: 20px 20px 0 0;
+    z-index: 10050;
+    display: none; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.5);
+  }
+  html.light .img-picker { background: rgba(255, 255, 255, 0.98); box-shadow: 0 -12px 40px rgba(0,0,0,0.15); }
+  .img-picker.show { display: flex; transform: translateY(0); }
+  .img-picker-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0;
+  }
+  .img-picker-title { font-size: 13px; color: var(--accent); font-family: monospace; letter-spacing: 0.1em; }
+  .img-picker-actions { display: flex; gap: 8px; }
+  .img-picker-btn {
+    padding: 6px 12px; border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: transparent; color: var(--text);
+    font-size: 12px; font-family: monospace; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .img-picker-btn:hover { background: rgba(127,127,127,0.15); }
+  .img-picker-btn.close { color: #e5484d; border-color: rgba(229,72,77,0.4); font-size: 18px; padding: 2px 10px; line-height: 1.2; }
+  .img-picker-grid {
+    flex: 1; overflow-y: auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; padding: 12px;
+    padding-bottom: calc(12px + var(--safe-bottom));
+  }
+  @media (max-width: 480px) {
+    .img-picker-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .img-picker-item {
+    aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+    cursor: pointer; background: rgba(127,127,127,0.1);
+    border: 2px solid transparent; transition: all 0.2s;
+    position: relative;
+  }
+  .img-picker-item:hover { border-color: var(--accent); transform: scale(1.03); }
+  .img-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-picker-empty { grid-column: 1 / -1; text-align: center; color: var(--text-sub); font-size: 12px; padding: 40px 0; font-family: monospace; }
+
   /* ===== 只读模式 ===== */
   body.readonly .toolbar,
   body.readonly #btnEdit,
@@ -676,6 +716,7 @@
   body.readonly .shape-picker,
   body.readonly .collection-menu,
   body.readonly .img-pos-overlay,
+  body.readonly .img-picker,
   body.readonly .music-panel,
   body.readonly .music-panel-backdrop {
     display: none !important;
@@ -687,6 +728,42 @@
   body.readonly .text-block {
     border-color: transparent !important;
     background: transparent !important;
+  }
+
+  /* ===== 微信 / 老浏览器：毛玻璃兜底 ===== */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .toolbar,
+    .top-nav,
+    .music-player,
+    .style-panel,
+    .collection-menu,
+    .shape-picker,
+    .music-panel,
+    .img-picker {
+      background: rgba(20, 20, 25, 0.96) !important;
+    }
+    html.light .toolbar,
+    html.light .top-nav,
+    html.light .music-player,
+    html.light .style-panel,
+    html.light .collection-menu,
+    html.light .shape-picker,
+    html.light .music-panel,
+    html.light .img-picker {
+      background: rgba(255, 255, 255, 0.98) !important;
+    }
+    .glass-card,
+    .main-card,
+    .feed-card {
+      background-color: rgba(25, 25, 30, 0.94) !important;
+      background-image: none !important;
+    }
+    html.light .glass-card,
+    html.light .main-card,
+    html.light .feed-card {
+      background-color: rgba(255, 255, 255, 0.96) !important;
+      background-image: none !important;
+    }
   }
 
   /* ===== 手机适配 ===== */
@@ -730,15 +807,9 @@
     .panel-nav-spacer { min-width: 42px; }
     .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(16px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
 
-    /* ===== 修复：样式面板高度降低 + 加折叠把手 ===== */
     .style-panel {
-      top: auto !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100vw !important;
-      max-width: 100vw !important;
-      max-height: 45vh !important;
+      top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+      width: 100vw !important; max-width: 100vw !important; max-height: 45vh !important;
       border-radius: 20px 20px 0 0 !important;
       padding: 8px 14px calc(14px + var(--safe-bottom)) 14px !important;
       box-shadow: 0 -12px 40px rgba(0,0,0,0.5) !important;
@@ -746,8 +817,7 @@
       transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       display: flex !important;
       flex-direction: column;
-      visibility: hidden;
-      opacity: 0;
+      visibility: hidden; opacity: 0;
     }
     html.light .style-panel { box-shadow: 0 -12px 40px rgba(0,0,0,0.15) !important; }
     .style-panel.show { transform: translateY(0); visibility: visible; opacity: 1; }
@@ -759,7 +829,6 @@
     .style-item input[type="color"] { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
     .style-btn { padding: 6px 10px !important; font-size: 11px !important; min-height: 32px; }
     .font-select { padding: 6px 8px !important; font-size: 12px !important; min-height: 32px; }
-    /* 折叠状态：只剩把手 + 一行 */
     .style-panel.collapsed { max-height: 60px !important; overflow: hidden; }
     .style-panel.collapsed .style-panel-drag { margin-bottom: 6px; }
     .style-panel.collapsed > *:not(.style-panel-drag) { display: none; }
@@ -771,16 +840,8 @@
     .block-actions { padding: 3px; gap: 3px; }
     .block-action-btn { width: 26px; height: 26px; font-size: 13px; }
     .block-action-btn.divider { font-size: 16px; }
-    /* ===== 修复：手机 resize handle 加大到 32px ===== */
-    .resize-handle {
-      width: 32px !important;
-      height: 32px !important;
-      border-bottom-right-radius: 12px !important;
-    }
-    .resize-handle::before {
-      right: -8px; bottom: -8px;
-      width: 52px; height: 52px;
-    }
+    .resize-handle { width: 32px !important; height: 32px !important; border-bottom-right-radius: 12px !important; }
+    .resize-handle::before { right: -8px; bottom: -8px; width: 52px; height: 52px; }
     .add-card-btn { padding: 12px; font-size: 12px; }
     .card-del { width: 26px; height: 26px; font-size: 14px; }
     .img-pos-preview { width: 92vw; height: 55vh; }
@@ -821,90 +882,6 @@
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
     body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
   }
-/* ===== 图片库面板 ===== */
-.img-picker {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 50vh;
-  background: rgba(20, 20, 25, 0.98);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-top: 1px solid var(--glass-border);
-  border-radius: 20px 20px 0 0;
-  z-index: 10050;
-  display: none;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 -12px 40px rgba(0,0,0,0.5);
-}
-html.light .img-picker {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 -12px 40px rgba(0,0,0,0.15);
-}
-.img-picker.show { display: flex; transform: translateY(0); }
-.img-picker-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--glass-border);
-  flex-shrink: 0;
-}
-.img-picker-title {
-  font-size: 13px; color: var(--accent);
-  font-family: monospace; letter-spacing: 0.1em;
-}
-.img-picker-actions { display: flex; gap: 8px; }
-.img-picker-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--glass-border);
-  background: transparent;
-  color: var(--text);
-  font-size: 12px;
-  font-family: monospace;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.img-picker-btn:hover { background: rgba(127,127,127,0.15); }
-.img-picker-btn.close {
-  color: #e5484d;
-  border-color: rgba(229,72,77,0.4);
-  font-size: 18px;
-  padding: 2px 10px;
-  line-height: 1.2;
-}
-.img-picker-grid {
-  flex: 1;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  padding: 12px;
-  padding-bottom: calc(12px + var(--safe-bottom));
-}
-@media (max-width: 480px) {
-  .img-picker-grid { grid-template-columns: repeat(3, 1fr); }
-}
-.img-picker-item {
-  aspect-ratio: 1;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  background: rgba(127,127,127,0.1);
-  border: 2px solid transparent;
-  transition: all 0.2s;
-  position: relative;
-}
-.img-picker-item:hover { border-color: var(--accent); transform: scale(1.03); }
-.img-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.img-picker-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--text-sub);
-  font-size: 12px;
-  padding: 40px 0;
-  font-family: monospace;
-}
 </style>
 </head>
 <body>
@@ -1063,12 +1040,11 @@ html.light .img-picker {
           </div>
         </div>
       </div>
-      <div class="image-grid" id="imageGrid0">
+      <div class="image-grid">
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🏞️%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E📸%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🌌%3C/text%3E%3C/svg%3E"></div>
       </div>
-      <!-- 图片下方添加分隔线 -->
       <button class="add-grid-divider" onclick="addDividerAfterGrid(this)">— 在图片下方添加分隔线</button>
       <div class="quote-block"><p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p></div>
       <div class="post-box" id="postBoxTrigger">
@@ -1192,16 +1168,6 @@ html.light .img-picker {
   </div>
 </div>
 
-<div class="img-picker" id="imgPicker">
-  <div class="img-picker-header">
-    <div class="img-picker-title">选择图片</div>
-    <div class="img-picker-actions">
-      <button class="img-picker-btn" id="imgPickerUpload">📷 从相册上传</button>
-      <button class="img-picker-btn close" id="imgPickerClose">×</button>
-    </div>
-  </div>
-  <div class="img-picker-grid" id="imgPickerGrid"></div>
-</div>
 <div class="toast" id="toast"></div>
 <input type="file" id="fileInput" accept="image/*" hidden>
 <input type="file" id="bgInput" accept="image/*" hidden>
@@ -1220,13 +1186,16 @@ html.light .img-picker {
     document.body.classList.add('readonly');
   }
 
-  var KEY_CONTENT = 'myPage.glass.v30';
+  var KEY_CONTENT = 'myPage.glass.v31';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
   var KEY_BG_POS  = 'myPage.bgPos.v1';
   var KEY_STYLE   = 'myPage.styleSettings.v1';
   var KEY_MUSIC   = 'myPage.musicUrl.v2';
+
+  // ⚠️ 你的图片完整 URL 前缀，改仓库名时只改这一行
+  var IMG_BASE = 'https://emil-si.github.io/My-page/';
 
   var app = document.getElementById('app');
   var bgImg = document.getElementById('bgImg');
@@ -1314,7 +1283,12 @@ html.light .img-picker {
     applyColor(styleSettings.accent);
     applySliders(styleSettings);
     if(savedBgImg && savedBgImg !== 'none'){
-      setBackgroundImage(savedBgImg, savedBgPos);
+      // 旧数据兼容：如果保存的是文件名（不含 http），拼上 IMG_BASE
+      var finalBg = savedBgImg;
+      if(savedBgImg.indexOf('http') !== 0 && savedBgImg.indexOf('data:') !== 0){
+        finalBg = IMG_BASE + savedBgImg;
+      }
+      setBackgroundImage(finalBg, savedBgPos);
     }
   } catch(e){}
 
@@ -1352,19 +1326,16 @@ html.light .img-picker {
     e.stopPropagation();
     var panel = document.getElementById('stylePanel');
     panel.classList.toggle('show');
-    // 打开时移除折叠状态
     if(panel.classList.contains('show')){
       panel.classList.remove('collapsed');
     }
   });
 
-  // 手机端样式面板折叠
   var stylePanelDrag = document.getElementById('stylePanelDrag');
   if(stylePanelDrag){
     stylePanelDrag.addEventListener('click', function(e){
       e.stopPropagation();
-      var panel = document.getElementById('stylePanel');
-      panel.classList.toggle('collapsed');
+      document.getElementById('stylePanel').classList.toggle('collapsed');
     });
   }
 
@@ -1579,10 +1550,153 @@ html.light .img-picker {
     });
   }
 
-  document.getElementById('btnBgImage').addEventListener('click', function(){
+  // ==================== 图片库模块（直接绑定，兼容所有浏览器） ====================
+  var GITHUB_IMAGES = [
+    'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
+    'IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg',
+    'IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg',
+    'IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg',
+    'IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png',
+    'IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png',
+    'IMG_9014.png','IMG_9016.png'
+  ];
+
+  var pickerTarget = null;
+  var pickerIsBg = false;
+
+  // 动态创建图片库面板
+  if(!document.getElementById('imgPicker')){
+    var _panel = document.createElement('div');
+    _panel.className = 'img-picker';
+    _panel.id = 'imgPicker';
+    _panel.innerHTML = ''
+      + '<div class="img-picker-header">'
+      +   '<div class="img-picker-title">选择图片</div>'
+      +   '<div class="img-picker-actions">'
+      +     '<button class="img-picker-btn" id="imgPickerUpload">📷 从相册上传</button>'
+      +     '<button class="img-picker-btn close" id="imgPickerClose">×</button>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="img-picker-grid" id="imgPickerGrid"></div>';
+    document.body.appendChild(_panel);
+  }
+
+  function openImgPicker(targetImg, type){
+    pickerIsBg = (type === 'bg');
+    pickerTarget = targetImg || null;
+
+    var grid = document.getElementById('imgPickerGrid');
+    grid.innerHTML = '';
+    if(GITHUB_IMAGES.length === 0){
+      grid.innerHTML = '<div class="img-picker-empty">暂无图片<br>请把图片上传到 GitHub 仓库<br>然后把文件名加到代码里的 GITHUB_IMAGES 列表中</div>';
+    } else {
+      GITHUB_IMAGES.forEach(function(name){
+        var item = document.createElement('div');
+        item.className = 'img-picker-item';
+        var thumb = document.createElement('img');
+        thumb.src = IMG_BASE + name;
+        thumb.alt = name;
+        thumb.loading = 'lazy';
+        item.appendChild(thumb);
+        item.addEventListener('click', function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          var fullUrl = IMG_BASE + name;
+          if(pickerIsBg){
+            try { setBackgroundImage(fullUrl, '50% 50%'); } catch(err){}
+            try {
+              localStorage.setItem(KEY_BG_IMG, fullUrl);
+              localStorage.setItem(KEY_BG_POS, '50% 50%');
+            } catch(err){}
+          } else if(pickerTarget){
+            pickerTarget.src = fullUrl;
+          }
+          try { scheduleSave(); } catch(err){}
+          try { toast('已替换为 ' + name); } catch(err){}
+          closeImgPicker();
+        });
+        grid.appendChild(item);
+      });
+    }
+
+    document.getElementById('imgPicker').classList.add('show');
+  }
+
+  function closeImgPicker(){
+    var p = document.getElementById('imgPicker');
+    if(p) p.classList.remove('show');
+    pickerTarget = null;
+    pickerIsBg = false;
+  }
+
+  var _closeBtn = document.getElementById('imgPickerClose');
+  if(_closeBtn) _closeBtn.addEventListener('click', closeImgPicker);
+
+  var _uploadBtn = document.getElementById('imgPickerUpload');
+  if(_uploadBtn){
+    _uploadBtn.addEventListener('click', function(){
+      var wasBg = pickerIsBg;
+      closeImgPicker();
+      if(wasBg){
+        bgInput.value = ''; bgInput.click();
+      } else {
+        fileInput.value = ''; fileInput.click();
+      }
+    });
+  }
+
+  // 绑定单个图片的点击
+  function bindImgClick(img){
+    if(!img || img.dataset.pickerBound === '1') return;
+    img.dataset.pickerBound = '1';
+
+    var downT = 0, downX = 0, downY = 0, moved = false;
+    var startHandler = function(e){
+      downT = Date.now();
+      moved = false;
+      var p = e.touches ? e.touches[0] : e;
+      downX = p.clientX; downY = p.clientY;
+    };
+    var moveHandler = function(e){
+      var p = e.touches ? e.touches[0] : e;
+      if(Math.abs(p.clientX - downX) > 10 || Math.abs(p.clientY - downY) > 10) moved = true;
+    };
+
+    img.addEventListener('mousedown', startHandler, true);
+    img.addEventListener('touchstart', startHandler, true);
+    img.addEventListener('mousemove', moveHandler, true);
+    img.addEventListener('touchmove', moveHandler, true);
+
+    img.addEventListener('click', function(e){
+      try { if(!editMode || isReadonly) return; } catch(err){ return; }
+      var upT = Date.now();
+      if(moved) return;
+      if(upT - downT > 700) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openImgPicker(img, 'normal');
+    }, true);
+  }
+
+  function bindAllImgClicks(){
+    var all = document.querySelectorAll('img');
+    for(var i=0; i<all.length; i++){
+      var im = all[i];
+      if(im.hasAttribute('data-edit-img') || im.closest('.image-frame-block')){
+        bindImgClick(im);
+      }
+    }
+  }
+
+  // 背景按钮
+  document.getElementById('btnBgImage').addEventListener('click', function(e){
     if(isReadonly) return;
+    e.preventDefault();
+    e.stopPropagation();
     openImgPicker(null, 'bg');
   });
+
+  // 相册上传回调（走位置选择器）
   bgInput.addEventListener('change', function(){
     var file = bgInput.files && bgInput.files[0]; if(!file) return;
     compressImage(file, 1600, 0.82).then(function(dataUrl){
@@ -1595,15 +1709,11 @@ html.light .img-picker {
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  document.getElementById('btnBgImage').addEventListener('click', function(){
-    if(isReadonly) return;
-    openImgPicker(null, 'bg');
-  });
   fileInput.addEventListener('change', function(){
     var file = fileInput.files && fileInput.files[0];
     if(!file || !currentImg) return;
     var targetImg = currentImg;
-    compressImage(file, 700, 0.6).then(function(dataUrl){
+    compressImage(file, 1200, 0.85).then(function(dataUrl){
       var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
       var parts = cur.split(' ');
       var initX = parseFloat(parts[0]) || 50;
@@ -1616,7 +1726,7 @@ html.light .img-picker {
     var file = elementImageInput.files && elementImageInput.files[0];
     if(!file || !currentElementImg) return;
     var targetImg = currentElementImg;
-    compressImage(file, 700, 0.6).then(function(dataUrl){
+    compressImage(file, 1000, 0.85).then(function(dataUrl){
       var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
       var parts = cur.split(' ');
       var initX = parseFloat(parts[0]) || 50;
@@ -1818,13 +1928,11 @@ html.light .img-picker {
     }
   });
 
-  // ===== 修复：左右对齐（flex 容器需要用 justify-content） =====
   document.querySelectorAll('.style-btn[data-align]').forEach(function(btn){
     btn.addEventListener('click', function(){
       if(!activeTextEl) return;
       var align = this.getAttribute('data-align');
       activeTextEl.style.textAlign = align;
-      // 如果是 flex 容器，同时调整 justify-content
       var cs = window.getComputedStyle(activeTextEl);
       if(cs.display === 'flex'){
         if(align === 'left') activeTextEl.style.justifyContent = 'flex-start';
@@ -1966,17 +2074,11 @@ html.light .img-picker {
 
   // ================= 在图片下方添加分隔线 =================
   window.addDividerAfterGrid = function(btn){
-    // 找到最近的 image-grid 的父卡片
     var grid = btn.previousElementSibling;
     while(grid && !grid.classList.contains('image-grid')){
       grid = grid.previousElementSibling;
     }
-    if(!grid){
-      // 找不到就在按钮前插入
-      var wrapper = btn.parentNode;
-      insertDividerAfter(btn);
-      return;
-    }
+    if(!grid){ insertDividerAfter(btn); return; }
     insertDividerAfter(grid);
   };
 
@@ -2064,72 +2166,39 @@ html.light .img-picker {
 
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
-    var downTime = 0, hasMoved = false;
-    var MOVE_THRESHOLD = 8;
-
     function onStart(e){
       if(!editMode || isReadonly) return;
       if(e.target.classList.contains('resize-handle')) return;
       if(e.target.classList.contains('element-del')) return;
       if(e.target.classList.contains('float-del')) return;
-
+      e.preventDefault();
       isDragging = true;
-      hasMoved = false;
-      downTime = Date.now();
       var p = e.touches ? e.touches[0] : e;
       startX = p.clientX; startY = p.clientY;
       startLeft = el.offsetLeft; startTop = el.offsetTop;
-
-      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){
-        selectShape(el);
-      }
-
+      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){ selectShape(el); }
       document.addEventListener('mousemove', onMove);
       document.addEventListener('touchmove', onMove, {passive: false});
       document.addEventListener('mouseup', onEnd);
       document.addEventListener('touchend', onEnd);
     }
-
     function onMove(e){
       if(!isDragging) return;
+      e.preventDefault();
       var p = e.touches ? e.touches[0] : e;
-      var dx = p.clientX - startX;
-      var dy = p.clientY - startY;
-
-      if(!hasMoved && (Math.abs(dx) > MOVE_THRESHOLD || Math.abs(dy) > MOVE_THRESHOLD)){
-        hasMoved = true;
-      }
-
-      if(hasMoved){
-        e.preventDefault();
-        el.style.left = (startLeft + dx) + 'px';
-        el.style.top = (startTop + dy) + 'px';
-      }
+      el.style.left = (startLeft + (p.clientX - startX)) + 'px';
+      el.style.top = (startTop + (p.clientY - startY)) + 'px';
     }
-
     function onEnd(){
-      if(!isDragging) return;
       isDragging = false;
-
-      var upTime = Date.now();
-      var isTap = !hasMoved && (upTime - downTime) < 600;
-
-      if(isTap && el.classList.contains('image-frame-block')){
-        var img = el.querySelector('img');
-        if(img){
-          setTimeout(function(){ openImgPicker(img, 'normal'); }, 10);
-        }
-      }
-
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('mouseup', onEnd);
       document.removeEventListener('touchend', onEnd);
       scheduleSave();
     }
-
     el.addEventListener('mousedown', onStart);
-    el.addEventListener('touchstart', onStart, {passive: true});
+    el.addEventListener('touchstart', onStart, {passive: false});
   }
 
   function getShapeSVG(type){
@@ -2180,7 +2249,9 @@ html.light .img-picker {
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图片框吗？')){ frame.remove(); if(activeShapeEl === frame){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     frame.appendChild(del);
     document.getElementById('float-layer').appendChild(frame);
-    makeDraggable(frame); selectShape(frame); scheduleSave(); toast('已添加图片框');
+    makeDraggable(frame);
+    if(window.bindImgClick) window.bindImgClick(img);
+    selectShape(frame); scheduleSave(); toast('已添加图片框');
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
@@ -2324,285 +2395,7 @@ html.light .img-picker {
     }
   });
 
-  // ================= 图片库面板 =================
-  // ★ 你的图片文件名列表，以后加图片就在这里加一行
-  var GITHUB_IMAGES = [
-    'IMG_6273.jpeg',
-    'IMG_6334.jpeg',
-    'IMG_6394.jpeg',
-    'IMG_6395.jpeg',
-    'IMG_6396.jpeg',
-    'IMG_7871.jpeg',
-    'IMG_7872.jpeg',
-    'IMG_7873.jpeg',
-    'IMG_7874.jpeg',
-    'IMG_8450.jpeg',
-    'IMG_8451.jpeg',
-    'IMG_8452.jpeg',
-    'IMG_8453.jpeg',
-    'IMG_8454.jpeg',
-    'IMG_8455.jpeg',
-    'IMG_8456.jpeg',
-    'IMG_9006.png',
-    'IMG_9007.png',
-    'IMG_9008.png',
-    'IMG_9009.png',
-    'IMG_9010.png',
-    'IMG_9011.png',
-    'IMG_9012.png',
-    'IMG_9013.png',
-    'IMG_9014.png',
-    'IMG_9016.png'
-  ];
-
-  var imgPickerTargetType = 'normal';  // 'normal' 替换普通图片，'bg' 换背景
-
-  function buildImgPicker(){
-    var grid = document.getElementById('imgPickerGrid');
-    grid.innerHTML = '';
-    if(GITHUB_IMAGES.length === 0){
-      grid.innerHTML = '<div class="img-picker-empty">暂无图片<br>请把图片上传到 GitHub 仓库<br>然后把文件名加到代码里的 GITHUB_IMAGES 列表中</div>';
-      return;
-    }
-    GITHUB_IMAGES.forEach(function(name){
-      var item = document.createElement('div');
-      item.className = 'img-picker-item';
-      item.title = name;
-      var img = document.createElement('img');
-      img.src = name;   // 相对路径，指向同目录的 GitHub 图片
-      img.alt = name;
-      img.loading = 'lazy';
-      item.appendChild(img);
-      item.addEventListener('click', function(){
-        if(imgPickerTargetType === 'bg'){
-          setBackgroundImage(name, '50% 50%');
-          try {
-            localStorage.setItem(KEY_BG_IMG, name);
-            localStorage.setItem(KEY_BG_POS, '50% 50%');
-          } catch(e){}
-        } else if(currentImg){
-          currentImg.src = name;
-        }
-        scheduleSave();
-        toast('已替换为 ' + name);
-        closeImgPicker();
-      });
-      grid.appendChild(item);
-    });
-  }
-
-  function openImgPicker(targetImg, type){
-    imgPickerTargetType = type || 'normal';
-    currentImg = targetImg || null;
-    buildImgPicker();
-    document.getElementById('imgPicker').classList.add('show');
-  }
-
-  function closeImgPicker(){
-    document.getElementById('imgPicker').classList.remove('show');
-  }
-
-  document.getElementById('imgPickerClose').addEventListener('click', closeImgPicker);
-
-  // 「从相册上传」按钮 —— 走原来的本地相册上传逻辑
-  document.getElementById('imgPickerUpload').addEventListener('click', function(){
-    closeImgPicker();
-    if(imgPickerTargetType === 'bg'){
-      bgInput.value = ''; bgInput.click();
-    } else {
-      fileInput.value = ''; fileInput.click();
-    }
-  });
- // ==================== 图片库完整模块（自包含） ====================
-  (function initImgPicker(){
-    // ---- 1. 动态注入 CSS ----
-    var css = ''
-      + '.img-picker{position:fixed;bottom:0;left:0;right:0;height:52vh;background:rgba(20,20,25,0.98);'
-      + '-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);'
-      + 'border-top:1px solid var(--glass-border);border-radius:20px 20px 0 0;z-index:10050;'
-      + 'display:none;flex-direction:column;transform:translateY(100%);'
-      + 'transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -12px 40px rgba(0,0,0,.5);}'
-      + 'html.light .img-picker{background:rgba(255,255,255,.98);box-shadow:0 -12px 40px rgba(0,0,0,.15);}'
-      + '.img-picker.show{display:flex !important;transform:translateY(0);}'
-      + '.img-picker-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;'
-      + 'border-bottom:1px solid var(--glass-border);flex-shrink:0;}'
-      + '.img-picker-title{font-size:13px;color:var(--accent);font-family:monospace;letter-spacing:.1em;}'
-      + '.img-picker-actions{display:flex;gap:8px;}'
-      + '.img-picker-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--glass-border);'
-      + 'background:transparent;color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;}'
-      + '.img-picker-btn:hover{background:rgba(127,127,127,.15);}'
-      + '.img-picker-btn.close{color:#e5484d;border-color:rgba(229,72,77,.4);font-size:18px;padding:2px 10px;}'
-      + '.img-picker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(4,1fr);'
-      + 'gap:6px;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}'
-      + '@media(max-width:480px){.img-picker-grid{grid-template-columns:repeat(3,1fr);}}'
-      + '.img-picker-item{aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;'
-      + 'background:rgba(127,127,127,.1);border:2px solid transparent;transition:all .2s;position:relative;}'
-      + '.img-picker-item:hover{border-color:var(--accent);transform:scale(1.03);}'
-      + '.img-picker-item img{width:100%;height:100%;object-fit:cover;display:block;}'
-      + '.img-picker-empty{grid-column:1/-1;text-align:center;color:var(--text-sub);font-size:12px;padding:40px 0;font-family:monospace;}';
-    var styleEl = document.createElement('style');
-    styleEl.textContent = css;
-    document.head.appendChild(styleEl);
-
-    // ---- 2. 动态创建面板 HTML ----
-    if(!document.getElementById('imgPicker')){
-      var panel = document.createElement('div');
-      panel.className = 'img-picker';
-      panel.id = 'imgPicker';
-      panel.innerHTML = ''
-        + '<div class="img-picker-header">'
-        +   '<div class="img-picker-title">选择图片</div>'
-        +   '<div class="img-picker-actions">'
-        +     '<button class="img-picker-btn" id="imgPickerUpload">📷 从相册上传</button>'
-        +     '<button class="img-picker-btn close" id="imgPickerClose">×</button>'
-        +   '</div>'
-        + '</div>'
-        + '<div class="img-picker-grid" id="imgPickerGrid"></div>';
-      document.body.appendChild(panel);
-    }
-
-    // ---- 3. 你的图片文件名列表 ----
-    window.GITHUB_IMAGES = [
-      'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
-      'IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg',
-      'IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg',
-      'IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg',
-      'IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png',
-      'IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png',
-      'IMG_9014.png','IMG_9016.png'
-    ];
-
-    var pickerTarget = null;
-    var pickerIsBg = false;
-    var lastOpenTime = 0;
-
-    // ---- 4. 打开图片库 ----
-    window.openImgPicker = function(targetImg, type){
-      var now = Date.now();
-      if(now - lastOpenTime < 250) return;   // 防重复弹出
-      lastOpenTime = now;
-
-      pickerIsBg = (type === 'bg');
-      pickerTarget = targetImg || null;
-
-      var grid = document.getElementById('imgPickerGrid');
-      grid.innerHTML = '';
-      if(window.GITHUB_IMAGES.length === 0){
-        grid.innerHTML = '<div class="img-picker-empty">暂无图片</div>';
-      } else {
-        window.GITHUB_IMAGES.forEach(function(name){
-          var item = document.createElement('div');
-          item.className = 'img-picker-item';
-          var thumb = document.createElement('img');
-          thumb.src = name;
-          thumb.alt = name;
-          thumb.loading = 'lazy';
-          item.appendChild(thumb);
-          item.addEventListener('click', function(){
-            if(pickerIsBg){
-              try { setBackgroundImage(name, '50% 50%'); } catch(err){}
-              try {
-                localStorage.setItem(KEY_BG_IMG, name);
-                localStorage.setItem(KEY_BG_POS, '50% 50%');
-              } catch(err){}
-            } else if(pickerTarget){
-              pickerTarget.src = name;
-            }
-            try { scheduleSave(); } catch(err){}
-            try { toast('已替换为 ' + name); } catch(err){}
-            window.closeImgPicker();
-          });
-          grid.appendChild(item);
-        });
-      }
-
-      document.getElementById('imgPicker').classList.add('show');
-    };
-
-    // ---- 5. 关闭图片库 ----
-    window.closeImgPicker = function(){
-      var p = document.getElementById('imgPicker');
-      if(p) p.classList.remove('show');
-      pickerTarget = null;
-      pickerIsBg = false;
-    };
-
-    // ---- 6. 关闭按钮 ----
-    var closeBtn = document.getElementById('imgPickerClose');
-    if(closeBtn) closeBtn.addEventListener('click', window.closeImgPicker);
-
-    // ---- 7. 从相册上传按钮 ----
-    var uploadBtn = document.getElementById('imgPickerUpload');
-    if(uploadBtn){
-      uploadBtn.addEventListener('click', function(){
-        var wasBg = pickerIsBg;
-        window.closeImgPicker();
-        if(wasBg){
-          if(typeof bgInput !== 'undefined' && bgInput){
-            bgInput.value = ''; bgInput.click();
-          }
-        } else {
-          if(typeof fileInput !== 'undefined' && fileInput){
-            fileInput.value = ''; fileInput.click();
-          }
-        }
-      });
-    }
-
-    // ---- 8. 全局捕获：普通图片 + 图片框图片 ----
-    var downTime = 0, downX = 0, downY = 0;
-    document.addEventListener('mousedown', function(e){
-      downTime = Date.now();
-      downX = e.clientX; downY = e.clientY;
-    }, true);
-    document.addEventListener('touchstart', function(e){
-      if(e.touches && e.touches[0]){
-        downTime = Date.now();
-        downX = e.touches[0].clientX;
-        downY = e.touches[0].clientY;
-      }
-    }, {passive: true, capture: true});
-
-    document.addEventListener('click', function(e){
-      try {
-        if(!editMode || isReadonly) return;
-      } catch(err){ return; }
-      if(e.target.closest && e.target.closest('.img-picker')) return;   // 忽略图片库内部的点击
-      if(e.target.closest && e.target.closest('.style-panel')) return;
-
-      var img = e.target.closest && e.target.closest('img');
-      if(!img) return;
-
-      // 判断这张图片是否"可编辑"
-      var isEditable = img.hasAttribute('data-edit-img');
-      var isInFrame = !!(img.closest && img.closest('.image-frame-block'));
-      if(!isEditable && !isInFrame) return;
-
-      // 拖拽后不弹面板
-      var upTime = Date.now();
-      var upX = e.clientX || 0, upY = e.clientY || 0;
-      var moved = Math.abs(upX - downX) > 10 || Math.abs(upY - downY) > 10;
-      var longPress = (upTime - downTime) > 700;
-      if(moved || longPress) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-      window.openImgPicker(img, 'normal');
-    }, true);
-
-    // ---- 9. 背景按钮：捕获阶段覆盖原有逻辑 ----
-    var bgBtn = document.getElementById('btnBgImage');
-    if(bgBtn){
-      bgBtn.addEventListener('click', function(e){
-        try { if(isReadonly) return; } catch(err){}
-        e.stopPropagation();
-        e.preventDefault();
-        window.openImgPicker(null, 'bg');
-      }, true);
-    }
-  })();
-  // ==================== 图片库模块结束 ====================
-    function setEdit(on){
+  function setEdit(on){
     if(isReadonly) return;
     editMode = on;
     document.body.classList.toggle('editing', on);
@@ -2622,7 +2415,12 @@ html.light .img-picker {
     btn.classList.toggle('on', on);
     btn.querySelector('.ico').textContent = on ? '✓' : '✎';
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
-    if(on){ bindAllResizeEvents(); refreshLinkTargets(); toast('编辑已开启'); }
+    if(on){
+      bindAllResizeEvents();
+      refreshLinkTargets();
+      if(window.bindAllImgClicks) window.bindAllImgClicks();
+      toast('编辑已开启');
+    }
     else { scheduleSave(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
@@ -2639,7 +2437,11 @@ html.light .img-picker {
   function scheduleSave(){
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
-      try {   localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) {   alert('⚠️ 保存失败：浏览器存储空间已满\n\n' +         '原因：上传的图片太多，超过了 5MB 上限。\n\n' +         '解决方案：\n' +         '1. 点工具栏的「重置」清空所有内容，重新编辑\n' +         '2. 每次编辑少传几张图片\n' +         '3. 用工具栏的「导出」把当前页面下载成文件备份'); }
+      try {
+        localStorage.setItem(KEY_CONTENT, serialize());
+      } catch(err) {
+        alert('⚠️ 保存失败：浏览器存储空间已满\n\n原因：上传的图片太多，超过了 5MB 上限。\n\n解决方案：\n1. 点工具栏的「重置」清空所有内容，重新编辑\n2. 使用「图片库」引用 GitHub 上的图片（不占空间）\n3. 用工具栏的「导出」把当前页面下载成文件备份');
+      }
     }, 400);
   }
 
@@ -2711,7 +2513,10 @@ html.light .img-picker {
       '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div></div>' +
       '<div class="feed-footer"><span>💬 评论</span></div>';
     var addBtn = panel.querySelector('.add-card-btn'); panel.insertBefore(card, addBtn);
-    if(editMode) card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
+    if(editMode){
+      card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
+      card.querySelectorAll('img[data-edit-img]').forEach(function(el){ if(window.bindImgClick) window.bindImgClick(el); });
+    }
     scheduleSave(); toast('已添加新卡片');
   };
   window.addTextBlock = function(panelId){
@@ -2736,7 +2541,7 @@ html.light .img-picker {
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
     clone.querySelectorAll('.divider-block.active').forEach(function(el){ el.classList.remove('active'); });
-    clone.querySelectorAll('.collection-menu, .img-pos-overlay, .music-panel, .music-panel-backdrop').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('.collection-menu, .img-pos-overlay, .music-panel, .music-panel-backdrop, .img-picker').forEach(function(el){ el.classList.remove('show'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
@@ -2770,6 +2575,8 @@ html.light .img-picker {
   bindAllResizeEvents();
   refreshCollectionMenu();
   refreshLinkTargets();
+  if(window.bindAllImgClicks) window.bindAllImgClicks();
+
 })();
 </script>
 </body>
