@@ -1487,11 +1487,25 @@
 
   document.getElementById('btnBgImage').addEventListener('click', function(){
     if(isReadonly) return;
+    var choice = prompt('更换背景图\n\n【推荐】直接输入 GitHub 仓库里的图片文件名，例如：\nIMG_9006.png\n\n留空点「确定」→ 从手机相册选图\n点「取消」→ 什么都不做', '');
+    if(choice === null) return;
+    choice = choice.trim();
+    if(choice){
+      if(bgImg){
+        bgImg.src = choice;
+        bgImg.classList.remove('hidden');
+        bgImg.style.objectPosition = '50% 50%';
+      }
+      try { localStorage.setItem(KEY_BG_IMG, choice); } catch(e){}
+      try { localStorage.setItem(KEY_BG_POS, '50% 50%'); } catch(e){}
+      toast('背景已替换为 ' + choice);
+      return;
+    }
     bgInput.value = ''; bgInput.click();
   });
   bgInput.addEventListener('change', function(){
     var file = bgInput.files && bgInput.files[0]; if(!file) return;
-    compressImage(file, 800, 0.6).then(function(dataUrl){
+    compressImage(file, 1600, 0.82).then(function(dataUrl){
       var savedPos = '50% 50%';
       try { savedPos = localStorage.getItem(KEY_BG_POS) || '50% 50%'; } catch(e){}
       var parts = savedPos.split(' ');
@@ -1507,6 +1521,15 @@
     if(img){
       e.preventDefault(); e.stopPropagation();
       currentImg = img;
+      var choice = prompt('更换图片\n\n【推荐】直接输入 GitHub 仓库里的图片文件名，例如：\nIMG_8450.jpeg\n\n留空点「确定」→ 从手机相册选图\n点「取消」→ 什么都不做', '');
+      if(choice === null) return;
+      choice = choice.trim();
+      if(choice){
+        img.src = choice;
+        scheduleSave();
+        toast('已替换为 ' + choice);
+        return;
+      }
       fileInput.value = '';
       fileInput.click();
     }
