@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -34,22 +35,24 @@
     color: var(--text); min-height: 100vh;
     padding-top: 60px; padding-bottom: 90px;
     transition: background 0.3s, color 0.3s;
+    position: relative; overflow-x: hidden;
   }
 
   /* ============ 工具栏 ============ */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 16px;
-    background: rgba(20, 20, 25, 0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-    border-bottom: 1px solid var(--glass-border);
+    background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
   }
-  html.light .toolbar { background: rgba(255, 255, 255, 0.7); }
+  html.light .toolbar { background: rgba(255, 255, 255, 0.75); }
+  .toolbar::-webkit-scrollbar { display: none; }
   .toolbar .spacer{flex:1;}
   .tbtn{
     display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px;
     border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);
     color: var(--text); cursor: pointer; font-size: 12px; font-family: monospace;
-    transition: all 0.2s; backdrop-filter: blur(8px);
+    transition: all 0.2s; backdrop-filter: blur(8px); white-space: nowrap;
   }
   .tbtn:active{transform: scale(0.95);}
   .tbtn.on{background: var(--accent); color: var(--accent-text); border-color: var(--accent);}
@@ -64,27 +67,29 @@
     width: 280px; padding: 16px; border-radius: 16px;
     background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    display: none; flex-direction: column; gap: 12px;
+    display: none; flex-direction: column; gap: 10px;
     color: #fff; font-size: 12px; max-height: 80vh; overflow-y: auto;
   }
   .style-panel.show { display: flex; }
-  .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
   .style-item input[type="range"] { flex: 1; cursor: pointer; }
-  .style-item input[type="color"] { width: 30px; height: 30px; border: none; border-radius: 6px; cursor: pointer; background: transparent; }
-  .style-panel h4 { font-size: 13px; margin: 8px 0 4px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 6px; color: var(--accent); }
-  .style-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); cursor: pointer; font-size: 12px; }
+  .style-item input[type="color"] { width: 28px; height: 28px; border: none; border-radius: 6px; cursor: pointer; background: transparent; }
+  .style-panel h4 { font-size: 13px; margin: 6px 0 2px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 4px; color: var(--accent); }
+  .style-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px; }
   .style-btn.active { background: var(--accent); color: var(--accent-text); }
   .style-btn-group { display: flex; gap: 4px; }
+  .style-tag { background: var(--accent); color: var(--accent-text); padding: 2px 6px; border-radius: 4px; font-size: 10px; position: absolute; top: -10px; right: 0; display: none; }
+  body.editing .style-tag.active { display: block; }
 
   /* ============ 顶部导航栏 ============ */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px; padding: 12px 16px;
     position: sticky; top: 50px; z-index: 998;
-    background: rgba(20, 20, 25, 0.7); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border);
     overflow-x: auto; scrollbar-width: none;
   }
-  html.light .top-nav { background: rgba(255, 255, 255, 0.7); }
+  html.light .top-nav { background: rgba(255, 255, 255, 0.75); }
   .top-nav::-webkit-scrollbar { display: none; }
   .nav-link {
     flex: 1 0 auto; text-align: center; padding: 8px 16px; border-radius: 20px;
@@ -97,7 +102,6 @@
   /* ============ 主容器 ============ */
   .container { max-width: 640px; margin: 0 auto; padding: 16px; }
 
-  /* 卡片统一玻璃质感 */
   .glass-card {
     background-color: var(--card-bg-color);
     background-image: var(--card-gradient);
@@ -106,7 +110,6 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
 
-  /* 主页顶部卡片 */
   .main-card {
     background-color: var(--card-bg-color);
     background-image: var(--card-gradient);
@@ -115,12 +118,15 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
   
-  /* 封面图：边缘渐变融合 */
-  .cover-wrap { width: 100%; height: 220px; background: #1a1a1a; position: relative; overflow: hidden; }
+  /* 封面图：边缘渐变融合增强 */
+  .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
-    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-    background: linear-gradient(to bottom, transparent, var(--card-bg-color)); z-index: 1; pointer-events: none;
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 140px;
+    background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%); 
+    z-index: 1; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
   }
 
   /* 个人信息区：左对齐 */
@@ -141,23 +147,19 @@
   .stats span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
-  /* 三图网格 */
   .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 24px 24px 24px; }
   .grid-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); position: relative; }
   .grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* 引言块 */
   .quote-block { margin: 0 24px 24px 24px; padding: 16px; border: 1px solid var(--glass-border); border-radius: 16px; background: rgba(255,255,255,0.02); }
   .quote-block p { font-size: 14px; line-height: 1.8; color: var(--text-sub); font-style: italic; }
 
-  /* 发帖框 */
   .post-box { margin: 0 24px 16px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
   .post-input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; resize: none; font-family: inherit; }
   .post-tools { display: flex; justify-content: space-between; align-items: center; }
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-  /* 动态卡片 */
   .feed-card { 
     background-color: var(--card-bg-color);
     background-image: var(--card-gradient);
@@ -173,14 +175,29 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* 自定义文字块 */
-  .text-block {
-    margin: 0 24px 16px 24px; padding: 16px; border-radius: 16px; border: 1px dashed var(--glass-border);
-    background: rgba(255,255,255,0.01); position: relative; min-height: 40px;
+  /* ============ 浮动文本框（自由拖动） ============ */
+  .float-text-block {
+    position: absolute; z-index: 100; min-width: 120px; min-height: 40px;
+    padding: 12px; border-radius: 12px; border: 1px dashed var(--accent);
+    background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(8px);
+    color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
+    cursor: move; outline: none; box-sizing: border-box; display: none;
   }
-  .text-block[contenteditable="true"] { cursor: text; outline: 1px dashed var(--accent); }
-  .text-block .card-del { display: none; top: 4px; right: 4px; }
-  body.editing .text-block:hover .card-del { display: flex; }
+  body.editing .float-text-block { display: block; }
+  .float-text-block:focus { cursor: text; border: 1px solid var(--accent); box-shadow: 0 0 15px rgba(74, 158, 255, 0.5); }
+  .float-text-block .drag-handle {
+    position: absolute; top: 2px; right: 2px; width: 24px; height: 24px;
+    background: var(--accent); color: var(--accent-text); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; cursor: move; opacity: 0.6;
+  }
+  .float-text-block .drag-handle:hover { opacity: 1; }
+  .float-del {
+    position: absolute; top: -10px; left: -10px; width: 20px; height: 20px;
+    background: #e5484d; color: #fff; border-radius: 50%; border: none;
+    font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center;
+  }
+  body.editing .float-text-block:hover .float-del { display: flex; }
 
   /* ============ 底部导航 ============ */
   .bottom-nav {
@@ -227,8 +244,10 @@
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
   /* ============ 编辑状态 ============ */
-  body.editing [data-edit] { outline: 1px dashed var(--accent); outline-offset: 4px; border-radius: 4px; cursor: text; }
-  body.editing [data-edit]:focus { background: rgba(255,255,255,0.05); outline: 1px solid var(--accent); }
+  /* 文字编辑状态清晰反馈 */
+  body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
+  body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(255,255,255,0.03); }
+  body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.08); box-shadow: 0 0 10px rgba(74, 158, 255, 0.2); }
   
   body.editing .cover-wrap:hover::after, 
   body.editing .avatar-wrap:hover::after, 
@@ -255,6 +274,7 @@
 <div class="toolbar">
   <button class="tbtn" id="btnEdit"><span class="ico">✎</span><span class="label">编辑</span></button>
   <button class="tbtn edit-only" id="btnStylePanel"><span class="ico">⚙️</span><span class="label">样式</span></button>
+  <button class="tbtn edit-only" id="btnAddFloat"><span class="ico">＋</span><span class="label">浮动文本</span></button>
   <button class="tbtn edit-only" id="btnExport"><span class="ico">⬇</span><span class="label">导出</span></button>
   <button class="tbtn edit-only" id="btnReset"><span class="ico">⟲</span><span class="label">重置</span></button>
   <span class="spacer"></span>
@@ -262,20 +282,22 @@
   <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 样式面板（包含卡片与文字样式调节） -->
+<!-- 样式面板 -->
 <div class="style-panel" id="stylePanel">
-  <h4>卡片样式调节</h4>
+  <div style="position:relative;">
+    <h4>卡片样式调节</h4>
+  </div>
   <div class="style-item">
     <span>透明度</span>
     <input type="range" id="opacitySlider" min="0" max="100" value="65">
     <span id="opacityVal">65%</span>
   </div>
   <div class="style-item">
-    <span>渐变起始色</span>
+    <span>渐变起始</span>
     <input type="color" id="gradColor1" value="#1c1c22">
   </div>
   <div class="style-item">
-    <span>渐变结束色</span>
+    <span>渐变结束</span>
     <input type="color" id="gradColor2" value="#0d0d10">
   </div>
   <div class="style-item">
@@ -288,7 +310,7 @@
     <input type="color" id="accentColor" value="#4a9eff">
   </div>
 
-  <h4>文字样式调节 (点击文字后生效)</h4>
+  <h4>文字样式（点击文字后激活）</h4>
   <div class="style-item">
     <span>字体大小</span>
     <input type="range" id="fontSize" min="12" max="48" value="16">
@@ -296,7 +318,7 @@
   </div>
   <div class="style-item">
     <span>方向</span>
-    <select id="textDir" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px;">
+    <select id="textDir" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px;">
       <option value="horizontal-tb">横排</option>
       <option value="vertical-rl">竖排</option>
     </select>
@@ -310,7 +332,7 @@
     </div>
   </div>
   <div class="style-item">
-    <span>字体样式</span>
+    <span>样式</span>
     <div class="style-btn-group">
       <button class="style-btn" id="btnBold">B</button>
       <button class="style-btn" id="btnItalic">I</button>
@@ -324,12 +346,26 @@
   <div class="style-item">
     <span>文字背景</span>
     <input type="color" id="textBg" value="#000000">
-    <button class="style-btn" id="btnClearBg">清除</button>
+    <span id="bgOpacityVal">0%</span>
+    <input type="range" id="bgOpacity" min="0" max="100" value="0" style="width:60px;">
   </div>
   <div class="style-item">
-    <span>背景边框</span>
+    <span>边框颜色</span>
     <input type="color" id="textBorderColor" value="#4a9eff">
-    <button class="style-btn" id="btnToggleBorder">加框</button>
+  </div>
+  <div class="style-item">
+    <span>边框粗细</span>
+    <input type="range" id="borderWidth" min="1" max="5" value="1">
+    <span id="borderWidthVal">1px</span>
+  </div>
+  <div class="style-item">
+    <span>边框圆角</span>
+    <input type="range" id="borderRadius" min="0" max="20" value="0">
+    <span id="borderRadiusVal">0px</span>
+  </div>
+  <div class="style-item">
+    <span>边框</span>
+    <button class="style-btn" id="btnToggleBorder">添加边框</button>
   </div>
 </div>
 
@@ -344,13 +380,12 @@
 <!-- 主容器 -->
 <div class="container" id="app">
 
-  <!-- ===== 面板 0: WELCOME (主页) ===== -->
+  <!-- ===== 面板 0 ===== -->
   <div id="panel-0" class="panel active">
     <div class="main-card">
       <div class="cover-wrap">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='8' fill='%23444' text-anchor='middle' font-family='monospace'%3E点击更换封面图%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
-      <!-- 个人资料区（左对齐） -->
       <div class="profile-info">
         <div class="profile-header-row">
           <div class="avatar-wrap">
@@ -377,7 +412,6 @@
         <p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p>
       </div>
 
-      <!-- 发帖框 -->
       <div class="post-box">
         <input class="post-input" placeholder="说点什么..." data-edit>
         <div class="post-tools">
@@ -405,7 +439,6 @@
       </div>
     </div>
 
-    <!-- 动态添加文字块按钮 -->
     <button class="add-card-btn" onclick="addCard('panel-0')" style="margin-bottom:8px;">＋ 添加动态卡片</button>
     <button class="add-card-btn" onclick="addTextBlock('panel-0')">＋ 添加自由文本块</button>
   </div>
@@ -457,7 +490,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v5';
+  var KEY_CONTENT = 'myPage.glass.v6';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -570,7 +603,31 @@
     applySliders(styleSettings);
   });
 
-  // 文字样式绑定
+  // ============ 文字样式绑定 ============
+  function updateTextStyleUI() {
+    if(!activeTextEl) return;
+    var style = window.getComputedStyle(activeTextEl);
+    document.getElementById('fontSize').value = parseInt(style.fontSize) || 16;
+    document.getElementById('fontSizeVal').textContent = (parseInt(style.fontSize) || 16) + 'px';
+    document.getElementById('textColor').value = style.color || '#f0f0f0';
+    document.getElementById('textDir').value = style.writingMode || 'horizontal-tb';
+    document.getElementById('borderWidth').value = parseInt(style.borderWidth) || 1;
+    document.getElementById('borderWidthVal').textContent = (parseInt(style.borderWidth) || 1) + 'px';
+    document.getElementById('borderRadius').value = parseInt(style.borderRadius) || 0;
+    document.getElementById('borderRadiusVal').textContent = (parseInt(style.borderRadius) || 0) + 'px';
+    
+    // 背景色透明度处理
+    var bgColor = style.backgroundColor;
+    if(bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
+      document.getElementById('textBg').value = bgColor;
+      document.getElementById('bgOpacity').value = 100;
+      document.getElementById('bgOpacityVal').textContent = '100%';
+    } else {
+      document.getElementById('bgOpacity').value = 0;
+      document.getElementById('bgOpacityVal').textContent = '0%';
+    }
+  }
+
   document.getElementById('fontSize').addEventListener('input', function(e){
     if(activeTextEl) { activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('fontSizeVal').textContent = e.target.value + 'px'; }
   });
@@ -583,103 +640,185 @@
     });
   });
   document.getElementById('btnBold').addEventListener('click', function(){
-    if(activeTextEl) { var w = activeTextEl.style.fontWeight === 'bold' ? 'normal' : 'bold'; activeTextEl.style.fontWeight = w; }
+    if(activeTextEl) { var w = activeTextEl.style.fontWeight === 'bold' ? 'normal' : 'bold'; activeTextEl.style.fontWeight = w; this.classList.toggle('active', w === 'bold'); }
   });
   document.getElementById('btnItalic').addEventListener('click', function(){
-    if(activeTextEl) { var s = activeTextEl.style.fontStyle === 'italic' ? 'normal' : 'italic'; activeTextEl.style.fontStyle = s; }
+    if(activeTextEl) { var s = activeTextEl.style.fontStyle === 'italic' ? 'normal' : 'italic'; activeTextEl.style.fontStyle = s; this.classList.toggle('active', s === 'italic'); }
   });
   document.getElementById('btnUnderline').addEventListener('click', function(){
-    if(activeTextEl) { var d = activeTextEl.style.textDecoration === 'underline' ? 'none' : 'underline'; activeTextEl.style.textDecoration = d; }
+    if(activeTextEl) { var d = activeTextEl.style.textDecoration === 'underline' ? 'none' : 'underline'; activeTextEl.style.textDecoration = d; this.classList.toggle('active', d === 'underline'); }
   });
   document.getElementById('textColor').addEventListener('input', function(e){
     if(activeTextEl) activeTextEl.style.color = e.target.value;
   });
+  
+  // 文字背景色与透明度
   document.getElementById('textBg').addEventListener('input', function(e){
-    if(activeTextEl) activeTextEl.style.backgroundColor = e.target.value;
-  });
-  document.getElementById('btnClearBg').addEventListener('click', function(){
-    if(activeTextEl) activeTextEl.style.backgroundColor = 'transparent';
-  });
-  document.getElementById('btnToggleBorder').addEventListener('click', function(){
     if(activeTextEl) {
-      if(activeTextEl.style.border) { activeTextEl.style.border = 'none'; this.textContent = '加框'; }
-      else { activeTextEl.style.border = '1px solid ' + document.getElementById('textBorderColor').value; this.textContent = '去框'; }
+      activeTextEl.dataset.bgColor = e.target.value;
+      var alpha = document.getElementById('bgOpacity').value / 100;
+      var hex = e.target.value.replace('#', '');
+      var r = parseInt(hex.substr(0,2), 16), g = parseInt(hex.substr(2,2), 16), b = parseInt(hex.substr(4,2), 16);
+      activeTextEl.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+  });
+  document.getElementById('bgOpacity').addEventListener('input', function(e){
+    if(activeTextEl) {
+      var color = activeTextEl.dataset.bgColor || document.getElementById('textBg').value;
+      var hex = color.replace('#', '');
+      var r = parseInt(hex.substr(0,2), 16), g = parseInt(hex.substr(2,2), 16), b = parseInt(hex.substr(4,2), 16);
+      activeTextEl.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${e.target.value / 100})`;
+      document.getElementById('bgOpacityVal').textContent = e.target.value + '%';
+    }
+  });
+
+  // 边框控制
+  document.getElementById('borderWidth').addEventListener('input', function(e){
+    if(activeTextEl) {
+      activeTextEl.style.borderWidth = e.target.value + 'px';
+      activeTextEl.style.borderStyle = 'solid';
+      activeTextEl.style.borderColor = document.getElementById('textBorderColor').value;
+      document.getElementById('borderWidthVal').textContent = e.target.value + 'px';
+    }
+  });
+  document.getElementById('borderRadius').addEventListener('input', function(e){
+    if(activeTextEl) {
+      activeTextEl.style.borderRadius = e.target.value + 'px';
+      document.getElementById('borderRadiusVal').textContent = e.target.value + 'px';
     }
   });
   document.getElementById('textBorderColor').addEventListener('input', function(e){
-    if(activeTextEl && activeTextEl.style.border) activeTextEl.style.border = '1px solid ' + e.target.value;
+    if(activeTextEl && activeTextEl.style.borderStyle === 'solid') activeTextEl.style.borderColor = e.target.value;
   });
-
-  document.getElementById('btnBgImage').addEventListener('click', function(){
-    bgInput.value = ''; bgInput.click();
-  });
-  bgInput.addEventListener('change', function(){
-    var file = bgInput.files && bgInput.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      document.body.style.backgroundImage = 'url(' + ev.target.result + ')';
-      try { localStorage.setItem(KEY_BG_IMG, ev.target.result); } catch(e){ toast('背景图太大，无法保存'); }
-      toast('背景已更新');
-    };
-    reader.readAsDataURL(file);
-  });
-
-  var toastTimer;
-  function toast(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
-  }
-
-  function serialize(){
-    var clone = app.cloneNode(true);
-    clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    return clone.innerHTML;
-  }
-  var saveTimer;
-  function scheduleSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){
-      try { localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) { toast('存储空间不足'); }
-    }, 400);
-  }
-
-  function setEdit(on){
-    editMode = on;
-    document.body.classList.toggle('editing', on);
-    document.querySelectorAll('[data-edit], .text-block').forEach(function(el){
-      if(on) { el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
-      else el.removeAttribute('contenteditable');
-    });
-    var btn = document.getElementById('btnEdit');
-    btn.classList.toggle('on', on);
-    btn.querySelector('.ico').textContent = on ? '✓' : '✎';
-    btn.querySelector('.label').textContent = on ? '完成' : '编辑';
-    
-    if(on) { toast('编辑已开启，点击图片可更换，点击文字可调样式'); }
-    else { scheduleSave(); toast('已保存'); }
-  }
-  document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
-  app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
-
-  // 监听文字聚焦，以便进行样式修改
-  app.addEventListener('focusin', function(e){
-    if(!editMode) return;
-    var el = e.target.closest('[contenteditable="true"], .text-block');
-    if(el) {
-      activeTextEl = el;
-      // 更新滑块UI状态
-      var style = window.getComputedStyle(el);
-      document.getElementById('fontSize').value = parseInt(style.fontSize) || 16;
-      document.getElementById('fontSizeVal').textContent = (parseInt(style.fontSize) || 16) + 'px';
-      document.getElementById('textColor').value = style.color || '#f0f0f0';
-      document.getElementById('textBg').value = style.backgroundColor === 'rgba(0, 0, 0, 0)' ? '#000000' : style.backgroundColor;
-      document.getElementById('textDir').value = style.writingMode || 'horizontal-tb';
+  document.getElementById('btnToggleBorder').addEventListener('click', function(){
+    if(activeTextEl) {
+      if(activeTextEl.style.borderStyle === 'solid') {
+        activeTextEl.style.borderStyle = 'none';
+        this.textContent = '添加边框';
+      } else {
+        activeTextEl.style.borderStyle = 'solid';
+        activeTextEl.style.borderWidth = document.getElementById('borderWidth').value + 'px';
+        activeTextEl.style.borderColor = document.getElementById('textBorderColor').value;
+        this.textContent = '去除边框';
+      }
     }
   });
 
+  // ============ 自由浮动文本框 ============
+  var floatIdCounter = 0;
+  document.getElementById('btnAddFloat').addEventListener('click', function(){
+    var floatBlock = document.createElement('div');
+    floatBlock.className = 'float-text-block';
+    floatBlock.id = 'float-' + (++floatIdCounter);
+    floatBlock.style.left = '50%';
+    floatBlock.style.top = '200px';
+    floatBlock.style.transform = 'translateX(-50%)';
+    floatBlock.setAttribute('contenteditable', 'true');
+    floatBlock.innerHTML = '自由文本框，可拖拽到任意位置...';
+    
+    var dragHandle = document.createElement('div');
+    dragHandle.className = 'drag-handle';
+    dragHandle.innerHTML = '≡';
+    floatBlock.appendChild(dragHandle);
+
+    var delBtn = document.createElement('button');
+    delBtn.className = 'float-del';
+    delBtn.innerHTML = '×';
+    delBtn.onclick = function(e) {
+      e.stopPropagation();
+      if(confirm('删除这个浮动文本框吗？')) {
+        floatBlock.remove();
+        scheduleSave();
+      }
+    };
+    floatBlock.appendChild(delBtn);
+
+    // 拖拽逻辑
+    dragHandle.addEventListener('mousedown', startDrag);
+    dragHandle.addEventListener('touchstart', startDrag, {passive: false});
+
+    var isDragging = false;
+    var startX, startY, startLeft, startTop;
+
+    function startDrag(e) {
+      if(!editMode) return;
+      e.preventDefault();
+      isDragging = true;
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      startX = clientX;
+      startY = clientY;
+      var rect = floatBlock.getBoundingClientRect();
+      startLeft = rect.left + window.scrollX;
+      startTop = rect.top + window.scrollY;
+      floatBlock.style.transform = 'none';
+      floatBlock.style.cursor = 'grabbing';
+      
+      document.addEventListener('mousemove', onDrag);
+      document.addEventListener('touchmove', onDrag, {passive: false});
+      document.addEventListener('mouseup', stopDrag);
+      document.addEventListener('touchend', stopDrag);
+    }
+
+    function onDrag(e) {
+      if(!isDragging) return;
+      e.preventDefault();
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      var dx = clientX - startX;
+      var dy = clientY - startY;
+      floatBlock.style.left = (startLeft + dx) + 'px';
+      floatBlock.style.top = (startTop + dy) + 'px';
+    }
+
+    function stopDrag() {
+      isDragging = false;
+      floatBlock.style.cursor = 'move';
+      document.removeEventListener('mousemove', onDrag);
+      document.removeEventListener('touchmove', onDrag);
+      document.removeEventListener('mouseup', stopDrag);
+      document.removeEventListener('touchend', stopDrag);
+      scheduleSave();
+    }
+
+    // 点击聚焦
+    floatBlock.addEventListener('focusin', function() {
+      activeTextEl = floatBlock;
+      updateTextStyleUI();
+    });
+
+    document.body.appendChild(floatBlock);
+    floatBlock.focus();
+    // 将光标放到末尾
+    if (window.getSelection && document.createRange) {
+      var range = document.createRange();
+      range.selectNodeContents(floatBlock);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    toast('已添加浮动文本框，可拖动');
+    scheduleSave();
+  });
+
+  // ============ 文本编辑状态跟踪 ============
+  app.addEventListener('focusin', function(e){
+    if(!editMode) return;
+    var el = e.target.closest('[contenteditable="true"], .float-text-block');
+    if(el) {
+      activeTextEl = el;
+      updateTextStyleUI();
+      // 自动弹出样式面板并滚动到文字区域
+      document.getElementById('stylePanel').classList.add('show');
+      // 添加一个短暂的闪烁提示
+      el.style.transition = 'box-shadow 0.3s';
+      el.style.boxShadow = '0 0 0 4px var(--accent)';
+      setTimeout(function(){ el.style.boxShadow = 'none'; }, 500);
+    }
+  });
+
+  // 点击卡片高亮
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var card = e.target.closest('.main-card, .feed-card, .text-block');
@@ -825,6 +964,24 @@
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); toast('已重置');
   });
+
+  function setEdit(on){
+    editMode = on;
+    document.body.classList.toggle('editing', on);
+    document.querySelectorAll('[data-edit], .text-block, .float-text-block').forEach(function(el){
+      if(on) { el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
+      else el.removeAttribute('contenteditable');
+    });
+    var btn = document.getElementById('btnEdit');
+    btn.classList.toggle('on', on);
+    btn.querySelector('.ico').textContent = on ? '✓' : '✎';
+    btn.querySelector('.label').textContent = on ? '完成' : '编辑';
+    
+    if(on) { toast('编辑已开启，点击文字可调样式'); }
+    else { scheduleSave(); toast('已保存'); }
+  }
+  document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
+  app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
 
   setEdit(false);
 })();
