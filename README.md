@@ -184,27 +184,27 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
-  /* 关键修复1：overflow 改为 visible，让缩放手柄不被裁剪 */
+  /* 修复1：移除 min-height，允许手柄拖动缩小；块本身用 overflow hidden 保持内容不溢出 */
   .card-col {
-    flex: 1; min-width: 60px; padding: 8px 20px 8px 8px; 
+    flex: 1; min-width: 40px; padding: 8px 22px 8px 8px; 
     border: 1px dashed var(--glass-border);
     border-radius: 8px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
-    text-align: center; overflow: visible;
-    min-height: 40px;
+    text-align: center; 
+    overflow: hidden;
   }
   body.editing .card-col { display: block; text-align: left; }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
   .text-block {
-    padding: 12px 20px 12px 12px; 
+    padding: 12px 22px 12px 12px; 
     border: 1px dashed var(--glass-border);
     border-radius: 12px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
-    text-align: center; overflow: visible;
-    min-height: 40px;
+    text-align: center; 
+    overflow: hidden;
   }
   body.editing .text-block { display: block; text-align: left; }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
@@ -241,18 +241,30 @@
   body.editing .shape-block:hover .element-del,
   body.editing .image-frame-block:hover .element-del { display: flex; }
 
-  /* 关键修复2：手柄位置改为 bottom:0; right:0，不再被裁剪 */
+  /* 修复2：缩放手柄独立于块，放在 block-wrapper 上 */
+  .block-wrapper { position: relative; }
+  .block-wrapper > .resize-handle { display: none; }
+  body.editing .block-wrapper > .resize-handle { display: block; }
+  
   .resize-handle {
-    position: absolute; bottom: 0; right: 0; width: 22px; height: 22px;
+    position: absolute; bottom: 0; right: 0; width: 24px; height: 24px;
     background: linear-gradient(135deg, transparent 48%, var(--accent) 48%);
     cursor: se-resize; z-index: 10; 
     border-bottom-right-radius: 8px; 
     opacity: 0.9;
     touch-action: none;
     user-select: none;
+    pointer-events: auto;
   }
   .resize-handle:hover { opacity: 1; }
-  body:not(.editing) .resize-handle { display: none !important; }
+  
+  /* shape/image-frame/float 的手柄仍在自身内部 */
+  .shape-block > .resize-handle,
+  .image-frame-block > .resize-handle,
+  .float-text-block > .resize-handle { display: none; }
+  body.editing .shape-block > .resize-handle,
+  body.editing .image-frame-block > .resize-handle,
+  body.editing .float-text-block > .resize-handle { display: block; }
 
   #float-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 997; }
   .float-text-block {
@@ -346,6 +358,23 @@
   }
   .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 块操作按钮（增删行列） */
+  .block-actions {
+    position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
+    background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
+    backdrop-filter: blur(4px); opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+  body.editing .block-actions { display: flex !important; }
+  body:not(.editing) .block-actions { display: none !important; }
+  .block-action-btn {
+    width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
+    border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s;
+  }
+  .block-action-btn:hover { transform: scale(1.1); }
+  .block-action-btn.del { background: #e5484d; }
 </style>
 </head>
 <body>
@@ -359,6 +388,7 @@
   <button class="tbtn edit-only" id="btnAddFloat"><span class="ico">＋</span><span class="label">文本</span></button>
   <button class="tbtn edit-only" id="btnAddShape"><span class="ico">◆</span><span class="label">图形</span></button>
   <button class="tbtn edit-only" id="btnAddImageFrame"><span class="ico">🖼️</span><span class="label">图片框</span></button>
+  <button class="tbtn edit-only" id="btnAddPanel"><span class="ico">📄</span><span class="label">新页面</span></button>
   <button class="tbtn edit-only" id="btnExport"><span class="ico">⬇</span><span class="label">导出</span></button>
   <button class="tbtn edit-only" id="btnReset"><span class="ico">⟲</span><span class="label">重置</span></button>
   <span class="spacer"></span>
@@ -567,7 +597,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v17';
+  var KEY_CONTENT = 'myPage.glass.v18';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -671,11 +701,11 @@
     document.getElementById('shapeRadius').value = radius;
     document.getElementById('shapeRadiusVal').textContent = radius + 'px';
     if(isShape){
-      var c = window.getComputedStyle(activeShapeEl).color;
-      document.getElementById('shapeColor').value = rgbToHex(c);
+      document.getElementById('shapeColor').value = rgbToHex(window.getComputedStyle(activeShapeEl).color);
     }
   }
   function rgbToHex(rgb){
+    if(!rgb) return '#4a9eff';
     var m = rgb.match(/\d+/g);
     if(!m) return '#4a9eff';
     return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
@@ -749,7 +779,7 @@
     var style = window.getComputedStyle(activeTextEl);
     document.getElementById('fontSize').value = parseInt(style.fontSize) || 16;
     document.getElementById('fontSizeVal').textContent = (parseInt(style.fontSize) || 16) + 'px';
-    document.getElementById('textColor').value = rgbToHex(style.color) || '#f0f0f0';
+    document.getElementById('textColor').value = rgbToHex(style.color);
     document.getElementById('textDir').value = style.writingMode && style.writingMode.indexOf('vertical') === 0 ? 'vertical-rl' : 'horizontal-tb';
     document.getElementById('borderWidth').value = parseInt(style.borderWidth) || 1;
     document.getElementById('borderWidthVal').textContent = (parseInt(style.borderWidth) || 1) + 'px';
@@ -826,25 +856,25 @@
     }
   });
 
-  // 关键修复：恢复 focusin 监听，点击文字即激活样式面板
   document.addEventListener('focusin', function(e){
     if(!editMode) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
-    if(el){
+    if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
       activeTextEl = el;
       updateTextStyleUI();
       document.getElementById('stylePanel').classList.add('show');
-      // 高亮闪烁
       el.style.transition = 'box-shadow 0.3s';
       el.style.boxShadow = '0 0 0 4px var(--accent)';
       setTimeout(function(){ el.style.boxShadow = ''; }, 600);
     }
   });
 
+  // ========= 增删行列 =========
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
-    nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容<div class="resize-handle"></div></div>' +
+    nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div>' +
+      '<div class="resize-handle"></div>' +
       '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.card-col').focus();
@@ -856,7 +886,8 @@
     var row = targetBlock.closest('.card-row');
     if(!row){ row = document.createElement('div'); row.className = 'card-row'; wrapper.parentNode.insertBefore(row, wrapper); row.appendChild(wrapper); }
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.flex = '1';
-    nw.innerHTML = '<div class="card-col" contenteditable="true">新列内容<div class="resize-handle"></div></div>' +
+    nw.innerHTML = '<div class="card-col" contenteditable="true">新列内容</div>' +
+      '<div class="resize-handle"></div>' +
       '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.card-col').focus();
@@ -865,7 +896,8 @@
   window.addTextBlockBelow = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
-    nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...<div class="resize-handle"></div></div>' +
+    nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div>' +
+      '<div class="resize-handle"></div>' +
       '<div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.text-block').focus();
@@ -878,12 +910,21 @@
     scheduleSave(); toast('已删除');
   };
 
-  function bindResizeEvents(wrapper){
-    if(!wrapper) return;
-    var block = wrapper.querySelector('.card-col, .text-block, .shape-block, .image-frame-block, .float-text-block');
-    if(!block) return;
-    var handle = block.querySelector('.resize-handle');
-    if(!handle) return;
+  // ========= 缩放核心（修复：手柄在 block-wrapper 上） =========
+  function bindResizeEvents(host){
+    if(!host) return;
+    var block;
+    var handle;
+    if(host.classList && (host.classList.contains('card-col') || host.classList.contains('text-block') || host.classList.contains('shape-block') || host.classList.contains('image-frame-block') || host.classList.contains('float-text-block'))){
+      // host 是块本身（shape/image-frame/float）
+      block = host;
+      handle = host.querySelector(':scope > .resize-handle');
+    } else {
+      // host 是 block-wrapper
+      block = host.querySelector('.card-col, .text-block');
+      handle = host.querySelector(':scope > .resize-handle');
+    }
+    if(!block || !handle) return;
     if(handle.dataset.bound) return;
     handle.dataset.bound = 'true';
 
@@ -905,8 +946,9 @@
       if(!isResizing) return;
       e.preventDefault();
       var p = e.touches ? e.touches[0] : e;
-      var newW = Math.max(30, startW + (p.clientX - startResX));
-      var newH = Math.max(30, startH + (p.clientY - startResY));
+      // 最小 16px，可以拖得非常小
+      var newW = Math.max(16, startW + (p.clientX - startResX));
+      var newH = Math.max(16, startH + (p.clientY - startResY));
       block.style.width = newW + 'px';
       block.style.height = newH + 'px';
       if(activeShapeEl === block){
@@ -929,14 +971,25 @@
   }
 
   function bindAllResizeEvents(){
-    document.querySelectorAll('.card-col, .text-block, .shape-block, .image-frame-block').forEach(function(block){
+    // card-col / text-block 在 block-wrapper 里
+    document.querySelectorAll('.block-wrapper').forEach(function(w){
+      var block = w.querySelector('.card-col, .text-block');
+      if(!block) return;
+      if(!w.querySelector(':scope > .resize-handle')){
+        var h = document.createElement('div'); h.className = 'resize-handle'; w.appendChild(h);
+      }
+      bindResizeEvents(w);
+    });
+    // shape / image-frame / float 手柄在内部
+    document.querySelectorAll('.shape-block, .image-frame-block, .float-text-block').forEach(function(block){
       if(!block.querySelector('.resize-handle')){
         var h = document.createElement('div'); h.className = 'resize-handle'; block.appendChild(h);
       }
-      bindResizeEvents(block.closest('.block-wrapper') || block.parentNode);
+      bindResizeEvents(block);
     });
   }
 
+  // ========= 拖拽 =========
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
@@ -1006,7 +1059,7 @@
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); if(activeShapeEl === shape){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     document.getElementById('float-layer').appendChild(shape);
     makeDraggable(shape);
-    bindResizeEvents(shape.parentNode);
+    bindResizeEvents(shape);
     selectShape(shape);
     scheduleSave();
     toast('已添加图形');
@@ -1031,7 +1084,7 @@
     frame.appendChild(del);
     document.getElementById('float-layer').appendChild(frame);
     makeDraggable(frame);
-    bindResizeEvents(frame.parentNode);
+    bindResizeEvents(frame);
     selectShape(frame);
     scheduleSave();
     toast('已添加图片框');
@@ -1097,11 +1150,73 @@
     floatBlock.addEventListener('focusin', function(){ activeTextEl = floatBlock; updateTextStyleUI(); });
     document.getElementById('float-layer').appendChild(floatBlock);
     makeDraggable(floatBlock);
-    bindResizeEvents(floatBlock.parentNode);
+    bindResizeEvents(floatBlock);
     floatBlock.focus();
     scheduleSave(); toast('浮动文本已添加');
   });
 
+  // ========= 新增页面 =========
+  document.getElementById('btnAddPanel').addEventListener('click', function(){
+    var name = prompt('请输入新页面的名称（将显示在顶部导航栏）：', '新页面');
+    if(!name) return;
+    name = name.trim();
+    if(!name) return;
+
+    // 找出当前已有的面板和最后一个 ID
+    var panels = document.querySelectorAll('#app .panel');
+    var lastPanelId = panels.length ? panels[panels.length - 1].id : '';
+    // 生成新 ID
+    var newIndex = 0;
+    var usedIds = {};
+    panels.forEach(function(p){ usedIds[p.id] = true; });
+    while(usedIds['panel-' + newIndex]) newIndex++;
+    var newPanelId = 'panel-' + newIndex;
+
+    // 创建新面板
+    var newPanel = document.createElement('div');
+    newPanel.id = newPanelId;
+    newPanel.className = 'panel';
+    newPanel.style.display = 'none';
+    newPanel.innerHTML =
+      '<div class="feed-card glass-card">' +
+        '<button class="card-del" contenteditable="false" title="删除这张卡片">×</button>' +
+        '<div class="block-wrapper">' +
+          '<div class="feed-text" data-edit>在此输入新页面内容...</div>' +
+          '<div class="block-actions">' +
+            '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
+            '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+            '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="add-card-btn" onclick="addCard(\'' + newPanelId + '\')" style="margin-bottom:8px;">＋ 添加动态卡片</button>' +
+      '<button class="add-card-btn" onclick="addTextBlock(\'' + newPanelId + '\')">＋ 添加自由文本块</button>' +
+      '<div class="panel-nav">' +
+        (lastPanelId ? '<button class="panel-nav-btn" onclick="window.switchTab(\'' + lastPanelId + '\')" title="上一页">←</button>' : '<div class="panel-nav-spacer"></div>') +
+        '<div class="panel-nav-spacer"></div>' +
+      '</div>';
+    document.getElementById('app').appendChild(newPanel);
+
+    // 在导航栏添加新链接
+    var newLink = document.createElement('a');
+    newLink.className = 'nav-link';
+    newLink.setAttribute('data-target', newPanelId);
+    newLink.textContent = name;
+    document.getElementById('topNav').appendChild(newLink);
+
+    // 如果当前是编辑模式，应用可编辑状态
+    if(editMode){
+      newPanel.querySelectorAll('[data-edit]').forEach(function(el){
+        el.setAttribute('contenteditable', 'true');
+        el.setAttribute('spellcheck', 'false');
+      });
+    }
+
+    scheduleSave();
+    toast('已添加新页面：' + name);
+  });
+
+  // ========= 编辑模式 =========
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
@@ -1129,7 +1244,6 @@
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
-    clone.querySelectorAll('.resize-handle').forEach(function(el){ el.removeAttribute('data-bound'); });
     return clone.innerHTML;
   }
   var saveTimer;
@@ -1151,9 +1265,13 @@
   }
   window.switchTab = switchTab;
 
-  document.querySelectorAll('.nav-link').forEach(function(link){
-    link.addEventListener('click', function(){ switchTab(this.getAttribute('data-target')); });
+  // 导航栏使用事件委托，动态新增的链接也能响应
+  document.getElementById('topNav').addEventListener('click', function(e){
+    var link = e.target.closest('.nav-link');
+    if(!link) return;
+    switchTab(link.getAttribute('data-target'));
   });
+
   document.getElementById('postBoxTrigger').addEventListener('click', function(e){
     if(editMode && e.target.closest('[data-edit]')) return;
     switchTab('panel-1'); toast('已跳转到个人信息页');
@@ -1167,16 +1285,19 @@
       '<div><div class="feed-name" data-edit>新朋友</div><div class="feed-handle" data-edit>@newuser</div></div>' +
       '<div class="feed-time" data-edit>刚刚</div></div>' +
       '<div class="block-wrapper"><div class="feed-text" data-edit>点击这里输入内容...</div>' +
+      '<div class="resize-handle"></div>' +
       '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div></div>' +
       '<div class="feed-footer"><span>💬 评论</span></div>';
     var addBtn = panel.querySelector('.add-card-btn'); panel.insertBefore(card, addBtn);
     if(editMode) card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
+    bindResizeEvents(card.querySelector('.block-wrapper'));
     scheduleSave(); toast('已添加新卡片');
   };
   window.addTextBlock = function(panelId){
     var panel = document.getElementById(panelId); if(!panel) return;
     var wrapper = document.createElement('div'); wrapper.className = 'block-wrapper';
-    wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...<div class="resize-handle"></div></div>' +
+    wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div>' +
+      '<div class="resize-handle"></div>' +
       '<div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; panel.insertBefore(wrapper, addBtn);
     if(editMode) wrapper.querySelector('.text-block').focus();
@@ -1254,7 +1375,6 @@
     var spBtn = document.getElementById('btnStylePanel');
     if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target)){
       if(e.target.closest('.shape-block') || e.target.closest('.image-frame-block')) return;
-      // 不收起：如果点的是内容可编辑区域，也保持打开
       if(e.target.closest('[contenteditable="true"]')) return;
       sp.classList.remove('show');
     }
