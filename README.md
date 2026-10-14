@@ -1,7 +1,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>个人主页</title>
 <style>
   :root{
@@ -15,6 +15,11 @@
     --accent-text: #ffffff;
     --card-bg-color: rgba(25, 25, 30, 0.65);
     --card-gradient: linear-gradient(135deg, #1c1c22 0%, #0d0d10 100%);
+    /* iPhone 刘海屏安全区（默认 0，Safari 会自动填充） */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
   }
   html.light{
     --glass-border: rgba(0, 0, 0, 0.08);
@@ -31,7 +36,10 @@
     background-color: var(--bg-color); background-image: var(--bg-image);
     background-size: cover; background-position: center; background-attachment: fixed;
     color: var(--text); min-height: 100vh;
-    padding-top: 60px; padding-bottom: 90px;
+    padding-top: calc(60px + var(--safe-top));
+    padding-bottom: calc(90px + var(--safe-bottom));
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
     transition: background 0.3s, color 0.3s; position: relative; overflow-x: hidden;
   }
 
@@ -44,9 +52,14 @@
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
 
+  /* ===== 工具栏（顶部固定 + 刘海屏安全区） ===== */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 16px;
+    height: calc(50px + var(--safe-top));
+    padding-top: var(--safe-top);
+    padding-left: calc(16px + var(--safe-left));
+    padding-right: calc(16px + var(--safe-right));
+    display: flex; align-items: center; gap: 8px;
     background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
   }
@@ -66,7 +79,10 @@
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
   .style-panel {
-    position: fixed; top: 60px; right: 16px; z-index: 9999; 
+    position: fixed;
+    top: calc(60px + var(--safe-top));
+    right: calc(16px + var(--safe-right));
+    z-index: 9999;
     width: 280px; padding: 16px; border-radius: 16px;
     background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -84,7 +100,9 @@
   .font-select { width: 100%; padding: 4px; border-radius: 4px; background: #333; color: #fff; border: 1px solid #555; font-size: 11px; }
 
   .shape-picker {
-    position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+    position: fixed;
+    top: calc(60px + var(--safe-top));
+    left: 50%; transform: translateX(-50%);
     z-index: 10000; background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 16px;
     padding: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
@@ -101,10 +119,14 @@
   .shape-picker-title { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); }
 
   .top-nav {
-    max-width: 640px; margin: 0 auto; display: flex; gap: 6px; padding: 12px 16px;
-    position: sticky; top: 50px; z-index: 998;
+    max-width: 640px; margin: 0 auto; display: flex; gap: 6px;
+    padding: 12px calc(16px + var(--safe-left)) 12px calc(16px + var(--safe-right));
+    position: sticky;
+    top: calc(50px + var(--safe-top));
+    z-index: 998;
     background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur);
-    border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
+    border-bottom: 1px solid var(--glass-border);
+    overflow-x: auto; scrollbar-width: none;
     align-items: center;
   }
   html.light .top-nav { background: rgba(255, 255, 255, 0.75); }
@@ -125,7 +147,9 @@
   .nav-collection svg { display: block; }
 
   .collection-menu {
-    position: fixed; top: 108px; left: 16px;
+    position: fixed;
+    top: calc(108px + var(--safe-top));
+    left: calc(16px + var(--safe-left));
     z-index: 10001;
     background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 14px;
@@ -135,7 +159,7 @@
   html.light .collection-menu { background: rgba(255, 255, 255, 0.98); }
   .collection-menu.show { display: block; animation: fadeIn 0.2s ease; }
   .collection-menu-title {
-    font-size: 10px; color: var(--accent); padding: 4px 10px 8px; 
+    font-size: 10px; color: var(--accent); padding: 4px 10px 8px;
     border-bottom: 1px solid var(--glass-border); margin-bottom: 4px;
     letter-spacing: 0.15em; text-transform: uppercase; font-family: monospace;
   }
@@ -153,14 +177,14 @@
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px; 
+    border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word;
   }
   .main-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border); border-radius: 24px; 
+    border: 1px solid var(--glass-border); border-radius: 24px;
     padding: 0 0 24px 0; overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
@@ -168,15 +192,15 @@
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
     content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
-    background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%); 
+    background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%);
     z-index: 1; pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
   }
   .profile-info { padding: 16px 24px 0; text-align: left; position: relative; z-index: 2; }
   .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
-  .avatar-wrap { 
-    width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border); 
+  .avatar-wrap {
+    width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border);
     background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex: none;
   }
   .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -199,10 +223,10 @@
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-  .feed-card { 
+  .feed-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
-    backdrop-filter: var(--glass-blur); 
-    border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative; 
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word;
   }
   .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -217,9 +241,9 @@
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
   .card-col {
-    flex: 1; min-width: 40px; padding: 8px 22px 8px 8px; 
+    flex: 1; min-width: 40px; padding: 8px 22px 8px 8px;
     border: 1px dashed var(--glass-border);
-    border-radius: 8px; background: rgba(255,255,255,0.02); 
+    border-radius: 8px; background: rgba(255,255,255,0.02);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
@@ -227,20 +251,18 @@
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
   .text-block {
-    padding: 12px 22px 12px 12px; 
+    padding: 12px 22px 12px 12px;
     border: 1px dashed var(--glass-border);
-    border-radius: 12px; background: rgba(255,255,255,0.02); 
+    border-radius: 12px; background: rgba(255,255,255,0.02);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
   }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* 分隔线：默认样式，支持 inline style 覆盖 */
   .divider-block {
     padding: 10px 0; position: relative; display: flex;
-    align-items: center; width: 100%;
-    cursor: pointer;
+    align-items: center; width: 100%; cursor: pointer;
   }
   .divider-block .divider-line {
     height: 1px; background: var(--glass-border); width: 100%;
@@ -249,8 +271,7 @@
   body.editing .divider-block .divider-line { opacity: 0.85; }
   body.editing .divider-block:hover .divider-line { opacity: 1; }
   body.editing .divider-block.active .divider-line {
-    box-shadow: 0 0 0 3px rgba(74,158,255,0.3);
-    opacity: 1;
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.3); opacity: 1;
   }
 
   .shape-block, .image-frame-block {
@@ -259,10 +280,7 @@
     overflow: visible; pointer-events: auto; touch-action: none; user-select: none;
   }
   body.editing .shape-block, body.editing .image-frame-block { display: block; }
-  .shape-block {
-    color: var(--accent);
-    filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
-  }
+  .shape-block { color: var(--accent); filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35)); }
   .shape-block.selected { outline: 2px solid var(--accent); outline-offset: 4px; }
   .shape-block svg { width: 100%; height: 100%; display: block; pointer-events: none; }
   .image-frame-block {
@@ -289,11 +307,11 @@
   .resize-handle {
     position: absolute; bottom: 0; right: 0; width: 24px; height: 24px;
     background: linear-gradient(135deg, transparent 48%, var(--accent) 48%);
-    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px; 
+    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px;
     opacity: 0.9; touch-action: none; user-select: none; pointer-events: auto;
   }
   .resize-handle:hover { opacity: 1; }
-  
+
   .shape-block > .resize-handle,
   .image-frame-block > .resize-handle,
   .float-text-block > .resize-handle { display: none; }
@@ -325,8 +343,12 @@
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
 
+  /* ===== 底部导航（含底部安全区） ===== */
   .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 998; height: 70px;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 998;
+    height: calc(70px + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
     display: flex; justify-content: space-around; align-items: center;
     background: rgba(20, 20, 25, 0.8); backdrop-filter: var(--glass-blur);
     border-top: 1px solid var(--glass-border);
@@ -361,14 +383,17 @@
     min-width: 48px; height: 48px; padding: 0 16px; border-radius: 24px;
     background: var(--card-bg-color); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); color: var(--text);
-    font-size: 20px; cursor: pointer; transition: all 0.2s; 
+    font-size: 20px; cursor: pointer; transition: all 0.2s;
     font-family: inherit; user-select: none;
   }
   .panel-nav-btn:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); transform: translateY(-2px); }
   .panel-nav-spacer { min-width: 48px; }
 
   .music-player {
-    position: fixed; bottom: 85px; right: 20px; z-index: 1000;
+    position: fixed;
+    bottom: calc(85px + var(--safe-bottom));
+    right: calc(20px + var(--safe-right));
+    z-index: 1000;
     width: 52px; height: 52px; border-radius: 50%;
     background: rgba(20, 20, 25, 0.8); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
@@ -384,14 +409,14 @@
   body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
   body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(255,255,255,0.03); }
   body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.1); }
-  body.editing .cover-wrap:hover::after, 
-  body.editing .avatar-wrap:hover::after, 
-  body.editing .grid-item:hover::after, 
+  body.editing .cover-wrap:hover::after,
+  body.editing .avatar-wrap:hover::after,
+  body.editing .grid-item:hover::after,
   body.editing .feed-avatar:hover::after {
     content: "点击换图"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; z-index: 5; pointer-events: none;
   }
-  .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
+  .toast { position: fixed; left: 50%; bottom: calc(100px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .block-actions {
@@ -417,15 +442,15 @@
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
-  /* ====== 手机自适应 ====== */
+  /* ===== 平板/大手机（≤640px） ===== */
   @media (max-width: 640px) {
-    body { padding-top: 54px; padding-bottom: 80px; }
-    .toolbar { height: 46px; padding: 0 10px; gap: 5px; }
+    body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); }
+    .toolbar { height: calc(46px + var(--safe-top)); padding: 0 10px; padding-top: var(--safe-top); gap: 5px; }
     .tbtn { padding: 5px 10px; font-size: 11px; border-radius: 16px; }
     .tbtn .label { display: none; }
     .tbtn .ico { font-size: 15px; }
     .bg-image-btn .label { display: none; }
-    .top-nav { top: 46px; padding: 8px 10px; gap: 4px; }
+    .top-nav { top: calc(46px + var(--safe-top)); padding: 8px 10px; gap: 4px; }
     .nav-link { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
     .nav-collection { padding: 6px 10px !important; min-width: 36px; }
     .container { padding: 12px; }
@@ -455,17 +480,17 @@
     .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
     .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
-    .bottom-nav { height: 58px; }
+    .bottom-nav { height: calc(58px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
     .bottom-nav-item { font-size: 9px; }
     .bottom-nav-item .icon { font-size: 17px; }
-    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: 68px; right: 12px; }
-    .style-panel { width: calc(100vw - 24px); max-width: 340px; right: 12px; padding: 12px; font-size: 11px; gap: 8px; }
+    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(68px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
+    .style-panel { width: calc(100vw - 24px); max-width: 340px; right: calc(12px + var(--safe-right)); padding: 12px; font-size: 11px; gap: 8px; }
     .style-panel h4 { font-size: 12px; }
     .style-btn { font-size: 10px; padding: 3px 6px; }
     .shape-picker { padding: 10px; gap: 6px; max-width: calc(100vw - 24px); }
     .shape-pick-item { width: 40px; height: 40px; }
     .shape-pick-item svg { width: 24px; height: 24px; }
-    .collection-menu { top: 96px; left: 12px; min-width: 150px; }
+    .collection-menu { top: calc(96px + var(--safe-top)); left: calc(12px + var(--safe-left)); min-width: 150px; }
     .block-actions { padding: 3px; gap: 3px; }
     .block-action-btn { width: 26px; height: 26px; font-size: 13px; }
     .block-action-btn.divider { font-size: 16px; }
@@ -474,11 +499,78 @@
     .card-del { width: 26px; height: 26px; font-size: 14px; }
   }
 
+  /* ===== 小手机（≤480px） ===== */
+  @media (max-width: 480px) {
+    html, body { max-width: 100vw; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    body { padding-top: calc(50px + var(--safe-top)); padding-bottom: calc(76px + var(--safe-bottom)); }
+    .toolbar { height: calc(44px + var(--safe-top)); padding: 0 8px; padding-top: var(--safe-top); gap: 4px; }
+    .tbtn { padding: 4px 8px; font-size: 10px; border-radius: 14px; }
+    .tbtn .label { display: none; }
+    .tbtn .ico { font-size: 14px; }
+    .top-nav { top: calc(44px + var(--safe-top)); padding: 6px 8px; gap: 3px; }
+    .nav-link { padding: 5px 10px; font-size: 10px; letter-spacing: 0.03em; border-radius: 14px; }
+    .nav-collection { padding: 5px 8px !important; min-width: 32px; }
+    .nav-collection svg { width: 14px; height: 14px; }
+    .container { padding: 10px; }
+    .glass-card, .feed-card { padding: 12px; border-radius: 16px; margin-bottom: 10px; }
+    .main-card { border-radius: 16px; }
+    .cover-wrap { height: 150px; }
+    .avatar-wrap { width: 56px; height: 56px; }
+    .name { font-size: 18px; }
+    .handle { font-size: 11px; }
+    .stats { font-size: 12px; gap: 12px; }
+    .profile-info { padding: 10px 14px 0; }
+    .profile-header-row { gap: 10px; }
+    .image-grid { margin: 0 14px 14px 14px; gap: 5px; }
+    .quote-block { margin: 0 14px 14px 14px; padding: 10px; }
+    .quote-block p { font-size: 12px; line-height: 1.6; }
+    .post-box { margin: 0 14px 10px 14px; padding: 10px; }
+    .post-input { font-size: 13px; }
+    .publish-btn { padding: 5px 14px; font-size: 11px; }
+    .feed-text { font-size: 13px; padding-right: 14px; }
+    .feed-avatar { width: 32px; height: 32px; }
+    .feed-name { font-size: 12px; }
+    .feed-handle, .feed-time { font-size: 10px; }
+    .card-col, .text-block { padding: 6px 18px 6px 6px; font-size: 12px; }
+    .divider-block { padding: 6px 0; }
+    .panel-nav { margin-top: 10px; gap: 10px; }
+    .panel-nav-btn { min-width: 40px; height: 40px; padding: 0 10px; font-size: 16px; border-radius: 20px; }
+    .panel-nav-spacer { min-width: 40px; }
+    .bottom-nav { height: calc(54px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
+    .bottom-nav-item .icon { font-size: 15px; }
+    .bottom-nav-item { font-size: 8px; }
+    .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(62px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
+    .style-panel { width: calc(100vw - 20px); max-width: 340px; right: calc(10px + var(--safe-right)); padding: 10px; font-size: 11px; gap: 6px; max-height: calc(100dvh - 100px); }
+    .style-panel h4 { font-size: 11px; }
+    .style-btn { padding: 3px 6px; font-size: 10px; }
+    .shape-picker { padding: 8px; gap: 5px; max-width: calc(100vw - 20px); border-radius: 12px; }
+    .shape-pick-item { width: 36px; height: 36px; border-radius: 8px; }
+    .shape-pick-item svg { width: 20px; height: 20px; }
+    .collection-menu { top: calc(90px + var(--safe-top)); left: calc(10px + var(--safe-left)); min-width: 130px; max-width: calc(100vw - 20px); border-radius: 12px; }
+    .collection-item { padding: 7px 10px; font-size: 12px; }
+    .block-actions { padding: 2px; gap: 2px; border-radius: 5px; }
+    .block-action-btn { width: 24px; height: 24px; font-size: 12px; border-radius: 3px; }
+    .block-action-btn.divider { font-size: 14px; }
+    .resize-handle { width: 20px; height: 20px; }
+    .add-card-btn { padding: 10px; font-size: 11px; border-radius: 12px; }
+    .card-del { width: 24px; height: 24px; font-size: 13px; border-radius: 6px; }
+    .tbtn, .nav-link, .panel-nav-btn, .block-action-btn,
+    .music-player, .publish-btn, .card-del, .element-del,
+    .add-card-btn, .collection-item { touch-action: manipulation; }
+  }
+
+  /* ===== 极小手机（≤380px） ===== */
   @media (max-width: 380px) {
     .nav-link { padding: 5px 9px; font-size: 10px; letter-spacing: 0.05em; }
-    .container { padding: 10px; }
-    .glass-card, .feed-card { padding: 12px; }
-    .name { font-size: 19px; }
+    .container { padding: 8px; }
+    .glass-card, .feed-card { padding: 10px; }
+    .name { font-size: 17px; }
+  }
+
+  /* ===== 横屏 & 底部安全区兜底 ===== */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .bottom-nav { padding-bottom: max(var(--safe-bottom), 4px); }
+    .music-player { bottom: calc(70px + max(var(--safe-bottom), 4px)); }
   }
 </style>
 </head>
@@ -539,7 +631,6 @@
     <div class="style-item" id="shapeImgRow" style="display:none;"><span>图片</span><button class="style-btn" id="btnChangeShapeImg">更换图片</button></div>
   </div>
 
-  <!-- ===== 新增：分隔线样式区 ===== -->
   <div id="dividerStyleSection" style="display:none;">
     <h4>分隔线样式</h4>
     <div class="style-item"><span>颜色</span><input type="color" id="dividerColor" value="#888888"></div>
@@ -746,12 +837,12 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v22';
+  var KEY_CONTENT = 'myPage.glass.v23';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
   var KEY_STYLE   = 'myPage.styleSettings.v1';
-  
+
   var app = document.getElementById('app');
   var fileInput = document.getElementById('fileInput');
   var bgInput = document.getElementById('bgInput');
@@ -762,12 +853,9 @@
   var editMode = false;
   var activeTextEl = null;
   var activeShapeEl = null;
-  var activeDivider = null;      // 新增：当前选中的分隔线
+  var activeDivider = null;
   var DEFAULT_HTML = app.innerHTML;
   var customFonts = [];
-
-  // 修复1：用 WeakSet 记录已绑定的 handle，避免通过 data-* 属性被保存到 localStorage
-  var boundHandles = new WeakSet();
 
   var styleSettings = {
     opacity: 65, gradColor1: '#1c1c22', gradColor2: '#0d0d10',
@@ -907,7 +995,6 @@
     if(el) document.getElementById('stylePanel').classList.add('show');
   }
 
-  // ========= 新增：分隔线选中与样式控制 =========
   function selectDivider(lineEl){
     if(activeDivider) activeDivider.classList.remove('active');
     activeDivider = lineEl;
@@ -924,53 +1011,46 @@
     var section = document.getElementById('dividerStyleSection');
     if(!activeDivider){ section.style.display = 'none'; return; }
     section.style.display = 'block';
-    var cs = window.getComputedStyle(activeDivider);
-    // 颜色
-    document.getElementById('dividerColor').value = rgbToHex(cs.backgroundColor) || '#888888';
-    // 粗细
-    var h = parseInt(cs.height) || 1;
-    document.getElementById('dividerThickness').value = h;
-    document.getElementById('dividerThicknessVal').textContent = h + 'px';
-    // 线型（背景是纯色，没有线型；用自定义属性记录）
-    var style = activeDivider.dataset.lineStyle || 'solid';
-    document.getElementById('dividerStyle').value = style;
-    // 更新实际显示
-    applyDividerLineStyle();
+    var color = activeDivider.dataset.color || '#888888';
+    var thickness = parseInt(activeDivider.dataset.thickness) || 1;
+    var lineStyle = activeDivider.dataset.lineStyle || 'solid';
+    document.getElementById('dividerColor').value = color;
+    document.getElementById('dividerThickness').value = thickness;
+    document.getElementById('dividerThicknessVal').textContent = thickness + 'px';
+    document.getElementById('dividerStyle').value = lineStyle;
   }
 
-  function applyDividerLineStyle(){
-    if(!activeDivider) return;
-    var style = activeDivider.dataset.lineStyle || 'solid';
-    var color = activeDivider.dataset.color || rgbToHex(window.getComputedStyle(activeDivider).backgroundColor) || '#888888';
-    var thickness = activeDivider.dataset.thickness || (parseInt(activeDivider.style.height) || 1);
-    // 使用 border-top 实现各种线型
-    activeDivider.style.background = 'transparent';
-    activeDivider.style.height = '0';
-    activeDivider.style.borderTop = thickness + 'px ' + style + ' ' + color;
-    activeDivider.style.borderRadius = '0';
+  function applyDividerLineStyle(line){
+    if(!line) return;
+    var color = line.dataset.color || '#888888';
+    var thickness = line.dataset.thickness || '1';
+    var lineStyle = line.dataset.lineStyle || 'solid';
+    line.style.background = 'transparent';
+    line.style.height = '0';
+    line.style.borderTop = thickness + 'px ' + lineStyle + ' ' + color;
+    line.style.borderRadius = '0';
   }
 
   document.getElementById('dividerColor').addEventListener('input', function(e){
     if(!activeDivider) return;
     activeDivider.dataset.color = e.target.value;
-    applyDividerLineStyle();
+    applyDividerLineStyle(activeDivider);
     scheduleSave();
   });
   document.getElementById('dividerThickness').addEventListener('input', function(e){
     if(!activeDivider) return;
     activeDivider.dataset.thickness = e.target.value;
     document.getElementById('dividerThicknessVal').textContent = e.target.value + 'px';
-    applyDividerLineStyle();
+    applyDividerLineStyle(activeDivider);
     scheduleSave();
   });
   document.getElementById('dividerStyle').addEventListener('change', function(e){
     if(!activeDivider) return;
     activeDivider.dataset.lineStyle = e.target.value;
-    applyDividerLineStyle();
+    applyDividerLineStyle(activeDivider);
     scheduleSave();
   });
 
-  // ========= 字体导入 =========
   document.getElementById('fontInput').addEventListener('change', function(e){
     var file = e.target.files[0]; if(!file) return;
     var reader = new FileReader();
@@ -1092,13 +1172,11 @@
     toast(target ? '已链接到 ' + target : '已取消链接');
   });
 
-  // 修复3：点击任意可编辑文字 → 激活样式面板
   document.addEventListener('focusin', function(e){
     if(!editMode) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
     if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
       activeTextEl = el;
-      // 清除分隔线选中
       if(activeDivider){ activeDivider.classList.remove('active'); activeDivider = null; document.getElementById('dividerStyleSection').style.display = 'none'; }
       updateTextStyleUI();
       document.getElementById('stylePanel').classList.add('show');
@@ -1108,17 +1186,14 @@
     }
   });
 
-  // 修复2：点击任何 block 里的文字（含新加的行列）都能激活样式；同时点击分隔线可选中
   document.addEventListener('click', function(e){
     if(!editMode) return;
-    // 优先处理分隔线点击
     var line = e.target.closest('.divider-line');
     if(line){
       selectDivider(line);
       e.stopPropagation();
       return;
     }
-    // 点击可编辑文字 → 更新 activeTextEl
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
     if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
       activeTextEl = el;
@@ -1128,7 +1203,71 @@
     }
   });
 
-  // ========= 增删行列 =========
+  // ================= resize 事件委托（稳定可靠） =================
+  var resizingState = null;
+
+  function onResizePointerDown(e){
+    if(!editMode) return;
+    var handle = e.target.closest && e.target.closest('.resize-handle');
+    if(!handle) return;
+    var host = handle.parentElement;
+    var block = host && host.classList && host.classList.contains('block-wrapper')
+      ? host.querySelector('.card-col, .text-block')
+      : host;
+    if(!block) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var p = e.touches ? e.touches[0] : e;
+    resizingState = {
+      block: block,
+      startX: p.clientX,
+      startY: p.clientY,
+      startW: block.offsetWidth,
+      startH: block.offsetHeight
+    };
+    if(block.closest('.card-row')) block.style.flex = 'none';
+  }
+
+  function onResizePointerMove(e){
+    if(!resizingState) return;
+    e.preventDefault();
+    var p = e.touches ? e.touches[0] : e;
+    var newW = Math.max(16, resizingState.startW + (p.clientX - resizingState.startX));
+    var newH = Math.max(16, resizingState.startH + (p.clientY - resizingState.startY));
+    resizingState.block.style.width = newW + 'px';
+    resizingState.block.style.height = newH + 'px';
+    if(activeShapeEl === resizingState.block){
+      document.getElementById('shapeWidth').value = newW;
+      document.getElementById('shapeWidthVal').textContent = newW + 'px';
+      document.getElementById('shapeHeight').value = newH;
+      document.getElementById('shapeHeightVal').textContent = newH + 'px';
+    }
+  }
+
+  function onResizePointerUp(){
+    if(!resizingState) return;
+    resizingState = null;
+    scheduleSave();
+  }
+
+  document.addEventListener('mousedown', onResizePointerDown, true);
+  document.addEventListener('touchstart', onResizePointerDown, {passive: false, capture: true});
+  document.addEventListener('mousemove', onResizePointerMove);
+  document.addEventListener('touchmove', onResizePointerMove, {passive: false});
+  document.addEventListener('mouseup', onResizePointerUp);
+  document.addEventListener('touchend', onResizePointerUp);
+
+  // 空函数保留（其它代码可能调用）
+  function bindResizeEvents(){}
+  function bindAllResizeEvents(){
+    document.querySelectorAll('.divider-line').forEach(function(line){
+      if(line.dataset.color){
+        applyDividerLineStyle(line);
+      }
+    });
+  }
+
+  // ================= 增删行列 =================
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
@@ -1143,12 +1282,12 @@
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var newText = nw.querySelector('.card-col');
     if(editMode){
-      activeTextEl = newText;             // 修复3：新建行列后立即激活
+      activeTextEl = newText;
       updateTextStyleUI();
       document.getElementById('stylePanel').classList.add('show');
       newText.focus();
     }
-    bindResizeEvents(nw); scheduleSave(); toast('已添加行');
+    scheduleSave(); toast('已添加行');
   };
   window.addColHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
@@ -1172,7 +1311,7 @@
       document.getElementById('stylePanel').classList.add('show');
       newText.focus();
     }
-    bindResizeEvents(nw); scheduleSave(); toast('已添加列');
+    scheduleSave(); toast('已添加列');
   };
   window.addTextBlockBelow = function(btn){
     var wrapper = btn.closest('.block-wrapper');
@@ -1193,10 +1332,9 @@
       document.getElementById('stylePanel').classList.add('show');
       newText.focus();
     }
-    bindResizeEvents(nw); scheduleSave(); toast('已添加内容');
+    scheduleSave(); toast('已添加内容');
   };
 
-  // ========= 分隔线 =========
   window.addDivider = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div');
@@ -1213,14 +1351,10 @@
       '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var line = nw.querySelector('.divider-line');
-    // 初始化样式数据
     line.dataset.color = '#888888';
     line.dataset.thickness = '1';
     line.dataset.lineStyle = 'solid';
-    applyDividerLineStyle.call({}, undefined); // 不直接调用，通过选中方式初始化
-    line.style.background = 'transparent';
-    line.style.height = '0';
-    line.style.borderTop = '1px solid #888888';
+    applyDividerLineStyle(line);
     if(editMode) selectDivider(line);
     scheduleSave();
     toast('已添加分隔线');
@@ -1237,88 +1371,7 @@
     scheduleSave(); toast('已删除');
   };
 
-  // 修复1：改进的缩放绑定，使用 WeakSet 记录已绑定元素
-  function bindResizeEvents(host){
-    if(!host) return;
-    var block, handle;
-    if(host.classList && (host.classList.contains('card-col') || host.classList.contains('text-block') || host.classList.contains('shape-block') || host.classList.contains('image-frame-block') || host.classList.contains('float-text-block'))){
-      block = host;
-      handle = host.querySelector(':scope > .resize-handle');
-    } else {
-      block = host.querySelector('.card-col, .text-block');
-      handle = host.querySelector(':scope > .resize-handle');
-    }
-    if(!block || !handle) return;
-    // 修复：用 WeakSet 判重，避免 data-* 被序列化影响
-    if(boundHandles.has(handle)) return;
-    boundHandles.add(handle);
-
-    var isResizing = false, startW, startH, startResX, startResY;
-    function startResize(e){
-      if(!editMode) return;
-      e.preventDefault(); e.stopPropagation();
-      isResizing = true;
-      var p = e.touches ? e.touches[0] : e;
-      startResX = p.clientX; startResY = p.clientY;
-      startW = block.offsetWidth; startH = block.offsetHeight;
-      if(block.closest('.card-row')) block.style.flex = 'none';
-      document.addEventListener('mousemove', onResize);
-      document.addEventListener('touchmove', onResize, {passive: false});
-      document.addEventListener('mouseup', stopResize);
-      document.addEventListener('touchend', stopResize);
-    }
-    function onResize(e){
-      if(!isResizing) return;
-      e.preventDefault();
-      var p = e.touches ? e.touches[0] : e;
-      var newW = Math.max(16, startW + (p.clientX - startResX));
-      var newH = Math.max(16, startH + (p.clientY - startResY));
-      block.style.width = newW + 'px';
-      block.style.height = newH + 'px';
-      if(activeShapeEl === block){
-        document.getElementById('shapeWidth').value = newW;
-        document.getElementById('shapeWidthVal').textContent = newW + 'px';
-        document.getElementById('shapeHeight').value = newH;
-        document.getElementById('shapeHeightVal').textContent = newH + 'px';
-      }
-    }
-    function stopResize(){
-      isResizing = false;
-      document.removeEventListener('mousemove', onResize);
-      document.removeEventListener('touchmove', onResize);
-      document.removeEventListener('mouseup', stopResize);
-      document.removeEventListener('touchend', stopResize);
-      scheduleSave();
-    }
-    handle.addEventListener('mousedown', startResize);
-    handle.addEventListener('touchstart', startResize, {passive: false});
-  }
-
-  function bindAllResizeEvents(){
-    document.querySelectorAll('.block-wrapper').forEach(function(w){
-      var block = w.querySelector('.card-col, .text-block');
-      if(!block) return;
-      if(!w.querySelector(':scope > .resize-handle')){
-        var h = document.createElement('div'); h.className = 'resize-handle'; w.appendChild(h);
-      }
-      bindResizeEvents(w);
-    });
-    document.querySelectorAll('.shape-block, .image-frame-block, .float-text-block').forEach(function(block){
-      if(!block.querySelector('.resize-handle')){
-        var h = document.createElement('div'); h.className = 'resize-handle'; block.appendChild(h);
-      }
-      bindResizeEvents(block);
-    });
-    // 初始化分隔线样式（确保旧版保存的分隔线颜色恢复）
-    document.querySelectorAll('.divider-line').forEach(function(line){
-      if(line.dataset.color){
-        line.style.background = 'transparent';
-        line.style.height = '0';
-        line.style.borderTop = (line.dataset.thickness || 1) + 'px ' + (line.dataset.lineStyle || 'solid') + ' ' + line.dataset.color;
-      }
-    });
-  }
-
+  // ================= 拖拽 =================
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
@@ -1388,7 +1441,6 @@
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); if(activeShapeEl === shape){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     document.getElementById('float-layer').appendChild(shape);
     makeDraggable(shape);
-    bindResizeEvents(shape);
     selectShape(shape);
     scheduleSave();
     toast('已添加图形');
@@ -1413,7 +1465,6 @@
     frame.appendChild(del);
     document.getElementById('float-layer').appendChild(frame);
     makeDraggable(frame);
-    bindResizeEvents(frame);
     selectShape(frame);
     scheduleSave();
     toast('已添加图片框');
@@ -1479,7 +1530,6 @@
     floatBlock.addEventListener('focusin', function(){ activeTextEl = floatBlock; updateTextStyleUI(); });
     document.getElementById('float-layer').appendChild(floatBlock);
     makeDraggable(floatBlock);
-    bindResizeEvents(floatBlock);
     floatBlock.focus();
     scheduleSave(); toast('浮动文本已添加');
   });
@@ -1637,11 +1687,9 @@
   var originalSwitchTab = function(targetPanelId){
     document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
     document.querySelectorAll('#collectionList .collection-item').forEach(function(l){ l.classList.remove('active'); });
-    
     var panel = document.getElementById(targetPanelId);
     if(!panel) return;
     var isCollection = panel.getAttribute('data-collection') === 'true';
-    
     if(isCollection){
       document.getElementById('navCollection').classList.add('active');
       var collectionItem = document.querySelector('#collectionList .collection-item[data-target="' + targetPanelId + '"]');
@@ -1650,7 +1698,6 @@
       var targetNav = document.querySelector('.nav-link[data-target="' + targetPanelId + '"]');
       if(targetNav) targetNav.classList.add('active');
     }
-    
     document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
     panel.style.display = 'block';
     if(editMode) toast('已跳转');
@@ -1718,7 +1765,6 @@
       '<div class="feed-footer"><span>💬 评论</span></div>';
     var addBtn = panel.querySelector('.add-card-btn'); panel.insertBefore(card, addBtn);
     if(editMode) card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
-    bindResizeEvents(card.querySelector('.block-wrapper'));
     scheduleSave(); toast('已添加新卡片');
   };
   window.addTextBlock = function(panelId){
@@ -1739,7 +1785,7 @@
       document.getElementById('stylePanel').classList.add('show');
       activeTextEl.focus();
     }
-    bindResizeEvents(wrapper); scheduleSave(); toast('已添加自由文本块');
+    scheduleSave(); toast('已添加自由文本块');
   };
 
   document.getElementById('btnBgImage').addEventListener('click', function(){ bgInput.value = ''; bgInput.click(); });
