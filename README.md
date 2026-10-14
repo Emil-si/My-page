@@ -1,7 +1,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>个人主页</title>
 <style>
   :root{
@@ -58,6 +58,7 @@
     border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);
     color: var(--text); cursor: pointer; font-size: 12px; font-family: monospace;
     transition: all 0.2s; backdrop-filter: blur(8px); white-space: nowrap;
+    flex-shrink: 0;
   }
   .tbtn:active{transform: scale(0.95);}
   .tbtn.on{background: var(--accent); color: var(--accent-text); border-color: var(--accent);}
@@ -219,6 +220,7 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
+  /* ====== 修复：始终居中（包括编辑模式） ====== */
   .card-col {
     flex: 1; min-width: 40px; padding: 8px 22px 8px 8px; 
     border: 1px dashed var(--glass-border);
@@ -227,8 +229,8 @@
     display: flex; align-items: center; justify-content: center;
     text-align: center; 
     overflow: hidden;
+    line-height: 1.5;
   }
-  body.editing .card-col { display: block; text-align: left; }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
   .text-block {
@@ -239,9 +241,27 @@
     display: flex; align-items: center; justify-content: center;
     text-align: center; 
     overflow: hidden;
+    line-height: 1.5;
   }
-  body.editing .text-block { display: block; text-align: left; }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+  /* ====== 新增：分隔线 ====== */
+  .divider-block {
+    padding: 10px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .divider-block .divider-line {
+    height: 1px;
+    background: var(--glass-border);
+    width: 100%;
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  body.editing .divider-block .divider-line { background: var(--accent); opacity: 0.7; }
+  body.editing .divider-block:hover .divider-line { opacity: 1; height: 2px; }
 
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
@@ -403,11 +423,12 @@
     width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
     border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s;
+    padding: 0; line-height: 1;
   }
   .block-action-btn:hover { transform: scale(1.1); }
   .block-action-btn.del { background: #e5484d; }
+  .block-action-btn.divider { background: #7d90b8; font-size: 18px; }
 
-  /* ===== 新增：可点击链接文字样式 ===== */
   .link-text {
     cursor: pointer;
     text-decoration: underline;
@@ -417,6 +438,90 @@
   }
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
+
+  /* ====== 手机自适应 ====== */
+  @media (max-width: 640px) {
+    body {
+      padding-top: 54px;
+      padding-bottom: 80px;
+    }
+    .toolbar {
+      height: 46px; padding: 0 10px; gap: 5px;
+    }
+    .tbtn {
+      padding: 5px 10px; font-size: 11px; border-radius: 16px;
+    }
+    .tbtn .label { display: none; }
+    .tbtn .ico { font-size: 15px; }
+    .bg-image-btn .label { display: none; }
+    .top-nav {
+      top: 46px; padding: 8px 10px; gap: 4px;
+    }
+    .nav-link {
+      padding: 6px 12px; font-size: 11px; border-radius: 16px;
+    }
+    .nav-collection { padding: 6px 10px !important; min-width: 36px; }
+    .container { padding: 12px; }
+    .glass-card, .feed-card { border-radius: 18px; padding: 14px; margin-bottom: 12px; }
+    .main-card { border-radius: 18px; padding-bottom: 18px; margin-bottom: 12px; }
+    .cover-wrap { height: 170px; }
+    .avatar-wrap { width: 64px; height: 64px; border-width: 2px; }
+    .name { font-size: 21px; }
+    .handle { font-size: 12px; }
+    .stats { font-size: 13px; gap: 14px; }
+    .profile-info { padding: 12px 16px 0; }
+    .profile-header-row { gap: 12px; margin-bottom: 10px; }
+    .image-grid { margin: 0 16px 16px 16px; gap: 6px; }
+    .quote-block { margin: 0 16px 16px 16px; padding: 12px; }
+    .quote-block p { font-size: 13px; line-height: 1.7; }
+    .post-box { margin: 0 16px 12px 16px; padding: 12px; border-radius: 16px; }
+    .post-input { font-size: 14px; }
+    .publish-btn { padding: 6px 16px; font-size: 12px; }
+    .tool-icons { font-size: 16px; gap: 10px; }
+    .feed-text { font-size: 14px; padding-right: 16px; }
+    .feed-header { gap: 8px; }
+    .feed-avatar { width: 34px; height: 34px; }
+    .feed-name { font-size: 13px; }
+    .feed-handle, .feed-time { font-size: 11px; }
+    .card-col, .text-block { padding: 8px 20px 8px 8px; font-size: 13px; }
+    .divider-block { padding: 8px 0; }
+    .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
+    .panel-nav-btn {
+      min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px;
+      border-radius: 21px;
+    }
+    .panel-nav-spacer { min-width: 42px; }
+    .bottom-nav { height: 58px; }
+    .bottom-nav-item { font-size: 9px; }
+    .bottom-nav-item .icon { font-size: 17px; }
+    .music-player {
+      width: 44px; height: 44px; font-size: 18px;
+      bottom: 68px; right: 12px;
+    }
+    .style-panel {
+      width: calc(100vw - 24px); max-width: 340px; right: 12px;
+      padding: 12px; font-size: 11px; gap: 8px;
+    }
+    .style-panel h4 { font-size: 12px; }
+    .style-btn { font-size: 10px; padding: 3px 6px; }
+    .shape-picker { padding: 10px; gap: 6px; max-width: calc(100vw - 24px); }
+    .shape-pick-item { width: 40px; height: 40px; }
+    .shape-pick-item svg { width: 24px; height: 24px; }
+    .collection-menu { top: 96px; left: 12px; min-width: 150px; }
+    .block-actions { padding: 3px; gap: 3px; }
+    .block-action-btn { width: 26px; height: 26px; font-size: 13px; }
+    .block-action-btn.divider { font-size: 16px; }
+    .resize-handle { width: 22px; height: 22px; }
+    .add-card-btn { padding: 12px; font-size: 12px; }
+    .card-del { width: 26px; height: 26px; font-size: 14px; }
+  }
+
+  @media (max-width: 380px) {
+    .nav-link { padding: 5px 9px; font-size: 10px; letter-spacing: 0.05em; }
+    .container { padding: 10px; }
+    .glass-card, .feed-card { padding: 12px; }
+    .name { font-size: 19px; }
+  }
 </style>
 </head>
 <body>
@@ -434,7 +539,7 @@
   <button class="tbtn edit-only" id="btnExport"><span class="ico">⬇</span><span class="label">导出</span></button>
   <button class="tbtn edit-only" id="btnReset"><span class="ico">⟲</span><span class="label">重置</span></button>
   <span class="spacer"></span>
-  <button class="tbtn edit-only bg-image-btn" id="btnBgImage">🖼️ 背景</button>
+  <button class="tbtn edit-only bg-image-btn" id="btnBgImage">🖼️ <span class="label">背景</span></button>
   <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
@@ -533,7 +638,10 @@
             <div><span data-edit>520</span> 正在关注</div>
             <div><span data-edit>1,314</span> 关注者</div>
           </div>
-          <div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在此栏下方添加内容">＋</button></div>
+          <div class="block-actions">
+            <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button>
+            <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
+          </div>
         </div>
       </div>
       <div class="image-grid">
@@ -562,6 +670,7 @@
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
@@ -583,6 +692,7 @@
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
@@ -603,6 +713,7 @@
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
@@ -623,6 +734,7 @@
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
@@ -631,6 +743,7 @@
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
@@ -660,7 +773,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v20';
+  var KEY_CONTENT = 'myPage.glass.v21';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -862,7 +975,6 @@
       document.getElementById('bgOpacity').value = 0;
       document.getElementById('bgOpacityVal').textContent = '0%';
     }
-    // 同步链接目标下拉框
     var linkSelect = document.getElementById('linkTargetSelect');
     if(linkSelect){
       linkSelect.value = activeTextEl.getAttribute('data-link') || '';
@@ -924,7 +1036,6 @@
     }
   });
 
-  // ========== 新增：链接目标下拉框 ==========
   document.getElementById('linkTargetSelect').addEventListener('change', function(e){
     if(!activeTextEl) return;
     var target = e.target.value;
@@ -952,12 +1063,18 @@
     }
   });
 
+  // ========= 增删行列 =========
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div>' +
       '<div class="resize-handle"></div>' +
-      '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
+      '<div class="block-actions">' +
+        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
+        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.card-col').focus();
     bindResizeEvents(nw); scheduleSave(); toast('已添加行');
@@ -970,7 +1087,12 @@
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.flex = '1';
     nw.innerHTML = '<div class="card-col" contenteditable="true">新列内容</div>' +
       '<div class="resize-handle"></div>' +
-      '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
+      '<div class="block-actions">' +
+        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
+        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.card-col').focus();
     bindResizeEvents(nw); scheduleSave(); toast('已添加列');
@@ -980,11 +1102,37 @@
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div>' +
       '<div class="resize-handle"></div>' +
-      '<div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
+      '<div class="block-actions">' +
+        '<button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button>' +
+        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     if(editMode) nw.querySelector('.text-block').focus();
     bindResizeEvents(nw); scheduleSave(); toast('已添加内容');
   };
+
+  // ========= 新增：分隔线 =========
+  window.addDivider = function(btn){
+    var wrapper = btn.closest('.block-wrapper');
+    var nw = document.createElement('div');
+    nw.className = 'block-wrapper';
+    nw.style.marginTop = '8px';
+    nw.style.marginBottom = '8px';
+    nw.innerHTML =
+      '<div class="divider-block">' +
+        '<div class="divider-line"></div>' +
+      '</div>' +
+      '<div class="block-actions">' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="再添加一条分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
+    wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
+    scheduleSave();
+    toast('已添加分隔线');
+  };
+
   window.deleteBlock = function(btn){
     var wrapper = btn.closest('.block-wrapper'); var row = wrapper.closest('.card-row');
     if(row){ wrapper.remove(); if(row.querySelectorAll('.block-wrapper').length === 0) row.remove(); }
@@ -1242,8 +1390,6 @@
     while(usedIds['panel-' + newIndex]) newIndex++;
     var newPanelId = 'panel-' + newIndex;
 
-    var lastPanelId = panels.length ? panels[panels.length - 1].id : 'panel-0';
-
     var newPanel = document.createElement('div');
     newPanel.id = newPanelId;
     newPanel.className = 'panel';
@@ -1258,6 +1404,7 @@
           '<div class="block-actions">' +
             '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
             '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+            '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
             '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
           '</div>' +
         '</div>' +
@@ -1304,7 +1451,6 @@
     });
   }
 
-  // ========== 新增：链接目标下拉框刷新 ==========
   function refreshLinkTargets(){
     var select = document.getElementById('linkTargetSelect');
     if(!select) return;
@@ -1377,7 +1523,6 @@
     }, 400);
   }
 
-  // ========== 新增：历史记录 + 跳转 ==========
   var navHistory = [];
 
   var originalSwitchTab = function(targetPanelId){
@@ -1402,7 +1547,6 @@
     if(editMode) toast('已跳转');
   };
 
-  // 包装 switchTab，记录历史
   window.switchTab = function(targetPanelId){
     var currentVisible = document.querySelector('.panel[style*="display: block"]');
     if(currentVisible && currentVisible.id !== targetPanelId){
@@ -1413,7 +1557,6 @@
     refreshLinkTargets();
   };
 
-  // 返回上一页
   window.goBack = function(){
     if(navHistory.length > 0){
       var prev = navHistory.pop();
@@ -1423,7 +1566,6 @@
     }
   };
 
-  // 链接文字点击跳转
   document.addEventListener('click', function(e){
     if(editMode) return;
     var linkEl = e.target.closest('[data-link]');
@@ -1458,7 +1600,12 @@
       '<div class="feed-time" data-edit>刚刚</div></div>' +
       '<div class="block-wrapper"><div class="feed-text" data-edit>点击这里输入内容...</div>' +
       '<div class="resize-handle"></div>' +
-      '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div></div>' +
+      '<div class="block-actions">' +
+        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
+        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div></div>' +
       '<div class="feed-footer"><span>💬 评论</span></div>';
     var addBtn = panel.querySelector('.add-card-btn'); panel.insertBefore(card, addBtn);
     if(editMode) card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
@@ -1470,7 +1617,12 @@
     var wrapper = document.createElement('div'); wrapper.className = 'block-wrapper';
     wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div>' +
       '<div class="resize-handle"></div>' +
-      '<div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
+      '<div class="block-actions">' +
+        '<button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button>' +
+        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; panel.insertBefore(wrapper, addBtn);
     if(editMode) wrapper.querySelector('.text-block').focus();
     bindResizeEvents(wrapper); scheduleSave(); toast('已添加自由文本块');
