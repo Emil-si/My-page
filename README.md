@@ -14,9 +14,7 @@
     --accent: #4a9eff;
     --accent-text: #ffffff;
     --card-bg-color: rgba(25, 25, 30, 0.65);
-    --card-opacity: 1;
     --card-gradient: linear-gradient(135deg, #1c1c22 0%, #0d0d10 100%);
-    --card-gradient-angle: 135deg;
   }
   html.light{
     --glass-border: rgba(0, 0, 0, 0.08);
@@ -58,25 +56,25 @@
   .edit-only{display: none !important;}
   body.editing .edit-only{display: flex !important;}
   
-  /* 颜色选择器与滑块面板 */
-  .color-picker-wrap { position: relative; overflow: hidden; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); }
-  .color-picker-wrap input { position: absolute; width: 50px; height: 50px; top: -10px; left: -10px; opacity: 0; cursor: pointer; }
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
-  /* 侧边样式面板 */
+  /* ============ 侧边样式面板 ============ */
   .style-panel {
     position: fixed; top: 60px; right: 16px; z-index: 1000;
-    width: 260px; padding: 16px; border-radius: 16px;
+    width: 280px; padding: 16px; border-radius: 16px;
     background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: none; flex-direction: column; gap: 12px;
-    color: #fff; font-size: 12px;
+    color: #fff; font-size: 12px; max-height: 80vh; overflow-y: auto;
   }
   .style-panel.show { display: flex; }
-  .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
   .style-item input[type="range"] { flex: 1; cursor: pointer; }
   .style-item input[type="color"] { width: 30px; height: 30px; border: none; border-radius: 6px; cursor: pointer; background: transparent; }
-  .style-panel h4 { font-size: 13px; margin-bottom: 4px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; }
+  .style-panel h4 { font-size: 13px; margin: 8px 0 4px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 6px; color: var(--accent); }
+  .style-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); cursor: pointer; font-size: 12px; }
+  .style-btn.active { background: var(--accent); color: var(--accent-text); }
+  .style-btn-group { display: flex; gap: 4px; }
 
   /* ============ 顶部导航栏 ============ */
   .top-nav {
@@ -117,25 +115,29 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
   
-  /* 封面图 */
+  /* 封面图：边缘渐变融合 */
   .cover-wrap { width: 100%; height: 220px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
+  .cover-wrap::after {
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--card-bg-color)); z-index: 1; pointer-events: none;
+  }
+
+  /* 个人信息区：左对齐 */
+  .profile-info { padding: 16px 24px 0; text-align: left; position: relative; z-index: 2; }
+  .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
   
-  /* 头像（已移至名字上方） */
   .avatar-wrap { 
-    width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--glass-border); 
-    margin: 0 auto 16px auto; background: var(--glass-bg); 
-    overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); position: relative; z-index: 2;
+    width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border); 
+    background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex: none;
   }
   .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* 个人信息区 */
-  .profile-info { padding: 20px 24px 0; text-align: center; }
-  .name-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
-  .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; }
-  .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; margin-bottom: 16px; }
+  .name-handle { flex: 1; }
+  .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 4px; }
+  .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; }
   
-  .stats { display: flex; justify-content: center; gap: 20px; font-size: 14px; margin-bottom: 24px; }
+  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; margin-bottom: 24px; }
   .stats span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
@@ -154,7 +156,6 @@
   .post-tools { display: flex; justify-content: space-between; align-items: center; }
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-  .publish-btn span[data-edit] { outline-offset: 2px; } /* 让发布二字可编辑 */
 
   /* 动态卡片 */
   .feed-card { 
@@ -172,7 +173,16 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* 底部导航 */
+  /* 自定义文字块 */
+  .text-block {
+    margin: 0 24px 16px 24px; padding: 16px; border-radius: 16px; border: 1px dashed var(--glass-border);
+    background: rgba(255,255,255,0.01); position: relative; min-height: 40px;
+  }
+  .text-block[contenteditable="true"] { cursor: text; outline: 1px dashed var(--accent); }
+  .text-block .card-del { display: none; top: 4px; right: 4px; }
+  body.editing .text-block:hover .card-del { display: flex; }
+
+  /* ============ 底部导航 ============ */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 998; height: 70px;
     display: flex; justify-content: space-around; align-items: center;
@@ -192,7 +202,7 @@
     align-items: center; justify-content: center; z-index: 10;
   }
   .card-del:hover { background: #e5484d; border-color: #e5484d; }
-  body.editing .card-del { display: flex; }
+  body.editing .feed-card .card-del { display: flex; }
   .add-card-btn {
     display: none; width: 100%; padding: 14px; border: 1px dashed var(--glass-border);
     border-radius: 16px; background: transparent; color: var(--text-sub); cursor: pointer;
@@ -220,14 +230,13 @@
   body.editing [data-edit] { outline: 1px dashed var(--accent); outline-offset: 4px; border-radius: 4px; cursor: text; }
   body.editing [data-edit]:focus { background: rgba(255,255,255,0.05); outline: 1px solid var(--accent); }
   
-  /* 修复换图Bug：为hover伪元素添加pointer-events: none; 防止遮挡点击 */
   body.editing .cover-wrap:hover::after, 
   body.editing .avatar-wrap:hover::after, 
   body.editing .grid-item:hover::after, 
   body.editing .feed-avatar:hover::after {
     content: "点击换图"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; z-index: 5;
-    pointer-events: none; /* 关键修复 */
+    pointer-events: none;
   }
   
   .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
@@ -253,7 +262,7 @@
   <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 样式面板 -->
+<!-- 样式面板（包含卡片与文字样式调节） -->
 <div class="style-panel" id="stylePanel">
   <h4>卡片样式调节</h4>
   <div class="style-item">
@@ -274,10 +283,53 @@
     <input type="range" id="gradAngle" min="0" max="360" value="135">
     <span id="angleVal">135°</span>
   </div>
-  <h4 style="margin-top: 10px;">主色调联动</h4>
   <div class="style-item">
     <span>全局主色</span>
     <input type="color" id="accentColor" value="#4a9eff">
+  </div>
+
+  <h4>文字样式调节 (点击文字后生效)</h4>
+  <div class="style-item">
+    <span>字体大小</span>
+    <input type="range" id="fontSize" min="12" max="48" value="16">
+    <span id="fontSizeVal">16px</span>
+  </div>
+  <div class="style-item">
+    <span>方向</span>
+    <select id="textDir" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px;">
+      <option value="horizontal-tb">横排</option>
+      <option value="vertical-rl">竖排</option>
+    </select>
+  </div>
+  <div class="style-item">
+    <span>对齐</span>
+    <div class="style-btn-group">
+      <button class="style-btn" data-align="left">左</button>
+      <button class="style-btn" data-align="center">中</button>
+      <button class="style-btn" data-align="right">右</button>
+    </div>
+  </div>
+  <div class="style-item">
+    <span>字体样式</span>
+    <div class="style-btn-group">
+      <button class="style-btn" id="btnBold">B</button>
+      <button class="style-btn" id="btnItalic">I</button>
+      <button class="style-btn" id="btnUnderline">U</button>
+    </div>
+  </div>
+  <div class="style-item">
+    <span>文字颜色</span>
+    <input type="color" id="textColor" value="#f0f0f0">
+  </div>
+  <div class="style-item">
+    <span>文字背景</span>
+    <input type="color" id="textBg" value="#000000">
+    <button class="style-btn" id="btnClearBg">清除</button>
+  </div>
+  <div class="style-item">
+    <span>背景边框</span>
+    <input type="color" id="textBorderColor" value="#4a9eff">
+    <button class="style-btn" id="btnToggleBorder">加框</button>
   </div>
 </div>
 
@@ -298,15 +350,17 @@
       <div class="cover-wrap">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='8' fill='%23444' text-anchor='middle' font-family='monospace'%3E点击更换封面图%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
-      <!-- 头像已移至名字上方 -->
+      <!-- 个人资料区（左对齐） -->
       <div class="profile-info">
-        <div class="avatar-wrap">
-          <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23222'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
+        <div class="profile-header-row">
+          <div class="avatar-wrap">
+            <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23222'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
+          </div>
+          <div class="name-handle">
+            <div class="name" data-edit>水水</div>
+            <div class="handle" data-edit>@InfernalBeyond.com</div>
+          </div>
         </div>
-        <div class="name-row">
-          <div class="name" data-edit>水水</div>
-        </div>
-        <div class="handle" data-edit>@InfernalBeyond.com</div>
         <div class="stats">
           <div><span data-edit>520</span> 正在关注</div>
           <div><span data-edit>1,314</span> 关注者</div>
@@ -323,7 +377,7 @@
         <p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p>
       </div>
 
-      <!-- 发帖框，发布二字支持编辑 -->
+      <!-- 发帖框 -->
       <div class="post-box">
         <input class="post-input" placeholder="说点什么..." data-edit>
         <div class="post-tools">
@@ -351,7 +405,9 @@
       </div>
     </div>
 
-    <button class="add-card-btn" onclick="addCard('panel-0')">＋ 添加一张动态卡片</button>
+    <!-- 动态添加文字块按钮 -->
+    <button class="add-card-btn" onclick="addCard('panel-0')" style="margin-bottom:8px;">＋ 添加动态卡片</button>
+    <button class="add-card-btn" onclick="addTextBlock('panel-0')">＋ 添加自由文本块</button>
   </div>
 
   <!-- ===== 面板 1 ===== -->
@@ -360,7 +416,8 @@
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
       <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。</div>
     </div>
-    <button class="add-card-btn" onclick="addCard('panel-1')">＋ 添加一张卡片</button>
+    <button class="add-card-btn" onclick="addCard('panel-1')">＋ 添加动态卡片</button>
+    <button class="add-card-btn" onclick="addTextBlock('panel-1')">＋ 添加自由文本块</button>
   </div>
 
   <!-- ===== 面板 2 ===== -->
@@ -369,7 +426,8 @@
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
       <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
     </div>
-    <button class="add-card-btn" onclick="addCard('panel-2')">＋ 添加一张卡片</button>
+    <button class="add-card-btn" onclick="addCard('panel-2')">＋ 添加动态卡片</button>
+    <button class="add-card-btn" onclick="addTextBlock('panel-2')">＋ 添加自由文本块</button>
   </div>
 
   <!-- ===== 面板 3 ===== -->
@@ -378,7 +436,8 @@
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
       <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
     </div>
-    <button class="add-card-btn" onclick="addCard('panel-3')">＋ 添加一张卡片</button>
+    <button class="add-card-btn" onclick="addCard('panel-3')">＋ 添加动态卡片</button>
+    <button class="add-card-btn" onclick="addTextBlock('panel-3')">＋ 添加自由文本块</button>
   </div>
 
 </div>
@@ -398,7 +457,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v4';
+  var KEY_CONTENT = 'myPage.glass.v5';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -411,6 +470,7 @@
   var currentImg = null;
   var editMode = false;
   var activeCard = null;
+  var activeTextEl = null; // 当前选中的文字元素
   var DEFAULT_HTML = app.innerHTML;
 
   var styleSettings = {
@@ -510,6 +570,46 @@
     applySliders(styleSettings);
   });
 
+  // 文字样式绑定
+  document.getElementById('fontSize').addEventListener('input', function(e){
+    if(activeTextEl) { activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('fontSizeVal').textContent = e.target.value + 'px'; }
+  });
+  document.getElementById('textDir').addEventListener('change', function(e){
+    if(activeTextEl) activeTextEl.style.writingMode = e.target.value;
+  });
+  document.querySelectorAll('.style-btn[data-align]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(activeTextEl) activeTextEl.style.textAlign = this.getAttribute('data-align');
+    });
+  });
+  document.getElementById('btnBold').addEventListener('click', function(){
+    if(activeTextEl) { var w = activeTextEl.style.fontWeight === 'bold' ? 'normal' : 'bold'; activeTextEl.style.fontWeight = w; }
+  });
+  document.getElementById('btnItalic').addEventListener('click', function(){
+    if(activeTextEl) { var s = activeTextEl.style.fontStyle === 'italic' ? 'normal' : 'italic'; activeTextEl.style.fontStyle = s; }
+  });
+  document.getElementById('btnUnderline').addEventListener('click', function(){
+    if(activeTextEl) { var d = activeTextEl.style.textDecoration === 'underline' ? 'none' : 'underline'; activeTextEl.style.textDecoration = d; }
+  });
+  document.getElementById('textColor').addEventListener('input', function(e){
+    if(activeTextEl) activeTextEl.style.color = e.target.value;
+  });
+  document.getElementById('textBg').addEventListener('input', function(e){
+    if(activeTextEl) activeTextEl.style.backgroundColor = e.target.value;
+  });
+  document.getElementById('btnClearBg').addEventListener('click', function(){
+    if(activeTextEl) activeTextEl.style.backgroundColor = 'transparent';
+  });
+  document.getElementById('btnToggleBorder').addEventListener('click', function(){
+    if(activeTextEl) {
+      if(activeTextEl.style.border) { activeTextEl.style.border = 'none'; this.textContent = '加框'; }
+      else { activeTextEl.style.border = '1px solid ' + document.getElementById('textBorderColor').value; this.textContent = '去框'; }
+    }
+  });
+  document.getElementById('textBorderColor').addEventListener('input', function(e){
+    if(activeTextEl && activeTextEl.style.border) activeTextEl.style.border = '1px solid ' + e.target.value;
+  });
+
   document.getElementById('btnBgImage').addEventListener('click', function(){
     bgInput.value = ''; bgInput.click();
   });
@@ -549,7 +649,7 @@
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
-    document.querySelectorAll('[data-edit]').forEach(function(el){
+    document.querySelectorAll('[data-edit], .text-block').forEach(function(el){
       if(on) { el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
       else el.removeAttribute('contenteditable');
     });
@@ -558,23 +658,38 @@
     btn.querySelector('.ico').textContent = on ? '✓' : '✎';
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
     
-    if(on) { toast('编辑已开启，点击图片可直接更换'); }
+    if(on) { toast('编辑已开启，点击图片可更换，点击文字可调样式'); }
     else { scheduleSave(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
   app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
 
+  // 监听文字聚焦，以便进行样式修改
+  app.addEventListener('focusin', function(e){
+    if(!editMode) return;
+    var el = e.target.closest('[contenteditable="true"], .text-block');
+    if(el) {
+      activeTextEl = el;
+      // 更新滑块UI状态
+      var style = window.getComputedStyle(el);
+      document.getElementById('fontSize').value = parseInt(style.fontSize) || 16;
+      document.getElementById('fontSizeVal').textContent = (parseInt(style.fontSize) || 16) + 'px';
+      document.getElementById('textColor').value = style.color || '#f0f0f0';
+      document.getElementById('textBg').value = style.backgroundColor === 'rgba(0, 0, 0, 0)' ? '#000000' : style.backgroundColor;
+      document.getElementById('textDir').value = style.writingMode || 'horizontal-tb';
+    }
+  });
+
   app.addEventListener('click', function(e){
     if(!editMode) return;
-    var card = e.target.closest('.main-card, .feed-card');
+    var card = e.target.closest('.main-card, .feed-card, .text-block');
     if(card && !e.target.closest('button') && !e.target.closest('img[data-edit-img]')){
-      document.querySelectorAll('.main-card, .feed-card').forEach(function(c){ c.style.outline = 'none'; });
+      document.querySelectorAll('.main-card, .feed-card, .text-block').forEach(function(c){ c.style.outline = 'none'; });
       card.style.outline = '2px solid var(--accent)';
       activeCard = card;
     }
   });
 
-  // 修复点击换图Bug：添加 stopPropagation，并处理可能的事件冲突
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var img = e.target.closest('img[data-edit-img]');
@@ -607,11 +722,8 @@
     reader.readAsDataURL(file);
   });
 
-  // 修复：编辑模式下也能跳转导航栏
   document.querySelectorAll('.nav-link').forEach(function(link){
-    link.addEventListener('click', function(e){
-      // 如果是编辑模式，点击导航栏可能想修改文字，所以不阻止默认行为
-      // 但是用户要求"跳转编辑"，所以这里直接执行跳转逻辑
+    link.addEventListener('click', function(){
       document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
       this.classList.add('active');
       var target = this.getAttribute('data-target');
@@ -619,12 +731,7 @@
       var panel = document.getElementById(target);
       if(panel) panel.style.display = 'block';
       
-      if(!editMode) {
-        // 非编辑模式正常跳转
-      } else {
-        // 编辑模式下提示跳转成功
-        toast('已跳转至 ' + this.textContent);
-      }
+      if(editMode) toast('已跳转至 ' + this.textContent);
     });
   });
 
@@ -658,14 +765,28 @@
     toast('已添加新卡片');
   };
 
+  window.addTextBlock = function(panelId){
+    var panel = document.getElementById(panelId);
+    if(!panel) return;
+    var block = document.createElement('div');
+    block.className = 'text-block';
+    block.setAttribute('contenteditable', 'true');
+    block.innerHTML = '点击输入自由文本内容...';
+    var addBtn = panel.querySelectorAll('.add-card-btn')[1]; // 第二个按钮
+    panel.insertBefore(block, addBtn);
+    if(editMode) block.focus();
+    scheduleSave();
+    toast('已添加自由文本块');
+  };
+
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
     if(!del || !editMode) return;
     e.preventDefault();
-    if(confirm('确定删除这张卡片吗？')){
-      del.closest('.feed-card, .main-card').remove();
+    if(confirm('确定删除这个内容吗？')){
+      del.closest('.feed-card, .text-block').remove();
       scheduleSave();
-      toast('卡片已删除');
+      toast('已删除');
     }
   });
 
