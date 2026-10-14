@@ -2,6 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
 <title>个人主页</title>
 <style>
   :root{
@@ -17,14 +18,16 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
+    color-scheme: dark;
   }
   html.light{
     --glass-border: rgba(0, 0, 0, 0.08);
     --bg-color: #f2f2f5;
     --text: #111;
     --text-sub: #666;
-    --card-bg-color: rgba(255, 255, 255, 0.65);
-    --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(240,240,245,0.8) 100%);
+    --card-bg-color: rgba(255, 255, 255, 0.7);
+    --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,245,0.85) 100%);
+    color-scheme: light;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
@@ -45,15 +48,12 @@
     position: relative;
   }
 
-  /* ===== 全屏背景层（用 img 实现，兼容所有设备） ===== */
+  /* ===== 全屏背景层 ===== */
   .bg-layer {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    z-index: 1;
-    overflow: hidden;
+    width: 100vw; height: 100vh; height: 100dvh;
+    z-index: 1; overflow: hidden;
     background-color: var(--bg-color);
     pointer-events: none;
     transition: background-color 0.3s;
@@ -62,29 +62,22 @@
     .bg-layer { height: -webkit-fill-available; }
   }
   .bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 50%;
-    display: block;
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: 50% 50%;
+    display: block; pointer-events: none;
+    user-select: none; -webkit-user-drag: none;
   }
   .bg-img.hidden { display: none !important; }
 
-  /* 所有页面内容浮在背景层上方 */
   .toolbar, .top-nav, .container, .music-player, .panel-nav, .toast {
-    position: relative;
-    z-index: 10;
+    position: relative; z-index: 10;
   }
   .toolbar { position: fixed; z-index: 999; }
   .top-nav { position: sticky; z-index: 998; }
   .music-player { position: fixed; z-index: 1000; }
   .toast { position: fixed; z-index: 2000; }
-  .style-panel, .shape-picker, .collection-menu, .music-panel, .music-panel-backdrop, .img-pos-overlay {
-    z-index: 9999;
-  }
+  .style-panel, .shape-picker, .collection-menu, .music-panel,
+  .music-panel-backdrop, .img-pos-overlay { z-index: 9999; }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -95,6 +88,7 @@
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
 
+  /* ===== 工具栏 ===== */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     height: calc(50px + var(--safe-top));
@@ -105,9 +99,10 @@
     background: rgba(20, 20, 25, 0.72);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
+    border-bottom: 1px solid var(--glass-border);
+    overflow-x: auto; scrollbar-width: none;
   }
-  html.light .toolbar { background: rgba(255, 255, 255, 0.72); }
+  html.light .toolbar { background: rgba(255, 255, 255, 0.78); }
   .toolbar::-webkit-scrollbar { display: none; }
   .toolbar .spacer{flex:1;}
   .tbtn{
@@ -115,15 +110,16 @@
     border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);
     color: var(--text); cursor: pointer; font-size: 12px; font-family: monospace;
     transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   }
+  html.light .tbtn { background: rgba(0, 0, 0, 0.03); border-color: rgba(0, 0, 0, 0.08); }
   .tbtn:active{transform: scale(0.95);}
   .tbtn.on{background: var(--accent); color: var(--accent-text); border-color: var(--accent);}
   .edit-only{display: none !important;}
   body.editing .edit-only{display: flex !important;}
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
+  /* ===== 样式面板 ===== */
   .style-panel {
     position: fixed;
     top: calc(60px + var(--safe-top));
@@ -133,9 +129,14 @@
     background: rgba(20, 20, 25, 0.95);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: none; flex-direction: column; gap: 10px;
-    color: #fff; font-size: 12px; max-height: 80vh; overflow-y: auto;
+    color: var(--text); font-size: 12px; max-height: 80vh; overflow-y: auto;
+  }
+  html.light .style-panel {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
   }
   .style-panel.show { display: flex; }
   .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -145,26 +146,29 @@
   .style-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px; }
   .style-btn.active { background: var(--accent); color: var(--accent-text); }
   .style-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
-  .font-select { width: 100%; padding: 4px; border-radius: 4px; background: #333; color: #fff; border: 1px solid #555; font-size: 11px; }
+  .font-select { width: 100%; padding: 4px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--glass-border); font-size: 11px; }
+  html.light .font-select { background: rgba(0,0,0,0.04); }
 
+  /* ===== 音乐面板 ===== */
   .music-panel {
-    position: fixed;
-    top: 50%; left: 50%;
+    position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0.96);
     z-index: 10002;
     width: min(92vw, 380px);
-    padding: 22px 20px;
-    border-radius: 20px;
+    padding: 22px 20px; border-radius: 20px;
     background: rgba(20, 20, 25, 0.98);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 24px 80px rgba(0,0,0,0.7);
-    color: #fff; font-size: 13px;
+    color: var(--text); font-size: 13px;
     display: none; flex-direction: column; gap: 14px;
     opacity: 0; transition: opacity 0.2s, transform 0.2s;
   }
-  html.light .music-panel { background: rgba(255, 255, 255, 0.98); color: #111; }
+  html.light .music-panel {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  }
   .music-panel.show { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .music-panel-title {
     font-size: 15px; color: var(--accent); text-align: center;
@@ -189,31 +193,35 @@
     font-size: 13px; font-family: monospace;
     cursor: pointer; transition: all 0.2s;
   }
-  .music-panel-btn:hover { background: rgba(255,255,255,0.08); }
+  .music-panel-btn:hover { background: rgba(127,127,127,0.15); }
   .music-panel-btn.confirm { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
   .music-panel-btn.danger { color: #e5484d; border-color: rgba(229,72,77,0.4); }
-  .music-panel-btn.danger:hover { background: rgba(229,72,77,0.15); }
 
   .music-panel-backdrop {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.5);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
-    z-index: 10001;
-    display: none;
+    z-index: 10001; display: none;
   }
   .music-panel-backdrop.show { display: block; }
 
+  /* ===== 图形选择器 ===== */
   .shape-picker {
     position: fixed;
     top: calc(60px + var(--safe-top));
     left: 50%; transform: translateX(-50%);
-    z-index: 10000; background: rgba(20, 20, 25, 0.98);
+    z-index: 10000;
+    background: rgba(20, 20, 25, 0.98);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 16px;
     padding: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     display: none; grid-template-columns: repeat(5, 1fr); gap: 8px;
+  }
+  html.light .shape-picker {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
   }
   .shape-picker.show { display: grid; }
   .shape-pick-item {
@@ -221,10 +229,15 @@
     border-radius: 10px; cursor: pointer; color: var(--text); transition: all 0.2s;
     background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
   }
+  html.light .shape-pick-item { background: rgba(0, 0, 0, 0.03); }
   .shape-pick-item:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); transform: scale(1.05); }
   .shape-pick-item svg { width: 30px; height: 30px; }
-  .shape-picker-title { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); }
+  .shape-picker-title {
+    grid-column: 1 / -1; text-align: center; font-size: 12px;
+    color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);
+  }
 
+  /* ===== 顶部导航 ===== */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px;
     padding: 12px calc(16px + var(--safe-left)) 12px calc(16px + var(--safe-right));
@@ -236,14 +249,15 @@
     border-bottom: 1px solid var(--glass-border);
     overflow-x: auto; scrollbar-width: none; align-items: center;
   }
-  html.light .top-nav { background: rgba(255, 255, 255, 0.72); }
+  html.light .top-nav { background: rgba(255, 255, 255, 0.78); }
   .top-nav::-webkit-scrollbar { display: none; }
   .nav-link {
     flex: 1 0 auto; text-align: center; padding: 8px 16px; border-radius: 20px;
     background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-    color: var(--text-sub); text-decoration: none; font-size: 12px; font-family: monospace; letter-spacing: 0.1em;
-    transition: all 0.2s ease; cursor: pointer; white-space: nowrap;
+    color: var(--text-sub); text-decoration: none; font-size: 12px; font-family: monospace;
+    letter-spacing: 0.1em; transition: all 0.2s ease; cursor: pointer; white-space: nowrap;
   }
+  html.light .nav-link { background: rgba(0, 0, 0, 0.03); }
   .nav-link.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .nav-collection {
     flex: 0 0 auto !important; display: flex; align-items: center; justify-content: center;
@@ -252,6 +266,7 @@
   .nav-collection.active { background: var(--accent) !important; color: var(--accent-text) !important; border-color: var(--accent) !important; }
   .nav-collection svg { display: block; }
 
+  /* ===== 合集菜单 ===== */
   .collection-menu {
     position: fixed;
     top: calc(108px + var(--safe-top));
@@ -264,7 +279,10 @@
     padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     display: none; min-width: 180px; max-width: 80vw; max-height: 60vh; overflow-y: auto;
   }
-  html.light .collection-menu { background: rgba(255, 255, 255, 0.98); }
+  html.light .collection-menu {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
   .collection-menu.show { display: block; animation: fadeIn 0.2s ease; }
   .collection-menu-title {
     font-size: 10px; color: var(--accent); padding: 4px 10px 8px;
@@ -276,12 +294,13 @@
     text-decoration: none; font-size: 13px; cursor: pointer; transition: all 0.2s;
     font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .collection-item:hover { background: rgba(255,255,255,0.08); }
+  .collection-item:hover { background: rgba(127,127,127,0.12); }
   .collection-item.active { background: var(--accent); color: var(--accent-text); }
   .collection-empty { padding: 8px 12px; font-size: 12px; color: var(--text-sub); text-align: center; }
 
   .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 16px; position: relative; box-sizing: border-box; z-index: 10; }
 
+  /* ===== 卡片 ===== */
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -290,6 +309,7 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
+  html.light .glass-card { box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
   .main-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -299,6 +319,7 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
     max-width: 100%; box-sizing: border-box;
   }
+  html.light .main-card { box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
@@ -312,7 +333,7 @@
   .profile-header-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
   .avatar-wrap {
     width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border);
-    background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex: none;
+    background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.4); flex: none;
   }
   .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
   .name-handle { flex: 1; }
@@ -323,13 +344,14 @@
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
   .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 24px 24px 24px; }
-  .grid-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); position: relative; }
+  .grid-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: rgba(127,127,127,0.1); position: relative; }
   .grid-item img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
-  .quote-block { margin: 0 24px 24px 24px; padding: 16px; border: 1px solid var(--glass-border); border-radius: 16px; background: rgba(255,255,255,0.02); }
+  .quote-block { margin: 0 24px 24px 24px; padding: 16px; border: 1px solid var(--glass-border); border-radius: 16px; background: rgba(127,127,127,0.04); }
   .quote-block p { font-size: 14px; line-height: 1.8; color: var(--text-sub); font-style: italic; }
-  .post-box { margin: 0 24px 16px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: all 0.2s; }
-  .post-box:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
+  .post-box { margin: 0 24px 16px 24px; background: rgba(127,127,127,0.05); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: all 0.2s; }
+  .post-box:hover { background: rgba(127,127,127,0.1); border-color: var(--accent); }
   .post-input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; outline: none; resize: none; font-family: inherit; cursor: pointer; }
+  .post-input::placeholder { color: var(--text-sub); }
   .post-tools { display: flex; justify-content: space-between; align-items: center; }
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
@@ -341,6 +363,7 @@
     border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
+  html.light .feed-card { box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
   .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .feed-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #333; }
   .feed-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
@@ -355,21 +378,21 @@
   .card-col {
     flex: 1; min-width: 40px; padding: 8px 22px 8px 8px;
     border: 1px dashed var(--glass-border);
-    border-radius: 8px; background: rgba(255,255,255,0.02);
+    border-radius: 8px; background: rgba(127,127,127,0.04);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
   }
-  .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+  .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(127,127,127,0.08); }
   .text-block {
     padding: 12px 22px 12px 12px;
     border: 1px dashed var(--glass-border);
-    border-radius: 12px; background: rgba(255,255,255,0.02);
+    border-radius: 12px; background: rgba(127,127,127,0.04);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
   }
-  .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+  .text-block:hover { border-color: var(--accent); background: rgba(127,127,127,0.08); }
 
   .divider-block {
     padding: 10px 0; position: relative; display: flex;
@@ -384,19 +407,20 @@
     box-shadow: 0 0 0 3px rgba(74,158,255,0.3); opacity: 1;
   }
 
+  /* ===== 图形 / 图片框 ===== */
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
     box-sizing: border-box; display: none; cursor: move;
     overflow: visible; pointer-events: auto; touch-action: none; user-select: none;
   }
   body.editing .shape-block, body.editing .image-frame-block { display: block; }
-  .shape-block { color: var(--accent); filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35)); }
+  .shape-block { color: var(--accent); filter: drop-shadow(0 6px 16px rgba(0,0,0,0.25)); }
   .shape-block.selected { outline: 2px solid var(--accent); outline-offset: 4px; }
   .shape-block svg { width: 100%; height: 100%; display: block; pointer-events: none; }
   .image-frame-block {
     overflow: hidden; background: #333;
     border: 2px solid var(--glass-border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
   .image-frame-block.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,158,255,0.3); }
   .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; pointer-events: none; }
@@ -433,12 +457,12 @@
     position: absolute; z-index: 998; min-width: 100px; min-height: 40px;
     padding: 14px; border-radius: 12px; border: 2px dashed var(--accent);
     background: rgba(20, 20, 25, 0.85);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
     cursor: move; outline: none; box-sizing: border-box; display: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: auto; touch-action: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); pointer-events: auto; touch-action: none;
   }
+  html.light .float-text-block { background: rgba(255, 255, 255, 0.92); }
   body.editing .float-text-block { display: block; }
   .float-text-block:focus { cursor: text; border: 2px solid var(--accent); }
   .float-text-block .drag-handle {
@@ -460,20 +484,20 @@
     background: rgba(0,0,0,0.5); color: #fff; cursor: pointer; font-size: 16px;
     align-items: center; justify-content: center; z-index: 10;
   }
-  .card-del:hover { background: #e5484d; border-color: #e5484d; }
+  html.light .card-del { background: rgba(255, 255, 255, 0.85); color: #333; }
+  .card-del:hover { background: #e5484d; color: #fff; border-color: #e5484d; }
   body.editing .feed-card .card-del { display: flex; }
   .add-card-btn {
     display: none; width: 100%; padding: 14px; border: 1px dashed var(--glass-border);
     border-radius: 16px; background: transparent; color: var(--text-sub); cursor: pointer;
     font-size: 13px; margin-bottom: 16px; transition: all 0.2s;
   }
-  .add-card-btn:hover { background: rgba(255,255,255,0.05); }
+  .add-card-btn:hover { background: rgba(127,127,127,0.08); }
   body.editing .add-card-btn { display: block; }
 
   .panel-nav {
     display: flex; justify-content: space-between; align-items: center;
-    margin-top: 16px; padding: 8px 0; gap: 16px;
-    position: relative; z-index: 10;
+    margin-top: 16px; padding: 8px 0; gap: 16px; position: relative; z-index: 10;
   }
   .panel-nav-btn {
     display: flex; align-items: center; justify-content: center;
@@ -488,6 +512,7 @@
   .panel-nav-btn:hover { background: var(--accent); color: var(--accent-text); border-color: var(--accent); transform: translateY(-2px); }
   .panel-nav-spacer { min-width: 48px; }
 
+  /* ===== 音乐播放器 ===== */
   .music-player {
     position: fixed;
     bottom: calc(24px + var(--safe-bottom));
@@ -503,15 +528,18 @@
     cursor: pointer; transition: all 0.3s;
     color: var(--text); font-size: 22px;
     touch-action: none; user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
+    -webkit-user-select: none; -webkit-touch-callout: none;
   }
-  html.light .music-player { background: rgba(255, 255, 255, 0.8); }
+  html.light .music-player {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
   .music-player.playing { animation: spin 4s linear infinite; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
+  /* ===== 编辑模式 ===== */
   body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
-  body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(255,255,255,0.03); }
+  body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(127,127,127,0.05); }
   body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.1); }
   body.editing .cover-wrap:hover::after,
   body.editing .avatar-wrap:hover::after,
@@ -526,15 +554,16 @@
   .block-actions {
     position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
     background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px); opacity: 0.85; transition: opacity 0.2s;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+    opacity: 0.85; transition: opacity 0.2s;
   }
+  html.light .block-actions { background: rgba(255, 255, 255, 0.75); }
   body.editing .block-actions { display: flex !important; }
   body:not(.editing) .block-actions { display: none !important; }
   .block-action-btn {
     width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
     border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s; padding: 0; line-height: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s; padding: 0; line-height: 1;
   }
   .block-action-btn:hover { transform: scale(1.1); }
   .block-action-btn.del { background: #e5484d; }
@@ -547,11 +576,11 @@
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
+  /* ===== 图片位置选择器 ===== */
   .img-pos-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.9);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
     z-index: 99999; display: none; flex-direction: column;
     align-items: center; justify-content: center;
     padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
@@ -560,10 +589,8 @@
   .img-pos-overlay.show { display: flex; }
   .img-pos-title { color: #fff; font-size: 15px; margin-bottom: 14px; font-family: monospace; letter-spacing: 0.1em; text-align: center; }
   .img-pos-preview {
-    width: min(92vw, 500px);
-    height: min(60vh, 500px);
-    border-radius: 14px;
-    background-color: #1a1a1a;
+    width: min(92vw, 500px); height: min(60vh, 500px);
+    border-radius: 14px; background-color: #1a1a1a;
     background-size: cover; background-repeat: no-repeat; background-position: 50% 50%;
     cursor: grab; touch-action: none;
     position: relative; overflow: hidden;
@@ -596,9 +623,7 @@
     padding: 6px 14px; border-radius: 16px;
     background: rgba(255,255,255,0.15); color: #fff;
     border: none; font-size: 11px; cursor: pointer;
-    font-family: monospace;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    font-family: monospace; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   }
 
   /* ===== 只读模式 ===== */
@@ -619,23 +644,16 @@
   body.readonly .music-panel-backdrop {
     display: none !important;
   }
-  body.readonly {
-    padding-top: calc(16px + var(--safe-top)) !important;
-  }
-  body.readonly .top-nav {
-    top: 0 !important;
-    position: sticky;
-  }
-  body.readonly [data-edit] {
-    outline: none !important;
-    cursor: default !important;
-  }
+  body.readonly { padding-top: calc(16px + var(--safe-top)) !important; }
+  body.readonly .top-nav { top: 0 !important; position: sticky; }
+  body.readonly [data-edit] { outline: none !important; cursor: default !important; }
   body.readonly .card-col,
   body.readonly .text-block {
     border-color: transparent !important;
     background: transparent !important;
   }
 
+  /* ===== 手机适配 ===== */
   @media (max-width: 640px) {
     body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(24px + var(--safe-bottom)); }
     .toolbar { height: calc(46px + var(--safe-top)); padding: 0 10px; padding-top: var(--safe-top); gap: 5px; }
@@ -683,6 +701,7 @@
       transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       display: flex !important; flex-direction: column; visibility: hidden; opacity: 0;
     }
+    html.light .style-panel { box-shadow: 0 -12px 40px rgba(0,0,0,0.15) !important; }
     .style-panel.show { transform: translateY(0); visibility: visible; opacity: 1; }
     .style-panel h4 { font-size: 13px !important; padding: 6px 0 !important; margin: 4px 0 !important; }
     .style-item { margin-bottom: 8px !important; gap: 10px !important; }
@@ -737,10 +756,7 @@
     .img-pos-preview { width: 94vw; height: 50vh; }
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
     body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
-  }
-</style>
-</head>
-<body>
+    <body>
 
 <div class="bg-layer">
   <img class="bg-img hidden" id="bgImg" alt="">
@@ -776,7 +792,7 @@
   <button class="tbtn edit-only" id="btnReset"><span class="ico">⟲</span><span class="label">重置</span></button>
   <span class="spacer"></span>
   <button class="tbtn edit-only bg-image-btn" id="btnBgImage">🖼️ <span class="label">背景</span></button>
-  <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
+  <button class="tbtn" id="btnTheme" title="切换白天/暗夜"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
 <div class="shape-picker" id="shapePicker">
@@ -822,7 +838,7 @@
     <div class="style-item"><span>颜色</span><input type="color" id="dividerColor" value="#888888"></div>
     <div class="style-item"><span>粗细</span><input type="range" id="dividerThickness" min="1" max="12" value="1"><span id="dividerThicknessVal">1px</span></div>
     <div class="style-item"><span>样式</span>
-      <select id="dividerStyle" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px;">
+      <select id="dividerStyle" class="font-select">
         <option value="solid">实线</option>
         <option value="dashed">虚线</option>
         <option value="dotted">点线</option>
@@ -836,7 +852,7 @@
   <div class="style-item"><span>字体</span><select id="fontFamilySelect" class="font-select"><option value="default">系统默认</option></select></div>
   <div class="style-item"><span>导入字体</span><input type="file" id="fontInput" accept=".ttf,.woff,.woff2" style="width:100px; font-size:10px;"></div>
   <div class="style-item"><span>出场动画</span><select id="textAnimation" class="font-select" style="width:100px;"><option value="none">无</option><option value="fadeIn">淡入</option><option value="slideUp">上滑</option><option value="zoomIn">缩放</option><option value="slideLeft">左滑</option></select></div>
-  <div class="style-item"><span>排列</span><select id="textDir" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px;"><option value="horizontal-tb">横排</option><option value="vertical-rl">竖排</option></select></div>
+  <div class="style-item"><span>排列</span><select id="textDir" class="font-select"><option value="horizontal-tb">横排</option><option value="vertical-rl">竖排</option></select></div>
   <div class="style-item"><span>对齐</span><div class="style-btn-group"><button class="style-btn" data-align="left">左</button><button class="style-btn" data-align="center">中</button><button class="style-btn" data-align="right">右</button></div></div>
   <div class="style-item"><span>样式</span><div class="style-btn-group"><button class="style-btn" id="btnBold">B</button><button class="style-btn" id="btnItalic">I</button><button class="style-btn" id="btnUnderline">U</button></div></div>
   <div class="style-item"><span>文字颜色</span><input type="color" id="textColor" value="#f0f0f0"></div>
@@ -1040,8 +1056,8 @@
     document.body.classList.add('readonly');
   }
 
-  var KEY_CONTENT = 'myPage.glass.v28';
-  var KEY_THEME   = 'myPage.theme.v1';
+  var KEY_CONTENT = 'myPage.glass.v29';
+  var KEY_THEME   = 'myPage.theme.v1';       // 用户手动选择的主题（'dark' 或 'light'）
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
   var KEY_BG_POS  = 'myPage.bgPos.v1';
@@ -1068,7 +1084,55 @@
     angle: 135, accent: '#4a9eff'
   };
 
-  // ===== 设置背景（用 <img> 元素） =====
+  // ================= 主题系统：自动跟随系统 + 手动切换记忆 =================
+  var systemPrefersDark = false;
+  try {
+    systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch(e){}
+
+  // 判断当前应使用的主题（'dark' 或 'light'）
+  function resolveTheme(){
+    var saved = null;
+    try { saved = localStorage.getItem(KEY_THEME); } catch(e){}
+    if(saved === 'dark' || saved === 'light') return saved;
+    // 没手动设置过 → 跟随系统
+    return systemPrefersDark ? 'dark' : 'light';
+  }
+
+  function applyThemeByString(theme){
+    var isDark = theme === 'dark';
+    document.documentElement.classList.toggle('light', !isDark);
+    var icon = document.getElementById('themeIcon');
+    if(icon) icon.textContent = isDark ? '☀' : '◐';
+  }
+
+  // 初始化应用主题
+  applyThemeByString(resolveTheme());
+
+  // 点击主题按钮：手动切换并记住
+  document.getElementById('btnTheme').addEventListener('click', function(){
+    var nowDark = !document.documentElement.classList.contains('light');
+    var nextTheme = nowDark ? 'light' : 'dark';
+    applyThemeByString(nextTheme);
+    try { localStorage.setItem(KEY_THEME, nextTheme); } catch(e){}
+    toast(nextTheme === 'dark' ? '已切换至暗夜' : '已切换至白天');
+  });
+
+  // 监听系统主题变化（仅在用户没手动设置过时跟随）
+  try {
+    var mql = window.matchMedia('(prefers-color-scheme: dark)');
+    var mqlHandler = function(e){
+      var saved = null;
+      try { saved = localStorage.getItem(KEY_THEME); } catch(err){}
+      if(saved === 'dark' || saved === 'light') return;   // 用户手动选过就不跟随
+      systemPrefersDark = e.matches;
+      applyThemeByString(e.matches ? 'dark' : 'light');
+    };
+    if(mql.addEventListener) mql.addEventListener('change', mqlHandler);
+    else if(mql.addListener) mql.addListener(mqlHandler);
+  } catch(e){}
+
+  // ===== 设置背景 =====
   function setBackgroundImage(dataUrl, pos){
     if(!bgImg) return;
     if(dataUrl){
@@ -1081,30 +1145,20 @@
     }
   }
 
+  // ================= 初始化加载 =================
   try {
     var saved = localStorage.getItem(KEY_CONTENT);
     if(saved) app.innerHTML = saved;
-    var savedTheme = localStorage.getItem(KEY_THEME) || 'dark';
     var savedBgImg = localStorage.getItem(KEY_BG_IMG) || 'none';
     var savedBgPos = localStorage.getItem(KEY_BG_POS) || '50% 50%';
     var savedStyle = localStorage.getItem(KEY_STYLE);
     if(savedStyle) styleSettings = JSON.parse(savedStyle);
-    applyTheme(savedTheme === 'dark');
     applyColor(styleSettings.accent);
     applySliders(styleSettings);
     if(savedBgImg && savedBgImg !== 'none'){
       setBackgroundImage(savedBgImg, savedBgPos);
     }
   } catch(e){}
-
-  function applyTheme(dark){
-    document.documentElement.classList.toggle('light', !dark);
-    document.getElementById('themeIcon').textContent = dark ? '☀' : '◐';
-    localStorage.setItem(KEY_THEME, dark ? 'dark' : 'light');
-  }
-  document.getElementById('btnTheme').addEventListener('click', function(){
-    applyTheme(!document.documentElement.classList.contains('light'));
-  });
 
   function applyColor(color){
     document.documentElement.style.setProperty('--accent', color);
@@ -1113,7 +1167,7 @@
     var r = parseInt(hex.substr(0,2), 16), g = parseInt(hex.substr(2,2), 16), b = parseInt(hex.substr(4,2), 16);
     var brightness = (r * 299 + g * 587 + b * 114) / 1000;
     document.documentElement.style.setProperty('--accent-text', brightness > 128 ? '#000000' : '#ffffff');
-    localStorage.setItem(KEY_COLOR, color);
+    try { localStorage.setItem(KEY_COLOR, color); } catch(e){}
   }
 
   function applySliders(settings){
@@ -1133,7 +1187,7 @@
     document.getElementById('gradAngle').value = settings.angle;
     document.getElementById('angleVal').textContent = settings.angle + '°';
     document.getElementById('accentColor').value = settings.accent;
-    localStorage.setItem(KEY_STYLE, JSON.stringify(settings));
+    try { localStorage.setItem(KEY_STYLE, JSON.stringify(settings)); } catch(e){}
   }
 
   document.getElementById('btnStylePanel').addEventListener('click', function(e){
@@ -1277,7 +1331,6 @@
   });
   imgPosCancel.addEventListener('click', closePosPicker);
   imgPosConfirm.addEventListener('click', function(){
-    if(!posState.target && !posState.isBg){ closePosPicker(); return; }
     if(!posState.image){ closePosPicker(); return; }
     if(posState.isBg){
       setBackgroundImage(posState.image, posState.posX + '% ' + posState.posY + '%');
@@ -1285,7 +1338,7 @@
         localStorage.setItem(KEY_BG_IMG, posState.image);
         localStorage.setItem(KEY_BG_POS, posState.posX + '% ' + posState.posY + '%');
       } catch(e){ toast('背景图太大，无法保存'); }
-    } else {
+    } else if(posState.target){
       var img = posState.target;
       img.src = posState.image;
       img.style.objectPosition = posState.posX + '% ' + posState.posY + '%';
@@ -1676,7 +1729,7 @@
     }
   });
 
-  // ================= resize 事件委托 =================
+  // ================= resize =================
   var resizingState = null;
   function onResizePointerDown(e){
     if(!editMode || isReadonly) return;
@@ -2188,3 +2241,6 @@
 </script>
 </body>
 </html>
+  }
+</style>
+</head>
