@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -41,7 +42,7 @@
     background-attachment: fixed;
     color: var(--text); min-height: 100vh;
     padding-top: calc(60px + var(--safe-top));
-    padding-bottom: calc(90px + var(--safe-bottom));
+    padding-bottom: calc(40px + var(--safe-bottom));
     padding-left: var(--safe-left);
     padding-right: var(--safe-right);
     transition: background-color 0.3s, color 0.3s;
@@ -103,7 +104,6 @@
   .style-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
   .font-select { width: 100%; padding: 4px; border-radius: 4px; background: #333; color: #fff; border: 1px solid #555; font-size: 11px; }
 
-  /* ===== 自定义音乐输入框面板 ===== */
   .music-panel {
     position: fixed;
     top: 50%; left: 50%;
@@ -117,60 +117,39 @@
     border: 1px solid var(--glass-border);
     box-shadow: 0 24px 80px rgba(0,0,0,0.7);
     color: #fff; font-size: 13px;
-    display: none;
-    flex-direction: column; gap: 14px;
-    opacity: 0;
-    transition: opacity 0.2s, transform 0.2s;
+    display: none; flex-direction: column; gap: 14px;
+    opacity: 0; transition: opacity 0.2s, transform 0.2s;
   }
   html.light .music-panel { background: rgba(255, 255, 255, 0.98); color: #111; }
-  .music-panel.show {
-    display: flex;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+  .music-panel.show { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .music-panel-title {
     font-size: 15px; color: var(--accent); text-align: center;
     font-family: monospace; letter-spacing: 0.1em;
     padding-bottom: 10px; border-bottom: 1px solid var(--glass-border);
   }
-  .music-panel-tip {
-    font-size: 11px; color: var(--text-sub); line-height: 1.6;
-    font-family: monospace;
-  }
+  .music-panel-tip { font-size: 11px; color: var(--text-sub); line-height: 1.6; font-family: monospace; }
   .music-panel-input {
-    width: 100%; padding: 12px 14px;
-    border-radius: 10px;
+    width: 100%; padding: 12px 14px; border-radius: 10px;
     border: 1px solid var(--glass-border);
     background: rgba(255,255,255,0.05);
-    color: var(--text);
-    font-size: 13px;
-    font-family: monospace;
-    outline: none;
-    transition: border-color 0.2s;
+    color: var(--text); font-size: 13px; font-family: monospace;
+    outline: none; transition: border-color 0.2s;
   }
   html.light .music-panel-input { background: rgba(0,0,0,0.04); }
   .music-panel-input:focus { border-color: var(--accent); }
-  .music-panel-btns {
-    display: flex; gap: 8px;
-  }
+  .music-panel-btns { display: flex; gap: 8px; }
   .music-panel-btn {
-    flex: 1;
-    padding: 10px;
-    border-radius: 12px;
+    flex: 1; padding: 10px; border-radius: 12px;
     border: 1px solid var(--glass-border);
-    background: transparent;
-    color: var(--text);
-    font-size: 13px;
-    font-family: monospace;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: transparent; color: var(--text);
+    font-size: 13px; font-family: monospace;
+    cursor: pointer; transition: all 0.2s;
   }
   .music-panel-btn:hover { background: rgba(255,255,255,0.08); }
   .music-panel-btn.confirm { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
   .music-panel-btn.danger { color: #e5484d; border-color: rgba(229,72,77,0.4); }
   .music-panel-btn.danger:hover { background: rgba(229,72,77,0.15); }
 
-  /* 背景遮罩 */
   .music-panel-backdrop {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.5);
@@ -419,20 +398,6 @@
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
 
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 998;
-    height: calc(70px + var(--safe-bottom));
-    padding-bottom: var(--safe-bottom);
-    padding-left: var(--safe-left); padding-right: var(--safe-right);
-    display: flex; justify-content: space-around; align-items: center;
-    background: rgba(20, 20, 25, 0.8); backdrop-filter: var(--glass-blur);
-    border-top: 1px solid var(--glass-border);
-  }
-  html.light .bottom-nav { background: rgba(255, 255, 255, 0.8); }
-  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--text-sub); cursor: pointer; }
-  .bottom-nav-item.active { color: var(--accent); }
-  .bottom-nav-item .icon { font-size: 20px; }
-
   .card-del {
     display: none; position: absolute; top: 12px; right: 12px;
     width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--glass-border);
@@ -466,7 +431,7 @@
 
   .music-player {
     position: fixed;
-    bottom: calc(85px + var(--safe-bottom));
+    bottom: calc(24px + var(--safe-bottom));
     right: calc(20px + var(--safe-right));
     z-index: 1000;
     width: 52px; height: 52px; border-radius: 50%;
@@ -494,7 +459,7 @@
     content: "点击换图"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; z-index: 5; pointer-events: none;
   }
-  .toast { position: fixed; left: 50%; bottom: calc(100px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
+  .toast { position: fixed; left: 50%; bottom: calc(60px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .block-actions {
@@ -570,8 +535,43 @@
     font-family: monospace; backdrop-filter: blur(8px);
   }
 
+  /* ===== 只读模式：隐藏所有编辑相关元素 ===== */
+  body.readonly .toolbar,
+  body.readonly #btnEdit,
+  body.readonly .edit-only,
+  body.readonly .block-actions,
+  body.readonly .card-del,
+  body.readonly .add-card-btn,
+  body.readonly .resize-handle,
+  body.readonly .element-del,
+  body.readonly .float-del,
+  body.readonly .style-panel,
+  body.readonly .shape-picker,
+  body.readonly .collection-menu,
+  body.readonly .img-pos-overlay,
+  body.readonly .music-panel,
+  body.readonly .music-panel-backdrop {
+    display: none !important;
+  }
+  body.readonly {
+    padding-top: calc(16px + var(--safe-top)) !important;
+  }
+  body.readonly .top-nav {
+    top: 0 !important;
+    position: sticky;
+  }
+  body.readonly [data-edit] {
+    outline: none !important;
+    cursor: default !important;
+  }
+  body.readonly .card-col,
+  body.readonly .text-block {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
+
   @media (max-width: 640px) {
-    body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); }
+    body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(24px + var(--safe-bottom)); }
     .toolbar { height: calc(46px + var(--safe-top)); padding: 0 10px; padding-top: var(--safe-top); gap: 5px; }
     .tbtn { padding: 5px 10px; font-size: 11px; border-radius: 16px; }
     .tbtn .label { display: none; }
@@ -607,10 +607,7 @@
     .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
     .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
-    .bottom-nav { height: calc(58px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
-    .bottom-nav-item { font-size: 9px; }
-    .bottom-nav-item .icon { font-size: 17px; }
-    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(68px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
+    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(16px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
     .style-panel { width: calc(100vw - 24px); max-width: 340px; right: calc(12px + var(--safe-right)); padding: 12px; font-size: 11px; gap: 8px; }
     .style-panel h4 { font-size: 12px; }
     .style-btn { font-size: 10px; padding: 3px 6px; }
@@ -626,11 +623,12 @@
     .card-del { width: 26px; height: 26px; font-size: 14px; }
     .img-pos-preview { width: 92vw; height: 55vh; }
     .music-panel { width: min(94vw, 360px); padding: 18px 16px; }
+    body.readonly { padding-top: calc(8px + var(--safe-top)) !important; }
   }
 
   @media (max-width: 480px) {
     html, body { max-width: 100vw; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-    body { padding-top: calc(50px + var(--safe-top)); padding-bottom: calc(76px + var(--safe-bottom)); }
+    body { padding-top: calc(50px + var(--safe-top)); padding-bottom: calc(20px + var(--safe-bottom)); }
     .toolbar { height: calc(44px + var(--safe-top)); padding: 0 8px; padding-top: var(--safe-top); gap: 4px; }
     .tbtn { padding: 4px 8px; font-size: 10px; border-radius: 14px; }
     .top-nav { top: calc(44px + var(--safe-top)); padding: 6px 8px; gap: 3px; }
@@ -652,26 +650,12 @@
     .feed-text { font-size: 13px; }
     .card-col, .text-block { padding: 6px 18px 6px 6px; font-size: 12px; }
     .panel-nav-btn { min-width: 40px; height: 40px; font-size: 16px; border-radius: 20px; }
-    .bottom-nav { height: calc(54px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
-    .bottom-nav-item .icon { font-size: 15px; }
-    .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(62px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
+    .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(14px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
     .style-panel { width: calc(100vw - 20px); right: calc(10px + var(--safe-right)); padding: 10px; max-height: calc(100dvh - 100px); }
     .img-pos-preview { width: 94vw; height: 50vh; }
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
+    body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
   }
-/* ===== 隐藏底部导航栏 ===== */
-.bottom-nav {
-  display: none !important;
-}
-body {
-  padding-bottom: calc(60px + var(--safe-bottom)) !important;
-}
-.music-player {
-  bottom: calc(20px + var(--safe-bottom)) !important;
-}
-.toast {
-  bottom: calc(40px + var(--safe-bottom)) !important;
-}
 </style>
 </head>
 <body>
@@ -939,13 +923,6 @@ body {
 
 </div>
 
-<div class="bottom-nav">
-  <div class="bottom-nav-item active"><span class="icon">⊞</span><span>Desk</span></div>
-  <div class="bottom-nav-item"><span class="icon">👤</span><span>Space</span></div>
-  <div class="bottom-nav-item"><span class="icon">👥</span><span>Friends</span></div>
-  <div class="bottom-nav-item"><span class="icon">⚙️</span><span>设置</span></div>
-</div>
-
 <div class="img-pos-overlay" id="imgPosOverlay">
   <div class="img-pos-title">选择展示位置</div>
   <div class="img-pos-preview" id="imgPosPreview">
@@ -967,7 +944,18 @@ body {
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v25';
+
+  // ===== 只读模式检测 =====
+  var isReadonly = false;
+  try {
+    var _params = new URLSearchParams(window.location.search);
+    if(_params.has('view') || _params.has('readonly')) isReadonly = true;
+  } catch(e){}
+  if(isReadonly){
+    document.body.classList.add('readonly');
+  }
+
+  var KEY_CONTENT = 'myPage.glass.v26';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -1010,6 +998,16 @@ body {
       document.body.style.backgroundPosition = savedBgPos;
     }
   } catch(e){}
+
+  // 只读模式下，把所有可编辑元素禁用
+  if(isReadonly){
+    setTimeout(function(){
+      app.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+      document.querySelectorAll('.divider-line, .shape-block, .image-frame-block, .float-text-block').forEach(function(el){
+        el.style.pointerEvents = 'none';
+      });
+    }, 100);
+  }
 
   function applyTheme(dark){
     document.documentElement.classList.toggle('light', !dark);
@@ -1068,7 +1066,7 @@ body {
     return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
   }
 
-  // ================= 音乐播放器（自定义面板） =================
+  // ================= 音乐播放器 =================
   var bgMusic = document.getElementById('bgMusic');
   var musicPlayer = document.getElementById('musicPlayer');
   var musicIcon = document.getElementById('musicIcon');
@@ -1086,13 +1084,13 @@ body {
 
   function playMusic(){
     if(!bgMusic.src || bgMusic.src === window.location.href){
-      toast('请长按音乐按钮设置音乐');
+      if(!isReadonly) toast('请长按音乐按钮设置音乐');
       return;
     }
     bgMusic.play().then(function(){
       musicPlayer.classList.add('playing');
       musicIcon.textContent = '❚❚';
-    }).catch(function(){ toast('播放失败，链接可能无效'); });
+    }).catch(function(){ if(!isReadonly) toast('播放失败，链接可能无效'); });
   }
   function pauseMusic(){
     bgMusic.pause();
@@ -1101,6 +1099,7 @@ body {
   }
 
   function openMusicPanel(){
+    if(isReadonly) return;   // 只读模式下不弹
     musicPanelBackdrop.classList.add('show');
     musicPanel.classList.add('show');
     try { musicUrlInput.value = localStorage.getItem(KEY_MUSIC) || ''; } catch(e){ musicUrlInput.value = ''; }
@@ -1146,7 +1145,6 @@ body {
     }
   });
 
-  // 长按检测
   var musicPressTimer = null;
   var musicLongPressed = false;
   var MUSIC_LONG_PRESS_MS = 600;
@@ -1159,9 +1157,7 @@ body {
       openMusicPanel();
     }, MUSIC_LONG_PRESS_MS);
   }
-  function cancelMusicPress(){
-    clearTimeout(musicPressTimer);
-  }
+  function cancelMusicPress(){ clearTimeout(musicPressTimer); }
   function onMusicRelease(e){
     cancelMusicPress();
     if(!musicLongPressed){
@@ -1176,7 +1172,6 @@ body {
   musicPlayer.addEventListener('touchstart', function(e){ startMusicPress(); }, {passive: true});
   musicPlayer.addEventListener('touchend', onMusicRelease);
   musicPlayer.addEventListener('touchcancel', cancelMusicPress);
-  // 阻止右键菜单干扰
   musicPlayer.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 
   // ================= 图片位置选择器 =================
@@ -1288,6 +1283,7 @@ body {
   }
 
   document.getElementById('btnBgImage').addEventListener('click', function(){
+    if(isReadonly) return;
     bgInput.value = ''; bgInput.click();
   });
   bgInput.addEventListener('change', function(){
@@ -1303,7 +1299,7 @@ body {
   });
 
   app.addEventListener('click', function(e){
-    if(!editMode) return;
+    if(!editMode || isReadonly) return;
     var img = e.target.closest('img[data-edit-img]');
     if(img){
       e.preventDefault(); e.stopPropagation();
@@ -1580,7 +1576,7 @@ body {
   });
 
   document.addEventListener('focusin', function(e){
-    if(!editMode) return;
+    if(!editMode || isReadonly) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
     if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
       activeTextEl = el;
@@ -1594,7 +1590,7 @@ body {
   });
 
   document.addEventListener('click', function(e){
-    if(!editMode) return;
+    if(!editMode || isReadonly) return;
     var line = e.target.closest('.divider-line');
     if(line){
       selectDivider(line);
@@ -1613,7 +1609,7 @@ body {
   // ================= resize 事件委托 =================
   var resizingState = null;
   function onResizePointerDown(e){
-    if(!editMode) return;
+    if(!editMode || isReadonly) return;
     var handle = e.target.closest && e.target.closest('.resize-handle');
     if(!handle) return;
     var host = handle.parentElement;
@@ -1665,6 +1661,7 @@ body {
 
   // ================= 增删行列 =================
   window.addRowHere = function(btn){
+    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
@@ -1674,6 +1671,7 @@ body {
     scheduleSave(); toast('已添加行');
   };
   window.addColHere = function(btn){
+    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var targetBlock = wrapper.querySelector('.feed-text, .card-col, .text-block');
     var row = targetBlock.closest('.card-row');
@@ -1686,6 +1684,7 @@ body {
     scheduleSave(); toast('已添加列');
   };
   window.addTextBlockBelow = function(btn){
+    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
@@ -1696,6 +1695,7 @@ body {
   };
 
   window.addDivider = function(btn){
+    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div');
     nw.className = 'block-wrapper';
@@ -1712,6 +1712,7 @@ body {
   };
 
   window.deleteBlock = function(btn){
+    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper'); var row = wrapper.closest('.card-row');
     if(row){ wrapper.remove(); if(row.querySelectorAll('.block-wrapper').length === 0) row.remove(); }
     else wrapper.remove();
@@ -1725,7 +1726,7 @@ body {
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
-      if(!editMode) return;
+      if(!editMode || isReadonly) return;
       if(e.target.classList.contains('resize-handle')) return;
       if(e.target.classList.contains('element-del')) return;
       if(e.target.classList.contains('float-del')) return;
@@ -1776,6 +1777,7 @@ body {
   }
 
   function createShape(type){
+    if(isReadonly) return;
     var shape = document.createElement('div');
     shape.className = 'shape-block';
     shape.dataset.shapeType = type;
@@ -1791,6 +1793,7 @@ body {
   }
 
   function createImageFrame(shapeType){
+    if(isReadonly) return;
     var frame = document.createElement('div');
     frame.className = 'image-frame-block';
     frame.style.left = '40px'; frame.style.top = (window.scrollY + 300) + 'px';
@@ -1810,11 +1813,13 @@ body {
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
+    if(isReadonly) return;
     e.stopPropagation();
     document.getElementById('framePicker').classList.remove('show');
     document.getElementById('shapePicker').classList.toggle('show');
   });
   document.getElementById('btnAddImageFrame').addEventListener('click', function(e){
+    if(isReadonly) return;
     e.stopPropagation();
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.toggle('show');
@@ -1833,6 +1838,7 @@ body {
   });
 
   document.getElementById('btnAddFloat').addEventListener('click', function(){
+    if(isReadonly) return;
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
     floatBlock.style.left = '40px';
@@ -1852,6 +1858,7 @@ body {
   });
 
   document.getElementById('btnAddPanel').addEventListener('click', function(){
+    if(isReadonly) return;
     var name = prompt('请输入新页面的名称（将保存在「合集」中）：', '新页面');
     if(!name) return;
     name = name.trim(); if(!name) return;
@@ -1939,6 +1946,7 @@ body {
 
   navCollection.addEventListener('click', function(e){
     e.stopPropagation();
+    if(isReadonly) { /* 只读模式也允许打开合集菜单浏览 */ }
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.remove('show');
     document.getElementById('stylePanel').classList.remove('show');
@@ -1951,6 +1959,7 @@ body {
   });
 
   function setEdit(on){
+    if(isReadonly) return;
     editMode = on;
     document.body.classList.toggle('editing', on);
     if(!on){
@@ -1984,6 +1993,7 @@ body {
   }
   var saveTimer;
   function scheduleSave(){
+    if(isReadonly) return;   // 只读模式不保存
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
       try { localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) { toast('存储空间不足'); }
@@ -2007,7 +2017,7 @@ body {
     }
     document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
     panel.style.display = 'block';
-    if(editMode) toast('已跳转');
+    if(editMode && !isReadonly) toast('已跳转');
   };
   window.switchTab = function(targetPanelId){
     var currentVisible = document.querySelector('.panel[style*="display: block"]');
@@ -2043,11 +2053,13 @@ body {
   });
 
   document.getElementById('postBoxTrigger').addEventListener('click', function(e){
-    if(editMode && e.target.closest('[data-edit]')) return;
-    window.switchTab('panel-1'); toast('已跳转到个人信息页');
+    if(editMode && !isReadonly && e.target.closest('[data-edit]')) return;
+    window.switchTab('panel-1');
+    if(!isReadonly) toast('已跳转到个人信息页');
   });
 
   window.addCard = function(panelId){
+    if(isReadonly) return;
     var panel = document.getElementById(panelId); if(!panel) return;
     var card = document.createElement('div'); card.className = 'feed-card glass-card';
     card.innerHTML = '<button class="card-del" contenteditable="false" title="删除这张卡片">×</button>' +
@@ -2062,6 +2074,7 @@ body {
     scheduleSave(); toast('已添加新卡片');
   };
   window.addTextBlock = function(panelId){
+    if(isReadonly) return;
     var panel = document.getElementById(panelId); if(!panel) return;
     var wrapper = document.createElement('div'); wrapper.className = 'block-wrapper';
     wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div><div class="resize-handle"></div>' +
@@ -2073,11 +2086,12 @@ body {
 
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
-    if(!del || !editMode) return; e.preventDefault();
+    if(!del || !editMode || isReadonly) return; e.preventDefault();
     if(confirm('确定删除这张卡片吗？')){ del.closest('.feed-card').remove(); scheduleSave(); toast('卡片已删除'); }
   });
 
   document.getElementById('btnExport').addEventListener('click', function(){
+    if(isReadonly) return;
     var clone = document.documentElement.cloneNode(true);
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
@@ -2089,6 +2103,7 @@ body {
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
   });
   document.getElementById('btnReset').addEventListener('click', function(){
+    if(isReadonly) return;
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); refreshLinkTargets(); toast('已重置');
   });
@@ -2113,10 +2128,18 @@ body {
     }
   });
 
-  setEdit(false);
-  bindAllResizeEvents();
-  refreshCollectionMenu();
-  refreshLinkTargets();
+  if(!isReadonly){
+    setEdit(false);
+    bindAllResizeEvents();
+    refreshCollectionMenu();
+    refreshLinkTargets();
+  } else {
+    // 只读模式初始化：隐藏所有编辑相关元素，恢复分隔线样式
+    document.querySelectorAll('.divider-line').forEach(function(line){
+      if(line.dataset.color) applyDividerLineStyle(line);
+    });
+    refreshCollectionMenu();
+  }
 })();
 </script>
 </body>
