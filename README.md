@@ -5,21 +5,14 @@
 <title>个人主页</title>
 <style>
   :root{
-    /* 玻璃质感核心 */
     --glass-blur: blur(24px) saturate(180%);
     --glass-border: rgba(255, 255, 255, 0.12);
-    
-    /* 背景与文字 */
     --bg-color: #0d0d10;
     --bg-image: none;
     --text: #f0f0f0;
     --text-sub: #999;
-    
-    /* 全局主色调 */
     --accent: #4a9eff;
     --accent-text: #ffffff;
-    
-    /* 卡片属性（通过滑块控制） */
     --card-bg-color: rgba(25, 25, 30, 0.65);
     --card-opacity: 1;
     --card-gradient: linear-gradient(135deg, #1c1c22 0%, #0d0d10 100%);
@@ -70,11 +63,11 @@
   .color-picker-wrap input { position: absolute; width: 50px; height: 50px; top: -10px; left: -10px; opacity: 0; cursor: pointer; }
   .bg-image-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); font-size: 12px; }
 
-  /* 侧边样式面板（用于滑块调节） */
+  /* 侧边样式面板 */
   .style-panel {
     position: fixed; top: 60px; right: 16px; z-index: 1000;
     width: 260px; padding: 16px; border-radius: 16px;
-    background: rgba(20, 20, 25, 0.9); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: none; flex-direction: column; gap: 12px;
     color: #fff; font-size: 12px;
@@ -110,13 +103,12 @@
   .glass-card {
     background-color: var(--card-bg-color);
     background-image: var(--card-gradient);
-    background-size: cover;
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 24px; overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
   }
 
-  /* 主页顶部卡片（封面 + 头像 + 资料） */
+  /* 主页顶部卡片 */
   .main-card {
     background-color: var(--card-bg-color);
     background-image: var(--card-gradient);
@@ -129,21 +121,21 @@
   .cover-wrap { width: 100%; height: 220px; background: #1a1a1a; position: relative; overflow: hidden; }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
   
-  /* 头像位置（按照第5张图，左下角下沉） */
+  /* 头像（已移至名字上方） */
   .avatar-wrap { 
-    width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--bg-color); 
-    position: absolute; bottom: -40px; left: 24px; background: var(--glass-bg); 
-    overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); z-index: 2;
+    width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--glass-border); 
+    margin: 0 auto 16px auto; background: var(--glass-bg); 
+    overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); position: relative; z-index: 2;
   }
   .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
   /* 个人信息区 */
-  .profile-info { padding: 48px 24px 0; }
-  .name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .profile-info { padding: 20px 24px 0; text-align: center; }
+  .name-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
   .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; }
   .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; margin-bottom: 16px; }
   
-  .stats { display: flex; gap: 20px; font-size: 14px; margin-bottom: 24px; }
+  .stats { display: flex; justify-content: center; gap: 20px; font-size: 14px; margin-bottom: 24px; }
   .stats span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
@@ -162,6 +154,7 @@
   .post-tools { display: flex; justify-content: space-between; align-items: center; }
   .tool-icons { display: flex; gap: 12px; color: var(--text-sub); font-size: 18px; cursor: pointer; }
   .publish-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .publish-btn span[data-edit] { outline-offset: 2px; } /* 让发布二字可编辑 */
 
   /* 动态卡片 */
   .feed-card { 
@@ -179,7 +172,7 @@
   .feed-text { font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
   .feed-footer { display: flex; justify-content: flex-end; font-size: 13px; color: var(--text-sub); gap: 16px; }
 
-  /* 底部导航（仿截图） */
+  /* 底部导航 */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 998; height: 70px;
     display: flex; justify-content: space-around; align-items: center;
@@ -226,10 +219,17 @@
   /* ============ 编辑状态 ============ */
   body.editing [data-edit] { outline: 1px dashed var(--accent); outline-offset: 4px; border-radius: 4px; cursor: text; }
   body.editing [data-edit]:focus { background: rgba(255,255,255,0.05); outline: 1px solid var(--accent); }
-  body.editing .cover-wrap:hover::after, body.editing .avatar-wrap:hover::after, body.editing .grid-item:hover::after, body.editing .feed-avatar:hover::after {
+  
+  /* 修复换图Bug：为hover伪元素添加pointer-events: none; 防止遮挡点击 */
+  body.editing .cover-wrap:hover::after, 
+  body.editing .avatar-wrap:hover::after, 
+  body.editing .grid-item:hover::after, 
+  body.editing .feed-avatar:hover::after {
     content: "点击换图"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; z-index: 5;
+    pointer-events: none; /* 关键修复 */
   }
+  
   .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -253,7 +253,7 @@
   <button class="tbtn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 样式面板（滑块控制） -->
+<!-- 样式面板 -->
 <div class="style-panel" id="stylePanel">
   <h4>卡片样式调节</h4>
   <div class="style-item">
@@ -294,17 +294,15 @@
 
   <!-- ===== 面板 0: WELCOME (主页) ===== -->
   <div id="panel-0" class="panel active">
-    <!-- 个人卡片 -->
     <div class="main-card">
       <div class="cover-wrap">
-        <!-- 初始占位图，请在编辑模式下点击替换为你的封面图 -->
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='8' fill='%23444' text-anchor='middle' font-family='monospace'%3E点击更换封面图%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
-      <!-- 头像（位置按第5张图） -->
-      <div class="avatar-wrap">
-        <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23222'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
-      </div>
+      <!-- 头像已移至名字上方 -->
       <div class="profile-info">
+        <div class="avatar-wrap">
+          <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23222'/%3E%3Ctext x='50' y='69' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
+        </div>
         <div class="name-row">
           <div class="name" data-edit>水水</div>
         </div>
@@ -315,31 +313,28 @@
         </div>
       </div>
       
-      <!-- 三图网格（点击可替换图片） -->
       <div class="image-grid">
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🏞️%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E📸%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🌌%3C/text%3E%3C/svg%3E"></div>
       </div>
 
-      <!-- 引言块 -->
       <div class="quote-block">
         <p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p>
       </div>
 
-      <!-- 发帖框 -->
+      <!-- 发帖框，发布二字支持编辑 -->
       <div class="post-box">
         <input class="post-input" placeholder="说点什么..." data-edit>
         <div class="post-tools">
           <div class="tool-icons">
             <span>🖼️</span><span>👥</span><span>📍</span>
           </div>
-          <button class="publish-btn"><span>发布</span> <span>→</span></button>
+          <button class="publish-btn"><span data-edit>发布</span> <span>→</span></button>
         </div>
       </div>
     </div>
 
-    <!-- 动态卡片流 -->
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
       <div class="feed-header">
@@ -356,11 +351,10 @@
       </div>
     </div>
 
-    <!-- 添加卡片按钮 -->
     <button class="add-card-btn" onclick="addCard('panel-0')">＋ 添加一张动态卡片</button>
   </div>
 
-  <!-- ===== 面板 1: PERSONAL INFO ===== -->
+  <!-- ===== 面板 1 ===== -->
   <div id="panel-1" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -369,7 +363,7 @@
     <button class="add-card-btn" onclick="addCard('panel-1')">＋ 添加一张卡片</button>
   </div>
 
-  <!-- ===== 面板 2: MY STYLE ===== -->
+  <!-- ===== 面板 2 ===== -->
   <div id="panel-2" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -378,7 +372,7 @@
     <button class="add-card-btn" onclick="addCard('panel-2')">＋ 添加一张卡片</button>
   </div>
 
-  <!-- ===== 面板 3: CATEGORIES ===== -->
+  <!-- ===== 面板 3 ===== -->
   <div id="panel-3" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
@@ -389,7 +383,7 @@
 
 </div>
 
-<!-- 底部导航（仿截图） -->
+<!-- 底部导航 -->
 <div class="bottom-nav">
   <div class="bottom-nav-item active"><span class="icon">⊞</span><span>Desk</span></div>
   <div class="bottom-nav-item"><span class="icon">👤</span><span>Space</span></div>
@@ -404,7 +398,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v3';
+  var KEY_CONTENT = 'myPage.glass.v4';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -419,7 +413,6 @@
   var activeCard = null;
   var DEFAULT_HTML = app.innerHTML;
 
-  // 样式滑块默认值
   var styleSettings = {
     opacity: 65,
     gradColor1: '#1c1c22',
@@ -447,7 +440,6 @@
     }
   } catch(e){}
 
-  // 应用主题
   function applyTheme(dark){
     document.documentElement.classList.toggle('light', !dark);
     document.getElementById('themeIcon').textContent = dark ? '☀' : '◐';
@@ -457,7 +449,6 @@
     applyTheme(!document.documentElement.classList.contains('light'));
   });
 
-  // 应用全局颜色
   function applyColor(color){
     document.documentElement.style.setProperty('--accent', color);
     var hex = color.replace('#', '');
@@ -468,10 +459,8 @@
     localStorage.setItem(KEY_COLOR, color);
   }
 
-  // 应用滑块设置（透明度、渐变、角度）
   function applySliders(settings) {
     var opacity = settings.opacity / 100;
-    // 将十六进制颜色转换为带透明度的 rgba
     function hexToRgba(hex, alpha) {
       var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
@@ -484,7 +473,6 @@
     document.documentElement.style.setProperty('--card-bg-color', bgColor);
     document.documentElement.style.setProperty('--card-gradient', `linear-gradient(${settings.angle}deg, ${gradColor1} 0%, ${gradColor2} 100%)`);
     
-    // 同步 UI 控件
     document.getElementById('opacitySlider').value = settings.opacity;
     document.getElementById('opacityVal').textContent = settings.opacity + '%';
     document.getElementById('gradColor1').value = settings.gradColor1;
@@ -496,7 +484,6 @@
     localStorage.setItem(KEY_STYLE, JSON.stringify(settings));
   }
 
-  // 绑定滑块与面板事件
   document.getElementById('btnStylePanel').addEventListener('click', function(){
     document.getElementById('stylePanel').classList.toggle('show');
   });
@@ -523,7 +510,6 @@
     applySliders(styleSettings);
   });
 
-  // 背景图更换
   document.getElementById('btnBgImage').addEventListener('click', function(){
     bgInput.value = ''; bgInput.click();
   });
@@ -539,7 +525,6 @@
     reader.readAsDataURL(file);
   });
 
-  // 提示气泡
   var toastTimer;
   function toast(msg){
     toastEl.textContent = msg;
@@ -548,7 +533,6 @@
     toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
   }
 
-  // 序列化与保存
   function serialize(){
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
@@ -562,7 +546,6 @@
     }, 400);
   }
 
-  // 编辑模式
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
@@ -575,29 +558,35 @@
     btn.querySelector('.ico').textContent = on ? '✓' : '✎';
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
     
-    if(on) { toast('编辑已开启，点击图片可更换'); }
+    if(on) { toast('编辑已开启，点击图片可直接更换'); }
     else { scheduleSave(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
   app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
 
-  // 点击卡片高亮（用于单独选中）
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var card = e.target.closest('.main-card, .feed-card');
-    if(card && !e.target.closest('button')){
+    if(card && !e.target.closest('button') && !e.target.closest('img[data-edit-img]')){
       document.querySelectorAll('.main-card, .feed-card').forEach(function(c){ c.style.outline = 'none'; });
       card.style.outline = '2px solid var(--accent)';
       activeCard = card;
     }
   });
 
-  // 图片替换
+  // 修复点击换图Bug：添加 stopPropagation，并处理可能的事件冲突
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var img = e.target.closest('img[data-edit-img]');
-    if(img){ e.preventDefault(); currentImg = img; fileInput.value = ''; fileInput.click(); }
+    if(img){ 
+      e.preventDefault(); 
+      e.stopPropagation(); 
+      currentImg = img; 
+      fileInput.value = ''; 
+      fileInput.click(); 
+    }
   });
+  
   fileInput.addEventListener('change', function(){
     var file = fileInput.files && fileInput.files[0];
     if(!file || !currentImg) return;
@@ -618,20 +607,27 @@
     reader.readAsDataURL(file);
   });
 
-  // 顶部导航跳转
+  // 修复：编辑模式下也能跳转导航栏
   document.querySelectorAll('.nav-link').forEach(function(link){
-    link.addEventListener('click', function(){
-      if(editMode) return;
+    link.addEventListener('click', function(e){
+      // 如果是编辑模式，点击导航栏可能想修改文字，所以不阻止默认行为
+      // 但是用户要求"跳转编辑"，所以这里直接执行跳转逻辑
       document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
       this.classList.add('active');
       var target = this.getAttribute('data-target');
       document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
       var panel = document.getElementById(target);
       if(panel) panel.style.display = 'block';
+      
+      if(!editMode) {
+        // 非编辑模式正常跳转
+      } else {
+        // 编辑模式下提示跳转成功
+        toast('已跳转至 ' + this.textContent);
+      }
     });
   });
 
-  // 添加卡片
   window.addCard = function(panelId){
     var panel = document.getElementById(panelId);
     if(!panel) return;
@@ -662,7 +658,6 @@
     toast('已添加新卡片');
   };
 
-  // 删除卡片
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
     if(!del || !editMode) return;
@@ -674,7 +669,6 @@
     }
   });
 
-  // 音乐播放控制
   var bgMusic = document.getElementById('bgMusic');
   var musicPlayer = document.getElementById('musicPlayer');
   var musicIcon = document.getElementById('musicIcon');
@@ -697,7 +691,6 @@
     }
   });
 
-  // 导出与重置
   document.getElementById('btnExport').addEventListener('click', function(){
     var clone = document.documentElement.cloneNode(true);
     clone.querySelector('body').classList.remove('editing');
@@ -706,6 +699,7 @@
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
   });
+  
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); toast('已重置');
