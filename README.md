@@ -1491,7 +1491,7 @@
   });
   bgInput.addEventListener('change', function(){
     var file = bgInput.files && bgInput.files[0]; if(!file) return;
-    compressImage(file, 1600, 0.82).then(function(dataUrl){
+    compressImage(file, 800, 0.6).then(function(dataUrl){
       var savedPos = '50% 50%';
       try { savedPos = localStorage.getItem(KEY_BG_POS) || '50% 50%'; } catch(e){}
       var parts = savedPos.split(' ');
@@ -1515,7 +1515,7 @@
     var file = fileInput.files && fileInput.files[0];
     if(!file || !currentImg) return;
     var targetImg = currentImg;
-    compressImage(file, 1200, 0.85).then(function(dataUrl){
+    compressImage(file, 700, 0.6).then(function(dataUrl){
       var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
       var parts = cur.split(' ');
       var initX = parseFloat(parts[0]) || 50;
@@ -1528,7 +1528,7 @@
     var file = elementImageInput.files && elementImageInput.files[0];
     if(!file || !currentElementImg) return;
     var targetImg = currentElementImg;
-    compressImage(file, 1000, 0.85).then(function(dataUrl){
+    compressImage(file, 700, 0.6).then(function(dataUrl){
       var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
       var parts = cur.split(' ');
       var initX = parseFloat(parts[0]) || 50;
@@ -2239,7 +2239,7 @@
   function scheduleSave(){
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
-      try { localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) { toast('存储空间不足'); }
+      try {   localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) {   alert('⚠️ 保存失败：浏览器存储空间已满\n\n' +         '原因：上传的图片太多，超过了 5MB 上限。\n\n' +         '解决方案：\n' +         '1. 点工具栏的「重置」清空所有内容，重新编辑\n' +         '2. 每次编辑少传几张图片\n' +         '3. 用工具栏的「导出」把当前页面下载成文件备份'); }
     }, 400);
   }
 
