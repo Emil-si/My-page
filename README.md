@@ -2413,7 +2413,196 @@ html.light .img-picker {
       fileInput.value = ''; fileInput.click();
     }
   });
-  function setEdit(on){
+ // ==================== 图片库完整模块（自包含） ====================
+  (function initImgPicker(){
+    // ---- 1. 动态注入 CSS ----
+    var css = ''
+      + '.img-picker{position:fixed;bottom:0;left:0;right:0;height:52vh;background:rgba(20,20,25,0.98);'
+      + '-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);'
+      + 'border-top:1px solid var(--glass-border);border-radius:20px 20px 0 0;z-index:10050;'
+      + 'display:none;flex-direction:column;transform:translateY(100%);'
+      + 'transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -12px 40px rgba(0,0,0,.5);}'
+      + 'html.light .img-picker{background:rgba(255,255,255,.98);box-shadow:0 -12px 40px rgba(0,0,0,.15);}'
+      + '.img-picker.show{display:flex !important;transform:translateY(0);}'
+      + '.img-picker-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;'
+      + 'border-bottom:1px solid var(--glass-border);flex-shrink:0;}'
+      + '.img-picker-title{font-size:13px;color:var(--accent);font-family:monospace;letter-spacing:.1em;}'
+      + '.img-picker-actions{display:flex;gap:8px;}'
+      + '.img-picker-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--glass-border);'
+      + 'background:transparent;color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;}'
+      + '.img-picker-btn:hover{background:rgba(127,127,127,.15);}'
+      + '.img-picker-btn.close{color:#e5484d;border-color:rgba(229,72,77,.4);font-size:18px;padding:2px 10px;}'
+      + '.img-picker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(4,1fr);'
+      + 'gap:6px;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}'
+      + '@media(max-width:480px){.img-picker-grid{grid-template-columns:repeat(3,1fr);}}'
+      + '.img-picker-item{aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;'
+      + 'background:rgba(127,127,127,.1);border:2px solid transparent;transition:all .2s;position:relative;}'
+      + '.img-picker-item:hover{border-color:var(--accent);transform:scale(1.03);}'
+      + '.img-picker-item img{width:100%;height:100%;object-fit:cover;display:block;}'
+      + '.img-picker-empty{grid-column:1/-1;text-align:center;color:var(--text-sub);font-size:12px;padding:40px 0;font-family:monospace;}';
+    var styleEl = document.createElement('style');
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
+
+    // ---- 2. 动态创建面板 HTML ----
+    if(!document.getElementById('imgPicker')){
+      var panel = document.createElement('div');
+      panel.className = 'img-picker';
+      panel.id = 'imgPicker';
+      panel.innerHTML = ''
+        + '<div class="img-picker-header">'
+        +   '<div class="img-picker-title">选择图片</div>'
+        +   '<div class="img-picker-actions">'
+        +     '<button class="img-picker-btn" id="imgPickerUpload">📷 从相册上传</button>'
+        +     '<button class="img-picker-btn close" id="imgPickerClose">×</button>'
+        +   '</div>'
+        + '</div>'
+        + '<div class="img-picker-grid" id="imgPickerGrid"></div>';
+      document.body.appendChild(panel);
+    }
+
+    // ---- 3. 你的图片文件名列表 ----
+    window.GITHUB_IMAGES = [
+      'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
+      'IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg',
+      'IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg',
+      'IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg',
+      'IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png',
+      'IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png',
+      'IMG_9014.png','IMG_9016.png'
+    ];
+
+    var pickerTarget = null;
+    var pickerIsBg = false;
+    var lastOpenTime = 0;
+
+    // ---- 4. 打开图片库 ----
+    window.openImgPicker = function(targetImg, type){
+      var now = Date.now();
+      if(now - lastOpenTime < 250) return;   // 防重复弹出
+      lastOpenTime = now;
+
+      pickerIsBg = (type === 'bg');
+      pickerTarget = targetImg || null;
+
+      var grid = document.getElementById('imgPickerGrid');
+      grid.innerHTML = '';
+      if(window.GITHUB_IMAGES.length === 0){
+        grid.innerHTML = '<div class="img-picker-empty">暂无图片</div>';
+      } else {
+        window.GITHUB_IMAGES.forEach(function(name){
+          var item = document.createElement('div');
+          item.className = 'img-picker-item';
+          var thumb = document.createElement('img');
+          thumb.src = name;
+          thumb.alt = name;
+          thumb.loading = 'lazy';
+          item.appendChild(thumb);
+          item.addEventListener('click', function(){
+            if(pickerIsBg){
+              try { setBackgroundImage(name, '50% 50%'); } catch(err){}
+              try {
+                localStorage.setItem(KEY_BG_IMG, name);
+                localStorage.setItem(KEY_BG_POS, '50% 50%');
+              } catch(err){}
+            } else if(pickerTarget){
+              pickerTarget.src = name;
+            }
+            try { scheduleSave(); } catch(err){}
+            try { toast('已替换为 ' + name); } catch(err){}
+            window.closeImgPicker();
+          });
+          grid.appendChild(item);
+        });
+      }
+
+      document.getElementById('imgPicker').classList.add('show');
+    };
+
+    // ---- 5. 关闭图片库 ----
+    window.closeImgPicker = function(){
+      var p = document.getElementById('imgPicker');
+      if(p) p.classList.remove('show');
+      pickerTarget = null;
+      pickerIsBg = false;
+    };
+
+    // ---- 6. 关闭按钮 ----
+    var closeBtn = document.getElementById('imgPickerClose');
+    if(closeBtn) closeBtn.addEventListener('click', window.closeImgPicker);
+
+    // ---- 7. 从相册上传按钮 ----
+    var uploadBtn = document.getElementById('imgPickerUpload');
+    if(uploadBtn){
+      uploadBtn.addEventListener('click', function(){
+        var wasBg = pickerIsBg;
+        window.closeImgPicker();
+        if(wasBg){
+          if(typeof bgInput !== 'undefined' && bgInput){
+            bgInput.value = ''; bgInput.click();
+          }
+        } else {
+          if(typeof fileInput !== 'undefined' && fileInput){
+            fileInput.value = ''; fileInput.click();
+          }
+        }
+      });
+    }
+
+    // ---- 8. 全局捕获：普通图片 + 图片框图片 ----
+    var downTime = 0, downX = 0, downY = 0;
+    document.addEventListener('mousedown', function(e){
+      downTime = Date.now();
+      downX = e.clientX; downY = e.clientY;
+    }, true);
+    document.addEventListener('touchstart', function(e){
+      if(e.touches && e.touches[0]){
+        downTime = Date.now();
+        downX = e.touches[0].clientX;
+        downY = e.touches[0].clientY;
+      }
+    }, {passive: true, capture: true});
+
+    document.addEventListener('click', function(e){
+      try {
+        if(!editMode || isReadonly) return;
+      } catch(err){ return; }
+      if(e.target.closest && e.target.closest('.img-picker')) return;   // 忽略图片库内部的点击
+      if(e.target.closest && e.target.closest('.style-panel')) return;
+
+      var img = e.target.closest && e.target.closest('img');
+      if(!img) return;
+
+      // 判断这张图片是否"可编辑"
+      var isEditable = img.hasAttribute('data-edit-img');
+      var isInFrame = !!(img.closest && img.closest('.image-frame-block'));
+      if(!isEditable && !isInFrame) return;
+
+      // 拖拽后不弹面板
+      var upTime = Date.now();
+      var upX = e.clientX || 0, upY = e.clientY || 0;
+      var moved = Math.abs(upX - downX) > 10 || Math.abs(upY - downY) > 10;
+      var longPress = (upTime - downTime) > 700;
+      if(moved || longPress) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      window.openImgPicker(img, 'normal');
+    }, true);
+
+    // ---- 9. 背景按钮：捕获阶段覆盖原有逻辑 ----
+    var bgBtn = document.getElementById('btnBgImage');
+    if(bgBtn){
+      bgBtn.addEventListener('click', function(e){
+        try { if(isReadonly) return; } catch(err){}
+        e.stopPropagation();
+        e.preventDefault();
+        window.openImgPicker(null, 'bg');
+      }, true);
+    }
+  })();
+  // ==================== 图片库模块结束 ====================
+    function setEdit(on){
     if(isReadonly) return;
     editMode = on;
     document.body.classList.toggle('editing', on);
