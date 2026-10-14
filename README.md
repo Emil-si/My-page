@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +13,8 @@
     --sub: #999;
     --accent: #4a9eff;
     --accent-text: #fff;
-    --card: rgba(25,25,30,0.55);
+    --card-alpha: 0.55;
+    --card: rgba(25,25,30,var(--card-alpha));
     --bar: rgba(20,20,25,0.75);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -23,7 +25,7 @@
     --bg: #f2f2f5;
     --text: #111;
     --sub: #666;
-    --card: rgba(255,255,255,0.7);
+    --card: rgba(255,255,255,var(--card-alpha));
     --bar: rgba(255,255,255,0.78);
     color-scheme: light;
   }
@@ -44,7 +46,6 @@
     pointer-events:none; transition:background-color .3s;
   }
 
-  /* 工具栏 */
   #toolbar{
     position:fixed; top:0; left:0; right:0; z-index:100;
     height:calc(48px + var(--safe-top));
@@ -73,7 +74,6 @@
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
 
-  /* 顶部导航 */
   #topnav{
     max-width:640px; margin:0 auto;
     padding:10px 14px; display:flex; gap:6px;
@@ -142,7 +142,6 @@
     word-break:break-word;
   }
 
-  /* 封面 */
   .cover{
     width:calc(100% + 32px); height:180px;
     border-radius:20px 20px 0 0;
@@ -156,7 +155,6 @@
     pointer-events:none;
   }
 
-  /* 头像 */
   .profile{display:flex; align-items:flex-end; gap:12px; margin-top:-40px; position:relative; z-index:2; padding-bottom:10px;}
   .avatar{
     width:76px; height:76px; border-radius:50%;
@@ -171,7 +169,6 @@
   .stats{display:flex; gap:18px; font-size:13px; margin:10px 0 6px; color:var(--sub);}
   .stats b{color:var(--text); font-weight:600;}
 
-  /* 图片网格 */
   .grid{
     display:grid; grid-template-columns:repeat(3, 1fr);
     gap:6px; margin:12px 0;
@@ -182,7 +179,6 @@
     background:rgba(127,127,127,0.1);
   }
 
-  /* 引文 */
   .quote{
     padding:14px; border:1px solid var(--border); border-radius:14px;
     background:rgba(127,127,127,0.04);
@@ -190,7 +186,6 @@
     margin:12px 0;
   }
 
-  /* 发帖框 */
   .post{
     background:rgba(127,127,127,0.05); border:1px solid var(--border);
     border-radius:16px; padding:14px; margin:12px 0 0;
@@ -208,7 +203,6 @@
     font-size:12px; font-weight:600; cursor:pointer;
   }
 
-  /* 动态 */
   .feed{display:flex; gap:10px; margin-bottom:10px; align-items:center;}
   .feed .fav{width:36px; height:36px; border-radius:50%; overflow:hidden; background:#333; flex-shrink:0;}
   .feed .fav img{width:100%; height:100%; object-fit:cover; display:block;}
@@ -217,13 +211,11 @@
   .feed .meta .h{font-size:11px; color:var(--sub); font-family:monospace;}
   .feed .time{font-size:11px; color:var(--sub);}
 
-  /* 可编辑文字 */
   .etext{
     font-size:14px; line-height:1.6;
     padding:4px 0; position:relative;
   }
 
-  /* 分隔线 */
   .divider{
     padding:8px 0; display:flex; align-items:center;
     position:relative;
@@ -234,7 +226,6 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  /* 每行包裹 + 操作按钮 */
   .bwrap{position:relative; padding-right:32px;}
   .bwrap > .row-tools{
     position:absolute;
@@ -259,7 +250,6 @@
   .row-tools button.del{background:#e5484d;}
   .row-tools button:hover{transform:scale(1.1);}
 
-  /* 图形 / 图片框 / 浮动文本 */
   .shape{
     position:absolute; z-index:998;
     display:none; cursor:move;
@@ -314,7 +304,6 @@
   }
   body:not(.editing) .rz{display:none;}
 
-  /* 选择器面板 */
   #shapePicker, #framePicker{
     position:fixed;
     top:calc(110px + var(--safe-top));
@@ -347,7 +336,6 @@
     padding-bottom:6px; border-bottom:1px solid var(--border); margin-bottom:4px;
   }
 
-  /* 底部翻页 */
   .pagenav{display:flex; justify-content:space-between; align-items:center; padding:10px 0; margin-top:10px;}
   .navbtn{
     width:44px; height:44px; border-radius:50%;
@@ -359,7 +347,6 @@
   .navbtn:active{background:var(--accent); color:var(--accent-text);}
   .spacer30{width:44px;}
 
-  /* 底部额外按钮 */
   .extras{display:none; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
   body.editing .extras{display:flex;}
   .exbtn{
@@ -416,8 +403,13 @@
   }
   .sp-btn:hover{background:rgba(127,127,127,0.12);}
   .sp-btn.on{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
+  .sp-note{
+    font-size:10px; color:var(--sub);
+    line-height:1.5; padding:6px 8px;
+    background:rgba(127,127,127,0.06);
+    border-radius:8px; margin-top:4px;
+  }
 
-  /* 音乐按钮 */
   #musicBtn{
     position:fixed; bottom:calc(20px + var(--safe-bottom)); right:14px;
     width:48px; height:48px; border-radius:50%;
@@ -431,7 +423,6 @@
   #musicBtn.playing{animation:spin 4s linear infinite; background:var(--accent); color:var(--accent-text);}
   @keyframes spin{100%{transform:rotate(360deg);}}
 
-  /* 编辑提示 */
   body.editing [data-edit]{
     outline:1px dashed transparent; outline-offset:4px;
     border-radius:4px; cursor:text; transition:outline .2s;
@@ -442,7 +433,6 @@
     background:rgba(74,158,255,0.08);
   }
 
-  /* 链接文字 */
   .linktext{
     cursor:pointer; text-decoration:underline;
     text-decoration-style:dotted; text-underline-offset:4px;
@@ -450,7 +440,6 @@
   .linktext:hover{color:var(--accent);}
   .linktext::after{content:" ↗"; font-size:.8em; opacity:.7;}
 
-  /* 图片库 */
   #picker{
     position:fixed; left:0; right:0; bottom:0;
     height:52vh; z-index:500;
@@ -483,7 +472,6 @@
   }
   .pgrid img:hover{border-color:var(--accent);}
 
-  /* 提示 */
   #toast{
     position:fixed; left:50%; bottom:calc(80px + var(--safe-bottom));
     transform:translateX(-50%) translateY(20px);
@@ -494,7 +482,6 @@
   }
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  /* 音乐弹窗 */
   #musicDialog{
     position:fixed; inset:0; z-index:1000;
     background:rgba(0,0,0,.5);
@@ -522,7 +509,6 @@
   }
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
-  /* 微信兜底 */
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu,
     #shapePicker, #framePicker, #stylePanel{
@@ -538,7 +524,6 @@
     }
   }
 
-  /* 手机适配 */
   @media (max-width:640px){
     body{padding-top:calc(52px + var(--safe-top));}
     #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
@@ -557,7 +542,6 @@
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
 
-    /* 样式面板：手机从底部滑出 */
     #stylePanel{
       top:auto !important;
       bottom:0 !important;
@@ -565,7 +549,7 @@
       right:0 !important;
       width:100vw !important;
       max-width:100vw !important;
-      max-height:55vh;
+      max-height:60vh;
       border-radius:20px 20px 0 0 !important;
       padding:14px 14px calc(14px + var(--safe-bottom)) 14px;
       transform:translateY(100%);
@@ -591,6 +575,8 @@
   <button class="btn edit-only" id="btnAddShape"><span class="ico">◆</span><span class="lbl">图形</span></button>
   <button class="btn edit-only" id="btnAddFrame"><span class="ico">🖼️</span><span class="lbl">图片框</span></button>
   <button class="btn edit-only" id="btnAddPanel"><span class="ico">📄</span><span class="lbl">新页面</span></button>
+  <button class="btn edit-only" id="btnExport"><span class="ico">⬇</span><span class="lbl">导出</span></button>
+  <button class="btn edit-only" id="btnImport"><span class="ico">⬆</span><span class="lbl">导入</span></button>
   <button class="btn edit-only" id="btnReset"><span class="ico">⟲</span><span class="lbl">重置</span></button>
   <span class="spacer"></span>
   <button class="btn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
@@ -614,9 +600,11 @@
   <div id="collectionList"></div>
 </div>
 
-<!-- 样式面板 -->
 <div id="stylePanel">
-  <div class="sp-title">文字样式</div>
+  <div class="sp-title">卡片透明度</div>
+  <div class="sp-row"><span>不透明</span><input type="range" id="spCardAlpha" min="0" max="100" value="55"><span id="spCardAlphaVal" style="min-width:34px;text-align:right;">55%</span></div>
+
+  <div class="sp-title" style="margin-top:6px;">文字样式</div>
   <div class="sp-row"><span>字号</span><input type="range" id="spFontSize" min="10" max="48" value="14"><span id="spFontSizeVal" style="min-width:34px;text-align:right;">14px</span></div>
   <div class="sp-row"><span>字体</span>
     <select id="spFontFamily">
@@ -650,6 +638,8 @@
       <option value="panel-3">CATEGORIES</option>
     </select>
   </div>
+
+  <div class="sp-note">💡 编辑完想分享给朋友看：点工具栏「⬇ 导出」下载 HTML 文件，再上传到 GitHub 覆盖 index.html。</div>
 </div>
 
 <div id="app">
@@ -878,10 +868,11 @@
   } catch(e){}
   if(isReadonly) document.body.classList.add('readonly');
 
-  var K_THEME = 'myPage.theme.v3';
-  var K_BG    = 'myPage.bg.v3';
-  var K_CONTENT = 'myPage.content.v4';
-  var K_MUSIC = 'myPage.music.v3';
+  var K_THEME = 'myPage.theme.v4';
+  var K_BG    = 'myPage.bg.v4';
+  var K_CONTENT = 'myPage.content.v5';
+  var K_MUSIC = 'myPage.music.v4';
+  var K_ALPHA = 'myPage.alpha.v1';
 
   var app = document.getElementById('app');
   var bgLayer = document.getElementById('bgLayer');
@@ -922,6 +913,24 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400);
   }
+
+  // ==================== 卡片透明度 ====================
+  function applyAlpha(v){
+    var a = Math.max(0, Math.min(1, v / 100));
+    document.documentElement.style.setProperty('--card-alpha', a);
+    document.getElementById('spCardAlphaVal').textContent = Math.round(v) + '%';
+    try { localStorage.setItem(K_ALPHA, v); } catch(e){}
+  }
+  try {
+    var savedAlpha = localStorage.getItem(K_ALPHA);
+    if(savedAlpha !== null){
+      applyAlpha(savedAlpha);
+      document.getElementById('spCardAlpha').value = savedAlpha;
+    }
+  } catch(e){}
+  document.getElementById('spCardAlpha').addEventListener('input', function(e){
+    applyAlpha(e.target.value);
+  });
 
   // ==================== 背景 ====================
   function setBg(url){
@@ -976,7 +985,7 @@
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
-  // ==================== 图片点击 → 图片库 ====================
+  // ==================== 图片点击 ====================
   function bindImg(img){
     if(!img || img.dataset.bound === '1') return;
     img.dataset.bound = '1';
@@ -1200,7 +1209,6 @@
     toast(v ? '已链接到 ' + v : '已取消链接');
   });
 
-  // 点击可编辑文字时，自动弹出样式面板
   document.addEventListener('focusin', function(e){
     if(!editMode || isReadonly) return;
     var el = e.target.closest('[contenteditable="true"]');
@@ -1345,6 +1353,103 @@
     save();
     refreshCollectionMenu();
     toast('已重置');
+  });
+
+  // ==================== 导出 ====================
+  document.getElementById('btnExport').addEventListener('click', function(){
+    // 保存当前内容到 localStorage 一份，确保导出最新
+    save();
+
+    // 克隆整个文档
+    var clone = document.documentElement.cloneNode(true);
+
+    // 清理临时状态
+    clone.querySelector('body').classList.remove('editing');
+    clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+    clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('.img-picker, #picker').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); });
+    clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
+
+    // 把当前 localStorage 中的内容，直接写入导出的 HTML 里，作为"初始内容"
+    // 这样即使别人第一次打开（本地没有数据），也能看到你导出的版本
+    var currentContent = serialize();
+    var currentBg = '';
+    var currentAlpha = '';
+    var currentTheme = '';
+    var currentMusic = '';
+    try {
+      currentBg = localStorage.getItem(K_BG) || '';
+      currentAlpha = localStorage.getItem(K_ALPHA) || '55';
+      currentTheme = localStorage.getItem(K_THEME) || 'light';
+      currentMusic = localStorage.getItem(K_MUSIC) || '';
+    } catch(e){}
+
+    // 在导出的 HTML 里，注入一段脚本：把当前内容写入 localStorage，然后立即恢复
+    var injectScript = document.createElement('script');
+    injectScript.textContent =
+      '(function(){try{' +
+      'var _c=' + JSON.stringify(currentContent) + ';' +
+      'var _bg=' + JSON.stringify(currentBg) + ';' +
+      'var _a=' + JSON.stringify(currentAlpha) + ';' +
+      'var _t=' + JSON.stringify(currentTheme) + ';' +
+      'var _m=' + JSON.stringify(currentMusic) + ';' +
+      'localStorage.setItem("myPage.content.v5",_c);' +
+      'if(_bg)localStorage.setItem("myPage.bg.v4",_bg);' +
+      'if(_a)localStorage.setItem("myPage.alpha.v1",_a);' +
+      'if(_t)localStorage.setItem("myPage.theme.v4",_t);' +
+      'if(_m)localStorage.setItem("myPage.music.v4",_m);' +
+      '}catch(e){}})();';
+
+    // 插入到 head 最前面，让它最先执行
+    clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild);
+
+    // 生成 HTML 字符串
+    var html = '<!DOCTYPE html>\n' + clone.outerHTML;
+
+    // 下载
+    var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+
+    toast('已导出 index.html，请上传到 GitHub');
+    alert('已导出 index.html 文件\n\n下一步：\n1. 打开 GitHub 仓库\n2. 点开 index.html\n3. 点铅笔编辑 → 全选删除 → 粘贴新内容\n4. 或者直接替换文件\n\n这样才能让分享的链接同步你的修改');
+  });
+
+  // ==================== 导入 ====================
+  document.getElementById('btnImport').addEventListener('click', function(){
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.html,.htm,text/html';
+    inp.onchange = function(){
+      var f = inp.files && inp.files[0]; if(!f) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        try {
+          var doc = new DOMParser().parseFromString(ev.target.result, 'text/html');
+          var imported = doc.getElementById('app');
+          if(!imported) throw new Error('no app');
+          app.innerHTML = imported.innerHTML;
+          bindAll();
+          setEdit(false);
+          save();
+          refreshCollectionMenu();
+          toast('导入成功');
+        } catch(err){
+          alert('导入失败：文件里没有识别到内容');
+        }
+      };
+      reader.readAsText(f);
+    };
+    inp.click();
   });
 
   // ==================== 图形 ====================
