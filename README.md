@@ -37,6 +37,17 @@
     position: relative; overflow-x: hidden;
   }
 
+  /* ============ 动画效果 ============ */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  @keyframes slideLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+  
+  .anim-fadeIn { animation: fadeIn 1s ease forwards; }
+  .anim-slideUp { animation: slideUp 1s ease forwards; }
+  .anim-zoomIn { animation: zoomIn 1s ease forwards; }
+  .anim-slideLeft { animation: slideLeft 1s ease forwards; }
+
   /* ============ 工具栏 ============ */
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
@@ -191,22 +202,30 @@
   }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* 任意位置插入行列的悬浮按钮 */
+  /* ============ 通用块操作按钮（常驻显示） ============ */
+  .block-wrapper {
+    position: relative;
+  }
   .block-actions {
-    position: absolute; top: -10px; right: 0; display: none; gap: 4px; z-index: 20;
+    position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
+    background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
+    backdrop-filter: blur(4px);
+    opacity: 0.8;
+    transition: opacity 0.2s;
   }
-  body.editing .card-col:hover .block-actions, 
-  body.editing .feed-text:hover .block-actions,
-  body.editing .card-col:focus .block-actions,
-  body.editing .feed-text:focus .block-actions {
-    display: flex;
-  }
+  .block-actions:hover { opacity: 1; }
+  
+  /* 在编辑模式下，所有带有 data-edit 的文本块显示操作按钮 */
+  body.editing .block-actions { display: flex !important; }
+  body:not(.editing) .block-actions { display: none !important; }
+
   .block-action-btn {
-    width: 24px; height: 24px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
+    width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
     border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s;
   }
   .block-action-btn:hover { transform: scale(1.1); }
+  .block-action-btn.del { background: #e5484d; }
 
   /* ============ 浮动文本框层 ============ */
   #float-layer {
@@ -232,7 +251,6 @@
   }
   .float-text-block .drag-handle:hover { opacity: 1; }
   
-  /* 右下角调整大小手柄 */
   .float-text-block .resize-handle {
     position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
     background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
@@ -374,6 +392,16 @@
     <input type="file" id="fontInput" accept=".ttf,.woff,.woff2" style="width:100px; font-size:10px;">
   </div>
   <div class="style-item">
+    <span>出场动画</span>
+    <select id="textAnimation" class="font-select" style="width:100px;">
+      <option value="none">无</option>
+      <option value="fadeIn">淡入</option>
+      <option value="slideUp">上滑</option>
+      <option value="zoomIn">缩放</option>
+      <option value="slideLeft">左滑</option>
+    </select>
+  </div>
+  <div class="style-item">
     <span>方向</span>
     <select id="textDir" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px;">
       <option value="horizontal-tb">横排</option>
@@ -494,11 +522,13 @@
         </div>
         <div class="feed-time" data-edit>7小时前</div>
       </div>
-      <!-- 文本块，自带悬浮按钮 -->
-      <div class="feed-text" data-edit>这里是暗网吗
+      <!-- 文本块包装器，自带常驻操作按钮 -->
+      <div class="block-wrapper">
+        <div class="feed-text" data-edit>这里是暗网吗</div>
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
         </div>
       </div>
       <div class="feed-footer">
@@ -514,10 +544,12 @@
   <div id="panel-1" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。
+      <div class="block-wrapper">
+        <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。</div>
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
         </div>
       </div>
     </div>
@@ -529,10 +561,12 @@
   <div id="panel-2" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。
+      <div class="block-wrapper">
+        <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
         </div>
       </div>
     </div>
@@ -544,10 +578,12 @@
   <div id="panel-3" class="panel" style="display:none;">
     <div class="feed-card glass-card">
       <button class="card-del" contenteditable="false" title="删除这张卡片">×</button>
-      <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。
+      <div class="block-wrapper">
+        <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
         <div class="block-actions">
           <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
           <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
         </div>
       </div>
     </div>
@@ -572,7 +608,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v10';
+  var KEY_CONTENT = 'myPage.glass.v11';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -747,6 +783,15 @@
       document.getElementById('bgOpacity').value = 0;
       document.getElementById('bgOpacityVal').textContent = '0%';
     }
+
+    // 动画状态同步
+    var animSelect = document.getElementById('textAnimation');
+    var classes = activeTextEl.className;
+    if(classes.includes('anim-fadeIn')) animSelect.value = 'fadeIn';
+    else if(classes.includes('anim-slideUp')) animSelect.value = 'slideUp';
+    else if(classes.includes('anim-zoomIn')) animSelect.value = 'zoomIn';
+    else if(classes.includes('anim-slideLeft')) animSelect.value = 'slideLeft';
+    else animSelect.value = 'none';
   }
 
   document.getElementById('fontSize').addEventListener('input', function(e){
@@ -755,6 +800,17 @@
   document.getElementById('fontFamilySelect').addEventListener('change', function(e){
     if(activeTextEl) {
       activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value;
+    }
+  });
+  document.getElementById('textAnimation').addEventListener('change', function(e){
+    if(activeTextEl) {
+      var anim = e.target.value;
+      activeTextEl.classList.remove('anim-fadeIn', 'anim-slideUp', 'anim-zoomIn', 'anim-slideLeft');
+      // 触发重绘以重启动画
+      void activeTextEl.offsetWidth;
+      if(anim !== 'none') {
+        activeTextEl.classList.add('anim-' + anim);
+      }
     }
   });
   document.getElementById('textDir').addEventListener('change', function(e){
@@ -828,43 +884,91 @@
     }
   });
 
-  // ============ 任意位置增加行列 ============
+  // ============ 增删行列（修复：增加删除键） ============
   window.addRowHere = function(btn) {
-    var block = btn.closest('.feed-text, .card-col');
-    var card = block.closest('.feed-card, .main-card');
-    var newRow = document.createElement('div');
-    newRow.className = 'card-row';
-    newRow.innerHTML = '<div class="card-col" contenteditable="' + editMode + '">新行内容</div>';
-    // 将新行插入到当前块的后面
-    block.parentNode.insertBefore(newRow, block.nextSibling);
-    if(editMode) newRow.querySelector('.card-col').focus();
+    var wrapper = btn.closest('.block-wrapper');
+    var card = btn.closest('.feed-card, .main-card');
+    var newWrapper = document.createElement('div');
+    newWrapper.className = 'block-wrapper';
+    newWrapper.innerHTML = `
+      <div class="card-col" contenteditable="true" style="width:100%;">新行内容</div>
+      <div class="block-actions">
+        <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+        <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+        <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
+      </div>
+    `;
+    // 插入到当前包装器后面
+    wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
+    if(editMode) newWrapper.querySelector('.card-col').focus();
     scheduleSave();
-    toast('已在此处添加行');
+    toast('已添加行');
   };
 
   window.addColHere = function(btn) {
-    var block = btn.closest('.feed-text, .card-col');
-    var card = block.closest('.feed-card, .main-card');
-    var lastRow = block.closest('.card-row');
+    var wrapper = btn.closest('.block-wrapper');
+    var card = btn.closest('.feed-card, .main-card');
+    var targetBlock = wrapper.querySelector('.feed-text, .card-col');
     
-    if(!lastRow) {
+    var row = targetBlock.closest('.card-row');
+    if(!row) {
       // 如果当前块不在行内，创建新行并包裹当前块
-      lastRow = document.createElement('div');
-      lastRow.className = 'card-row';
-      block.parentNode.insertBefore(lastRow, block);
-      lastRow.appendChild(block);
+      row = document.createElement('div');
+      row.className = 'card-row';
+      wrapper.parentNode.insertBefore(row, wrapper);
+      row.appendChild(wrapper);
     }
     
-    var newCol = document.createElement('div');
-    newCol.className = 'card-col';
-    newCol.setAttribute('contenteditable', editMode);
-    newCol.textContent = '新列内容';
-    // 在当前块后面添加列
-    lastRow.insertBefore(newCol, block.nextSibling);
-    if(editMode) newCol.focus();
+    // 创建新列
+    var newColWrapper = document.createElement('div');
+    newColWrapper.className = 'block-wrapper';
+    newColWrapper.style.flex = '1';
+    newColWrapper.innerHTML = `
+      <div class="card-col" contenteditable="true">新列内容</div>
+      <div class="block-actions">
+        <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+        <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+        <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
+      </div>
+    `;
+    // 插入到当前包装器后面
+    wrapper.parentNode.insertBefore(newColWrapper, wrapper.nextSibling);
+    if(editMode) newColWrapper.querySelector('.card-col').focus();
     scheduleSave();
-    toast('已在此处添加列');
+    toast('已添加列');
   };
+
+  // 删除块
+  window.deleteBlock = function(btn) {
+    var wrapper = btn.closest('.block-wrapper');
+    var row = wrapper.closest('.card-row');
+    
+    if(row) {
+      // 如果它在行内，删除该包装器
+      wrapper.remove();
+      // 如果行内没有其他块了，删除整行
+      if(row.querySelectorAll('.block-wrapper').length === 0) {
+        row.remove();
+      }
+    } else {
+      // 如果不在行内，删除包装器
+      wrapper.remove();
+    }
+    scheduleSave();
+    toast('已删除该内容');
+  };
+
+  // 删除卡片
+  app.addEventListener('click', function(e){
+    var del = e.target.closest('.card-del');
+    if(!del || !editMode) return;
+    e.preventDefault();
+    if(confirm('确定删除这张卡片吗？')){
+      del.closest('.feed-card').remove();
+      scheduleSave();
+      toast('卡片已删除');
+    }
+  });
 
   // ============ 浮动文本框 ============
   var floatIdCounter = 0;
@@ -935,7 +1039,7 @@
       scheduleSave();
     }
 
-    // 缩放 (修复：不再强制高度auto)
+    // 缩放
     resizeHandle.addEventListener('mousedown', startResize);
     resizeHandle.addEventListener('touchstart', startResize, {passive: false});
     var isResizing = false;
@@ -961,7 +1065,7 @@
       var newW = Math.max(100, startW + (clientX - startResX));
       var newH = Math.max(40, startH + (clientY - startResY));
       floatBlock.style.width = newW + 'px';
-      floatBlock.style.height = newH + 'px'; // 自由设定高度
+      floatBlock.style.height = newH + 'px'; 
     }
     function stopResize() {
       isResizing = false;
@@ -1000,9 +1104,9 @@
   // 点击卡片高亮
   app.addEventListener('click', function(e){
     if(!editMode) return;
-    var card = e.target.closest('.main-card, .feed-card, .text-block');
+    var card = e.target.closest('.main-card, .feed-card');
     if(card && !e.target.closest('button') && !e.target.closest('img[data-edit-img]')){
-      document.querySelectorAll('.main-card, .feed-card, .text-block').forEach(function(c){ c.style.outline = 'none'; });
+      document.querySelectorAll('.main-card, .feed-card').forEach(function(c){ c.style.outline = 'none'; });
       card.style.outline = '2px solid var(--accent)';
       activeCard = card;
     }
@@ -1076,10 +1180,12 @@
         </div>
         <div class="feed-time" data-edit>刚刚</div>
       </div>
-      <div class="feed-text" data-edit>点击这里输入内容...
+      <div class="block-wrapper">
+        <div class="feed-text" data-edit>点击这里输入内容...</div>
         <div class="block-actions">
-          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
-          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
       <div class="feed-footer"><span>💬 评论</span></div>
@@ -1096,27 +1202,22 @@
   window.addTextBlock = function(panelId){
     var panel = document.getElementById(panelId);
     if(!panel) return;
-    var block = document.createElement('div');
-    block.className = 'text-block';
-    block.setAttribute('contenteditable', 'true');
-    block.innerHTML = '点击输入自由文本内容...';
+    var wrapper = document.createElement('div');
+    wrapper.className = 'block-wrapper';
+    wrapper.innerHTML = `
+      <div class="text-block" contenteditable="true">点击输入自由文本内容...</div>
+      <div class="block-actions">
+        <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+        <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+        <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
+      </div>
+    `;
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; 
-    panel.insertBefore(block, addBtn);
-    if(editMode) block.focus();
+    panel.insertBefore(wrapper, addBtn);
+    if(editMode) wrapper.querySelector('.text-block').focus();
     scheduleSave();
     toast('已添加自由文本块');
   };
-
-  app.addEventListener('click', function(e){
-    var del = e.target.closest('.card-del');
-    if(!del || !editMode) return;
-    e.preventDefault();
-    if(confirm('确定删除这个内容吗？')){
-      del.closest('.feed-card, .text-block').remove();
-      scheduleSave();
-      toast('已删除');
-    }
-  });
 
   var bgMusic = document.getElementById('bgMusic');
   var musicPlayer = document.getElementById('musicPlayer');
@@ -1157,10 +1258,8 @@
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
-    // 强制收起样式面板
-    if(!on) {
-      document.getElementById('stylePanel').classList.remove('show');
-    }
+    if(!on) document.getElementById('stylePanel').classList.remove('show');
+    
     document.querySelectorAll('[data-edit], .text-block, .float-text-block, .card-col').forEach(function(el){
       if(on) { el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
       else el.removeAttribute('contenteditable');
@@ -1171,7 +1270,7 @@
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
     
     if(on) { 
-      toast('编辑已开启，悬停文本可见增删行列按钮'); 
+      toast('编辑已开启，点击块右上角可增删行列'); 
     } else { 
       scheduleSave(); 
       toast('已保存'); 
