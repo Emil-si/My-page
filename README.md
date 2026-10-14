@@ -48,7 +48,6 @@
     position: relative;
   }
 
-  /* ===== 全屏背景层 ===== */
   .bg-layer {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -139,6 +138,12 @@
     box-shadow: 0 10px 40px rgba(0,0,0,0.15);
   }
   .style-panel.show { display: flex; }
+  .style-panel-drag {
+    display: none; /* 只在手机显示 */
+    width: 44px; height: 5px; border-radius: 3px; background: rgba(127,127,127,0.4);
+    margin: 0 auto 8px; cursor: pointer; flex-shrink: 0;
+  }
+  html.light .style-panel-drag { background: rgba(0,0,0,0.15); }
   .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
   .style-item input[type="range"] { flex: 1; cursor: pointer; }
   .style-item input[type="color"] { width: 28px; height: 28px; border: none; border-radius: 6px; cursor: pointer; background: transparent; }
@@ -375,24 +380,24 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
+  /* ===== 修复：文字对齐（flex 容器也能左右对齐） ===== */
   .card-col {
-    flex: 1; min-width: 40px; padding: 8px 22px 8px 8px;
+    flex: 1; min-width: 40px; padding: 8px 30px 8px 8px;
     border: 1px dashed var(--glass-border);
     border-radius: 8px; background: rgba(127,127,127,0.04);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
   }
-  .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(127,127,127,0.08); }
   .text-block {
-    padding: 12px 22px 12px 12px;
+    padding: 12px 30px 12px 12px;
     border: 1px dashed var(--glass-border);
     border-radius: 12px; background: rgba(127,127,127,0.04);
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
   }
-  .text-block:hover { border-color: var(--accent); background: rgba(127,127,127,0.08); }
+  .card-col:hover, .feed-text:hover, .text-block:hover { border-color: var(--accent); background: rgba(127,127,127,0.08); }
 
   .divider-block {
     padding: 10px 0; position: relative; display: flex;
@@ -406,6 +411,25 @@
   body.editing .divider-block.active .divider-line {
     box-shadow: 0 0 0 3px rgba(74,158,255,0.3); opacity: 1;
   }
+
+  /* ===== 图片下方添加分隔线按钮 ===== */
+  .add-grid-divider {
+    display: none;
+    margin: -14px 24px 16px 24px;
+    padding: 8px 12px;
+    border: 1px dashed var(--glass-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-sub);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+    width: calc(100% - 48px);
+    transition: all 0.2s;
+  }
+  .add-grid-divider:hover { background: rgba(127,127,127,0.08); color: var(--accent); border-color: var(--accent); }
+  body.editing .add-grid-divider { display: block; }
 
   /* ===== 图形 / 图片框 ===== */
   .shape-block, .image-frame-block {
@@ -438,11 +462,23 @@
   .block-wrapper > .resize-handle { display: none; }
   body.editing .block-wrapper > .resize-handle { display: block; }
 
+  /* ===== 修复：resize handle 加大点击区域 ===== */
   .resize-handle {
-    position: absolute; bottom: 0; right: 0; width: 24px; height: 24px;
+    position: absolute; bottom: 0; right: 0;
+    width: 28px; height: 28px;
     background: linear-gradient(135deg, transparent 48%, var(--accent) 48%);
-    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px;
+    cursor: se-resize; z-index: 10; border-bottom-right-radius: 10px;
     opacity: 0.9; touch-action: none; user-select: none; pointer-events: auto;
+  }
+  /* 用伪元素扩大点击范围（不影响视觉） */
+  .resize-handle::before {
+    content: '';
+    position: absolute;
+    right: -6px; bottom: -6px;
+    width: 44px; height: 44px;
+    background: transparent;
+    pointer-events: auto;
+    cursor: se-resize;
   }
   .resize-handle:hover { opacity: 1; }
   .shape-block > .resize-handle,
@@ -537,7 +573,6 @@
   .music-player.playing { animation: spin 4s linear infinite; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
-  /* ===== 编辑模式 ===== */
   body.editing [data-edit] { outline: 1px dashed transparent; outline-offset: 4px; border-radius: 4px; cursor: text; transition: outline 0.2s, background 0.2s; position: relative; }
   body.editing [data-edit]:hover { outline: 1px dashed var(--accent); background: rgba(127,127,127,0.05); }
   body.editing [data-edit]:focus { outline: 2px solid var(--accent); background: rgba(74, 158, 255, 0.1); }
@@ -633,6 +668,7 @@
   body.readonly .block-actions,
   body.readonly .card-del,
   body.readonly .add-card-btn,
+  body.readonly .add-grid-divider,
   body.readonly .resize-handle,
   body.readonly .element-del,
   body.readonly .float-del,
@@ -675,6 +711,7 @@
     .profile-info { padding: 12px 16px 0; }
     .profile-header-row { gap: 12px; margin-bottom: 10px; }
     .image-grid { margin: 0 16px 16px 16px; gap: 6px; }
+    .add-grid-divider { margin: -10px 16px 12px 16px; width: calc(100% - 32px); }
     .quote-block { margin: 0 16px 16px 16px; padding: 12px; }
     .quote-block p { font-size: 13px; line-height: 1.7; }
     .post-box { margin: 0 16px 12px 16px; padding: 12px; border-radius: 16px; }
@@ -686,30 +723,47 @@
     .feed-avatar { width: 34px; height: 34px; }
     .feed-name { font-size: 13px; }
     .feed-handle, .feed-time { font-size: 11px; }
-    .card-col, .text-block { padding: 8px 20px 8px 8px; font-size: 13px; }
+    .card-col, .text-block { padding: 8px 30px 8px 8px; font-size: 13px; }
     .divider-block { padding: 8px 0; }
     .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
     .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
     .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(16px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
+
+    /* ===== 修复：样式面板高度降低 + 加折叠把手 ===== */
     .style-panel {
-      top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-      width: 100vw !important; max-width: 100vw !important; max-height: 60vh !important;
+      top: auto !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      max-height: 45vh !important;
       border-radius: 20px 20px 0 0 !important;
-      padding: 16px 16px calc(16px + var(--safe-bottom)) 16px !important;
+      padding: 8px 14px calc(14px + var(--safe-bottom)) 14px !important;
       box-shadow: 0 -12px 40px rgba(0,0,0,0.5) !important;
-      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex !important; flex-direction: column; visibility: hidden; opacity: 0;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex !important;
+      flex-direction: column;
+      visibility: hidden;
+      opacity: 0;
     }
     html.light .style-panel { box-shadow: 0 -12px 40px rgba(0,0,0,0.15) !important; }
     .style-panel.show { transform: translateY(0); visibility: visible; opacity: 1; }
-    .style-panel h4 { font-size: 13px !important; padding: 6px 0 !important; margin: 4px 0 !important; }
+    .style-panel-drag { display: block; }
+    .style-panel h4 { font-size: 12px !important; padding: 4px 0 !important; margin: 4px 0 !important; }
     .style-item { margin-bottom: 8px !important; gap: 10px !important; }
-    .style-item span { font-size: 12px !important; flex-shrink: 0; min-width: 60px; }
-    .style-item input[type="range"] { height: 24px; }
-    .style-item input[type="color"] { width: 34px !important; height: 34px !important; border-radius: 8px !important; }
-    .style-btn { padding: 6px 12px !important; font-size: 12px !important; min-height: 32px; }
+    .style-item span { font-size: 11px !important; flex-shrink: 0; min-width: 55px; }
+    .style-item input[type="range"] { height: 26px; }
+    .style-item input[type="color"] { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+    .style-btn { padding: 6px 10px !important; font-size: 11px !important; min-height: 32px; }
     .font-select { padding: 6px 8px !important; font-size: 12px !important; min-height: 32px; }
+    /* 折叠状态：只剩把手 + 一行 */
+    .style-panel.collapsed { max-height: 60px !important; overflow: hidden; }
+    .style-panel.collapsed .style-panel-drag { margin-bottom: 6px; }
+    .style-panel.collapsed > *:not(.style-panel-drag) { display: none; }
+
     .shape-picker { padding: 10px; gap: 6px; max-width: calc(100vw - 24px); }
     .shape-pick-item { width: 40px; height: 40px; }
     .shape-pick-item svg { width: 24px; height: 24px; }
@@ -717,7 +771,16 @@
     .block-actions { padding: 3px; gap: 3px; }
     .block-action-btn { width: 26px; height: 26px; font-size: 13px; }
     .block-action-btn.divider { font-size: 16px; }
-    .resize-handle { width: 22px; height: 22px; }
+    /* ===== 修复：手机 resize handle 加大到 32px ===== */
+    .resize-handle {
+      width: 32px !important;
+      height: 32px !important;
+      border-bottom-right-radius: 12px !important;
+    }
+    .resize-handle::before {
+      right: -8px; bottom: -8px;
+      width: 52px; height: 52px;
+    }
     .add-card-btn { padding: 12px; font-size: 12px; }
     .card-del { width: 26px; height: 26px; font-size: 14px; }
     .img-pos-preview { width: 92vw; height: 55vh; }
@@ -743,20 +806,24 @@
     .stats { font-size: 12px; gap: 12px; }
     .profile-info { padding: 10px 14px 0; }
     .image-grid { margin: 0 14px 14px 14px; gap: 5px; }
+    .add-grid-divider { margin: -8px 14px 10px 14px; width: calc(100% - 28px); }
     .quote-block { margin: 0 14px 14px 14px; padding: 10px; }
     .quote-block p { font-size: 12px; line-height: 1.6; }
     .post-box { margin: 0 14px 10px 14px; padding: 10px; }
     .feed-text { font-size: 13px; }
-    .card-col, .text-block { padding: 6px 18px 6px 6px; font-size: 12px; }
+    .card-col, .text-block { padding: 6px 30px 6px 6px; font-size: 12px; }
     .panel-nav-btn { min-width: 40px; height: 40px; font-size: 16px; border-radius: 20px; }
     .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(14px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
-    .style-panel { max-height: 65vh !important; padding: 12px 12px calc(12px + var(--safe-bottom)) 12px !important; }
-    .style-panel h4 { font-size: 12px !important; }
-    .style-item span { font-size: 11px !important; min-width: 50px; }
+    .style-panel { max-height: 50vh !important; padding: 8px 12px calc(10px + var(--safe-bottom)) 12px !important; }
+    .style-panel h4 { font-size: 11px !important; }
+    .style-item span { font-size: 10px !important; min-width: 50px; }
     .img-pos-preview { width: 94vw; height: 50vh; }
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
     body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
-    <body>
+  }
+</style>
+</head>
+<body>
 
 <div class="bg-layer">
   <img class="bg-img hidden" id="bgImg" alt="">
@@ -817,6 +884,8 @@
 </div>
 
 <div class="style-panel" id="stylePanel">
+  <div class="style-panel-drag" id="stylePanelDrag" title="点击折叠/展开"></div>
+
   <h4>卡片样式调节</h4>
   <div class="style-item"><span>透明度</span><input type="range" id="opacitySlider" min="0" max="100" value="65"><span id="opacityVal">65%</span></div>
   <div class="style-item"><span>渐变起始</span><input type="color" id="gradColor1" value="#1c1c22"></div>
@@ -910,11 +979,13 @@
           </div>
         </div>
       </div>
-      <div class="image-grid">
+      <div class="image-grid" id="imageGrid0">
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🏞️%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E📸%3C/text%3E%3C/svg%3E"></div>
         <div class="grid-item"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='30' fill='%23999' text-anchor='middle'%3E🌌%3C/text%3E%3C/svg%3E"></div>
       </div>
+      <!-- 图片下方添加分隔线 -->
+      <button class="add-grid-divider" onclick="addDividerAfterGrid(this)">— 在图片下方添加分隔线</button>
       <div class="quote-block"><p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p></div>
       <div class="post-box" id="postBoxTrigger">
         <input class="post-input" placeholder="说点什么..." data-edit>
@@ -1046,7 +1117,6 @@
 (function(){
   'use strict';
 
-  // ===== 只读模式检测 =====
   var isReadonly = false;
   try {
     var _p = new URLSearchParams(window.location.search);
@@ -1056,8 +1126,8 @@
     document.body.classList.add('readonly');
   }
 
-  var KEY_CONTENT = 'myPage.glass.v29';
-  var KEY_THEME   = 'myPage.theme.v1';       // 用户手动选择的主题（'dark' 或 'light'）
+  var KEY_CONTENT = 'myPage.glass.v30';
+  var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
   var KEY_BG_POS  = 'myPage.bgPos.v1';
@@ -1084,18 +1154,16 @@
     angle: 135, accent: '#4a9eff'
   };
 
-  // ================= 主题系统：自动跟随系统 + 手动切换记忆 =================
+  // ================= 主题系统 =================
   var systemPrefersDark = false;
   try {
     systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   } catch(e){}
 
-  // 判断当前应使用的主题（'dark' 或 'light'）
   function resolveTheme(){
     var saved = null;
     try { saved = localStorage.getItem(KEY_THEME); } catch(e){}
     if(saved === 'dark' || saved === 'light') return saved;
-    // 没手动设置过 → 跟随系统
     return systemPrefersDark ? 'dark' : 'light';
   }
 
@@ -1105,11 +1173,8 @@
     var icon = document.getElementById('themeIcon');
     if(icon) icon.textContent = isDark ? '☀' : '◐';
   }
-
-  // 初始化应用主题
   applyThemeByString(resolveTheme());
 
-  // 点击主题按钮：手动切换并记住
   document.getElementById('btnTheme').addEventListener('click', function(){
     var nowDark = !document.documentElement.classList.contains('light');
     var nextTheme = nowDark ? 'light' : 'dark';
@@ -1118,13 +1183,12 @@
     toast(nextTheme === 'dark' ? '已切换至暗夜' : '已切换至白天');
   });
 
-  // 监听系统主题变化（仅在用户没手动设置过时跟随）
   try {
     var mql = window.matchMedia('(prefers-color-scheme: dark)');
     var mqlHandler = function(e){
       var saved = null;
       try { saved = localStorage.getItem(KEY_THEME); } catch(err){}
-      if(saved === 'dark' || saved === 'light') return;   // 用户手动选过就不跟随
+      if(saved === 'dark' || saved === 'light') return;
       systemPrefersDark = e.matches;
       applyThemeByString(e.matches ? 'dark' : 'light');
     };
@@ -1192,8 +1256,24 @@
 
   document.getElementById('btnStylePanel').addEventListener('click', function(e){
     e.stopPropagation();
-    document.getElementById('stylePanel').classList.toggle('show');
+    var panel = document.getElementById('stylePanel');
+    panel.classList.toggle('show');
+    // 打开时移除折叠状态
+    if(panel.classList.contains('show')){
+      panel.classList.remove('collapsed');
+    }
   });
+
+  // 手机端样式面板折叠
+  var stylePanelDrag = document.getElementById('stylePanelDrag');
+  if(stylePanelDrag){
+    stylePanelDrag.addEventListener('click', function(e){
+      e.stopPropagation();
+      var panel = document.getElementById('stylePanel');
+      panel.classList.toggle('collapsed');
+    });
+  }
+
   document.getElementById('opacitySlider').addEventListener('input', function(e){ styleSettings.opacity = e.target.value; applySliders(styleSettings); });
   document.getElementById('gradColor1').addEventListener('input', function(e){ styleSettings.gradColor1 = e.target.value; applySliders(styleSettings); });
   document.getElementById('gradColor2').addEventListener('input', function(e){ styleSettings.gradColor2 = e.target.value; applySliders(styleSettings); });
@@ -1649,9 +1729,23 @@
       activeTextEl.style.textOrientation = '';
     }
   });
+
+  // ===== 修复：左右对齐（flex 容器需要用 justify-content） =====
   document.querySelectorAll('.style-btn[data-align]').forEach(function(btn){
-    btn.addEventListener('click', function(){ if(activeTextEl) activeTextEl.style.textAlign = this.getAttribute('data-align'); });
+    btn.addEventListener('click', function(){
+      if(!activeTextEl) return;
+      var align = this.getAttribute('data-align');
+      activeTextEl.style.textAlign = align;
+      // 如果是 flex 容器，同时调整 justify-content
+      var cs = window.getComputedStyle(activeTextEl);
+      if(cs.display === 'flex'){
+        if(align === 'left') activeTextEl.style.justifyContent = 'flex-start';
+        else if(align === 'right') activeTextEl.style.justifyContent = 'flex-end';
+        else activeTextEl.style.justifyContent = 'center';
+      }
+    });
   });
+
   document.getElementById('btnBold').addEventListener('click', function(){ if(activeTextEl){ var w = activeTextEl.style.fontWeight === 'bold' ? 'normal' : 'bold'; activeTextEl.style.fontWeight = w; this.classList.toggle('active', w === 'bold'); } });
   document.getElementById('btnItalic').addEventListener('click', function(){ if(activeTextEl){ var s = activeTextEl.style.fontStyle === 'italic' ? 'normal' : 'italic'; activeTextEl.style.fontStyle = s; this.classList.toggle('active', s === 'italic'); } });
   document.getElementById('btnUnderline').addEventListener('click', function(){ if(activeTextEl){ var d = activeTextEl.style.textDecoration === 'underline' ? 'none' : 'underline'; activeTextEl.style.textDecoration = d; this.classList.toggle('active', d === 'underline'); } });
@@ -1780,6 +1874,45 @@
     document.querySelectorAll('.divider-line').forEach(function(line){
       if(line.dataset.color) applyDividerLineStyle(line);
     });
+  }
+
+  // ================= 在图片下方添加分隔线 =================
+  window.addDividerAfterGrid = function(btn){
+    // 找到最近的 image-grid 的父卡片
+    var grid = btn.previousElementSibling;
+    while(grid && !grid.classList.contains('image-grid')){
+      grid = grid.previousElementSibling;
+    }
+    if(!grid){
+      // 找不到就在按钮前插入
+      var wrapper = btn.parentNode;
+      insertDividerAfter(btn);
+      return;
+    }
+    insertDividerAfter(grid);
+  };
+
+  function insertDividerAfter(target){
+    var wrapper = document.createElement('div');
+    wrapper.className = 'block-wrapper';
+    wrapper.style.marginTop = '12px';
+    wrapper.style.marginBottom = '12px';
+    wrapper.style.marginLeft = '24px';
+    wrapper.style.marginRight = '24px';
+    wrapper.innerHTML = '<div class="divider-block"><div class="divider-line"></div></div>' +
+      '<div class="block-actions">' +
+        '<button class="block-action-btn divider" onclick="addDivider(this)" title="再添加一条分隔线">—</button>' +
+        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
+      '</div>';
+    target.parentNode.insertBefore(wrapper, target.nextSibling);
+    var line = wrapper.querySelector('.divider-line');
+    line.dataset.color = '#888888';
+    line.dataset.thickness = '1';
+    line.dataset.lineStyle = 'solid';
+    applyDividerLineStyle(line);
+    if(editMode) selectDivider(line);
+    scheduleSave();
+    toast('已在图片下方添加分隔线');
   }
 
   // ================= 增删行列 =================
@@ -2241,6 +2374,3 @@
 </script>
 </body>
 </html>
-  }
-</style>
-</head>
