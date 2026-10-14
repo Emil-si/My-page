@@ -7,8 +7,6 @@
   :root{
     --glass-border: rgba(255, 255, 255, 0.12);
     --bg-color: #0d0d10;
-    --bg-image: none;
-    --bg-pos: 50% 50%;
     --text: #f0f0f0;
     --text-sub: #999;
     --accent: #4a9eff;
@@ -47,18 +45,15 @@
     position: relative;
   }
 
-  /* ===== 独立全屏背景层 ===== */
+  /* ===== 全屏背景层（用 img 实现，兼容所有设备） ===== */
   .bg-layer {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    z-index: 0;
-    background-image: var(--bg-image);
-    background-size: cover;
-    background-position: var(--bg-pos);
-    background-repeat: no-repeat;
+    z-index: 1;
+    overflow: hidden;
     background-color: var(--bg-color);
     pointer-events: none;
     transition: background-color 0.3s;
@@ -66,21 +61,30 @@
   @supports (-webkit-touch-callout: none) {
     .bg-layer { height: -webkit-fill-available; }
   }
-
-  /* 主内容浮在背景层上方 */
-  .toolbar,
-  .top-nav,
-  .container,
-  .music-player,
-  .panel-nav,
-  .toast {
-    position: relative;
-    z-index: 2;
+  .bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
-  .toolbar { position: fixed; }
-  .top-nav { position: sticky; }
-  .music-player { position: fixed; }
-  .toast { position: fixed; }
+  .bg-img.hidden { display: none !important; }
+
+  /* 所有页面内容浮在背景层上方 */
+  .toolbar, .top-nav, .container, .music-player, .panel-nav, .toast {
+    position: relative;
+    z-index: 10;
+  }
+  .toolbar { position: fixed; z-index: 999; }
+  .top-nav { position: sticky; z-index: 998; }
+  .music-player { position: fixed; z-index: 1000; }
+  .toast { position: fixed; z-index: 2000; }
+  .style-panel, .shape-picker, .collection-menu, .music-panel, .music-panel-backdrop, .img-pos-overlay {
+    z-index: 9999;
+  }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -90,12 +94,6 @@
   .anim-slideUp { animation: slideUp 1s ease forwards; }
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
-
-  /* ===== 毛玻璃通用类（写死 blur 值，不依赖变量） ===== */
-  .glass {
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-  }
 
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
@@ -282,7 +280,7 @@
   .collection-item.active { background: var(--accent); color: var(--accent-text); }
   .collection-empty { padding: 8px 12px; font-size: 12px; color: var(--text-sub); text-align: center; }
 
-  .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 16px; position: relative; box-sizing: border-box; }
+  .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 16px; position: relative; box-sizing: border-box; z-index: 10; }
 
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
@@ -475,6 +473,7 @@
   .panel-nav {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 16px; padding: 8px 0; gap: 16px;
+    position: relative; z-index: 10;
   }
   .panel-nav-btn {
     display: flex; align-items: center; justify-content: center;
@@ -676,22 +675,13 @@
     .panel-nav-spacer { min-width: 42px; }
     .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(16px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
     .style-panel {
-      top: auto !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100vw !important;
-      max-width: 100vw !important;
-      max-height: 60vh !important;
+      top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+      width: 100vw !important; max-width: 100vw !important; max-height: 60vh !important;
       border-radius: 20px 20px 0 0 !important;
       padding: 16px 16px calc(16px + var(--safe-bottom)) 16px !important;
       box-shadow: 0 -12px 40px rgba(0,0,0,0.5) !important;
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex !important;
-      flex-direction: column;
-      visibility: hidden;
-      opacity: 0;
+      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex !important; flex-direction: column; visibility: hidden; opacity: 0;
     }
     .style-panel.show { transform: translateY(0); visibility: visible; opacity: 1; }
     .style-panel h4 { font-size: 13px !important; padding: 6px 0 !important; margin: 4px 0 !important; }
@@ -752,7 +742,9 @@
 </head>
 <body>
 
-<div class="bg-layer"></div>
+<div class="bg-layer">
+  <img class="bg-img hidden" id="bgImg" alt="">
+</div>
 
 <audio id="bgMusic" src="" loop preload="none"></audio>
 <div class="music-player" id="musicPlayer" title="短按播放/暂停 · 长按换歌"><span id="musicIcon">♪</span></div>
@@ -1048,7 +1040,7 @@
     document.body.classList.add('readonly');
   }
 
-  var KEY_CONTENT = 'myPage.glass.v27';
+  var KEY_CONTENT = 'myPage.glass.v28';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -1057,7 +1049,7 @@
   var KEY_MUSIC   = 'myPage.musicUrl.v2';
 
   var app = document.getElementById('app');
-  var bgLayer = document.querySelector('.bg-layer');
+  var bgImg = document.getElementById('bgImg');
   var fileInput = document.getElementById('fileInput');
   var bgInput = document.getElementById('bgInput');
   var elementImageInput = document.getElementById('elementImageInput');
@@ -1076,17 +1068,17 @@
     angle: 135, accent: '#4a9eff'
   };
 
-  // ===== 设置背景工具函数：优先用 CSS 变量控制 .bg-layer =====
+  // ===== 设置背景（用 <img> 元素） =====
   function setBackgroundImage(dataUrl, pos){
-    if(!bgLayer) return;
+    if(!bgImg) return;
     if(dataUrl){
-      bgLayer.style.backgroundImage = 'url(' + dataUrl + ')';
+      bgImg.src = dataUrl;
+      bgImg.classList.remove('hidden');
+      bgImg.style.objectPosition = pos || '50% 50%';
     } else {
-      bgLayer.style.backgroundImage = 'none';
+      bgImg.removeAttribute('src');
+      bgImg.classList.add('hidden');
     }
-    bgLayer.style.backgroundPosition = pos || '50% 50%';
-    bgLayer.style.backgroundSize = 'cover';
-    bgLayer.style.backgroundRepeat = 'no-repeat';
   }
 
   try {
@@ -1132,7 +1124,7 @@
     }
     var gradColor1 = hexToRgba(settings.gradColor1, opacity);
     var gradColor2 = hexToRgba(settings.gradColor2, opacity);
-    document.documentElement.style.setProperty('--card-bg-color', hexToRgba(settings.gradColor1, opacity * 0.7));
+    document.documentElement.style.setProperty('--card-bg-color', hexToRgba(settings.gradColor1, Math.min(1, opacity * 0.85)));
     document.documentElement.style.setProperty('--card-gradient', 'linear-gradient(' + settings.angle + 'deg, ' + gradColor1 + ' 0%, ' + gradColor2 + ' 100%)');
     document.getElementById('opacitySlider').value = settings.opacity;
     document.getElementById('opacityVal').textContent = settings.opacity + '%';
@@ -1285,7 +1277,8 @@
   });
   imgPosCancel.addEventListener('click', closePosPicker);
   imgPosConfirm.addEventListener('click', function(){
-    if(!posState.target || !posState.image){ closePosPicker(); return; }
+    if(!posState.target && !posState.isBg){ closePosPicker(); return; }
+    if(!posState.image){ closePosPicker(); return; }
     if(posState.isBg){
       setBackgroundImage(posState.image, posState.posX + '% ' + posState.posY + '%');
       try {
