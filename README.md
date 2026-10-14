@@ -57,8 +57,7 @@
     display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px;
     border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);
     color: var(--text); cursor: pointer; font-size: 12px; font-family: monospace;
-    transition: all 0.2s; backdrop-filter: blur(8px); white-space: nowrap;
-    flex-shrink: 0;
+    transition: all 0.2s; backdrop-filter: blur(8px); white-space: nowrap; flex-shrink: 0;
   }
   .tbtn:active{transform: scale(0.95);}
   .tbtn.on{background: var(--accent); color: var(--accent-text); border-color: var(--accent);}
@@ -120,8 +119,7 @@
 
   .nav-collection {
     flex: 0 0 auto !important; display: flex; align-items: center; justify-content: center;
-    padding: 8px 12px !important; min-width: 40px;
-    color: var(--text) !important;
+    padding: 8px 12px !important; min-width: 40px; color: var(--text) !important;
   }
   .nav-collection.active { background: var(--accent) !important; color: var(--accent-text) !important; border-color: var(--accent) !important; }
   .nav-collection svg { display: block; }
@@ -139,14 +137,12 @@
   .collection-menu-title {
     font-size: 10px; color: var(--accent); padding: 4px 10px 8px; 
     border-bottom: 1px solid var(--glass-border); margin-bottom: 4px;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    font-family: monospace;
+    letter-spacing: 0.15em; text-transform: uppercase; font-family: monospace;
   }
   .collection-item {
     display: block; padding: 8px 12px; border-radius: 8px; color: var(--text);
     text-decoration: none; font-size: 13px; cursor: pointer; transition: all 0.2s;
-    font-family: monospace;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .collection-item:hover { background: rgba(255,255,255,0.08); }
   .collection-item.active { background: var(--accent); color: var(--accent-text); }
@@ -220,16 +216,13 @@
 
   .card-row { display: flex; gap: 10px; margin-top: 12px; width: 100%; flex-wrap: wrap; }
 
-  /* ====== 修复：始终居中（包括编辑模式） ====== */
   .card-col {
     flex: 1; min-width: 40px; padding: 8px 22px 8px 8px; 
     border: 1px dashed var(--glass-border);
     border-radius: 8px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
-    text-align: center; 
-    overflow: hidden;
-    line-height: 1.5;
+    text-align: center; overflow: hidden; line-height: 1.5;
   }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
@@ -239,37 +232,31 @@
     border-radius: 12px; background: rgba(255,255,255,0.02); 
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
-    text-align: center; 
-    overflow: hidden;
-    line-height: 1.5;
+    text-align: center; overflow: hidden; line-height: 1.5;
   }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-  /* ====== 新增：分隔线 ====== */
+  /* 分隔线：默认样式，支持 inline style 覆盖 */
   .divider-block {
-    padding: 10px 0;
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
+    padding: 10px 0; position: relative; display: flex;
+    align-items: center; width: 100%;
+    cursor: pointer;
   }
   .divider-block .divider-line {
-    height: 1px;
-    background: var(--glass-border);
-    width: 100%;
-    border-radius: 1px;
-    transition: all 0.2s;
+    height: 1px; background: var(--glass-border); width: 100%;
+    border-radius: 1px; transition: all 0.2s;
   }
-  body.editing .divider-block .divider-line { background: var(--accent); opacity: 0.7; }
-  body.editing .divider-block:hover .divider-line { opacity: 1; height: 2px; }
+  body.editing .divider-block .divider-line { opacity: 0.85; }
+  body.editing .divider-block:hover .divider-line { opacity: 1; }
+  body.editing .divider-block.active .divider-line {
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.3);
+    opacity: 1;
+  }
 
   .shape-block, .image-frame-block {
     position: absolute; z-index: 998;
     box-sizing: border-box; display: none; cursor: move;
-    overflow: visible;
-    pointer-events: auto;
-    touch-action: none;
-    user-select: none;
+    overflow: visible; pointer-events: auto; touch-action: none; user-select: none;
   }
   body.editing .shape-block, body.editing .image-frame-block { display: block; }
   .shape-block {
@@ -298,16 +285,12 @@
   .block-wrapper { position: relative; }
   .block-wrapper > .resize-handle { display: none; }
   body.editing .block-wrapper > .resize-handle { display: block; }
-  
+
   .resize-handle {
     position: absolute; bottom: 0; right: 0; width: 24px; height: 24px;
     background: linear-gradient(135deg, transparent 48%, var(--accent) 48%);
-    cursor: se-resize; z-index: 10; 
-    border-bottom-right-radius: 8px; 
-    opacity: 0.9;
-    touch-action: none;
-    user-select: none;
-    pointer-events: auto;
+    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px; 
+    opacity: 0.9; touch-action: none; user-select: none; pointer-events: auto;
   }
   .resize-handle:hover { opacity: 1; }
   
@@ -414,52 +397,36 @@
   .block-actions {
     position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
     background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
-    backdrop-filter: blur(4px); opacity: 0.85;
-    transition: opacity 0.2s;
+    backdrop-filter: blur(4px); opacity: 0.85; transition: opacity 0.2s;
   }
   body.editing .block-actions { display: flex !important; }
   body:not(.editing) .block-actions { display: none !important; }
   .block-action-btn {
     width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: var(--accent-text);
     border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s;
-    padding: 0; line-height: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s; padding: 0; line-height: 1;
   }
   .block-action-btn:hover { transform: scale(1.1); }
   .block-action-btn.del { background: #e5484d; }
   .block-action-btn.divider { background: #7d90b8; font-size: 18px; }
 
   .link-text {
-    cursor: pointer;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 4px;
-    transition: color 0.2s, transform 0.2s;
+    cursor: pointer; text-decoration: underline; text-decoration-style: dotted;
+    text-underline-offset: 4px; transition: color 0.2s, transform 0.2s;
   }
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
   /* ====== 手机自适应 ====== */
   @media (max-width: 640px) {
-    body {
-      padding-top: 54px;
-      padding-bottom: 80px;
-    }
-    .toolbar {
-      height: 46px; padding: 0 10px; gap: 5px;
-    }
-    .tbtn {
-      padding: 5px 10px; font-size: 11px; border-radius: 16px;
-    }
+    body { padding-top: 54px; padding-bottom: 80px; }
+    .toolbar { height: 46px; padding: 0 10px; gap: 5px; }
+    .tbtn { padding: 5px 10px; font-size: 11px; border-radius: 16px; }
     .tbtn .label { display: none; }
     .tbtn .ico { font-size: 15px; }
     .bg-image-btn .label { display: none; }
-    .top-nav {
-      top: 46px; padding: 8px 10px; gap: 4px;
-    }
-    .nav-link {
-      padding: 6px 12px; font-size: 11px; border-radius: 16px;
-    }
+    .top-nav { top: 46px; padding: 8px 10px; gap: 4px; }
+    .nav-link { padding: 6px 12px; font-size: 11px; border-radius: 16px; }
     .nav-collection { padding: 6px 10px !important; min-width: 36px; }
     .container { padding: 12px; }
     .glass-card, .feed-card { border-radius: 18px; padding: 14px; margin-bottom: 12px; }
@@ -486,22 +453,13 @@
     .card-col, .text-block { padding: 8px 20px 8px 8px; font-size: 13px; }
     .divider-block { padding: 8px 0; }
     .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
-    .panel-nav-btn {
-      min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px;
-      border-radius: 21px;
-    }
+    .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
     .bottom-nav { height: 58px; }
     .bottom-nav-item { font-size: 9px; }
     .bottom-nav-item .icon { font-size: 17px; }
-    .music-player {
-      width: 44px; height: 44px; font-size: 18px;
-      bottom: 68px; right: 12px;
-    }
-    .style-panel {
-      width: calc(100vw - 24px); max-width: 340px; right: 12px;
-      padding: 12px; font-size: 11px; gap: 8px;
-    }
+    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: 68px; right: 12px; }
+    .style-panel { width: calc(100vw - 24px); max-width: 340px; right: 12px; padding: 12px; font-size: 11px; gap: 8px; }
     .style-panel h4 { font-size: 12px; }
     .style-btn { font-size: 10px; padding: 3px 6px; }
     .shape-picker { padding: 10px; gap: 6px; max-width: calc(100vw - 24px); }
@@ -579,6 +537,21 @@
     <div class="style-item"><span>高度</span><input type="range" id="shapeHeight" min="20" max="400" value="90"><span id="shapeHeightVal">90px</span></div>
     <div class="style-item"><span>圆角</span><input type="range" id="shapeRadius" min="0" max="200" value="0"><span id="shapeRadiusVal">0px</span></div>
     <div class="style-item" id="shapeImgRow" style="display:none;"><span>图片</span><button class="style-btn" id="btnChangeShapeImg">更换图片</button></div>
+  </div>
+
+  <!-- ===== 新增：分隔线样式区 ===== -->
+  <div id="dividerStyleSection" style="display:none;">
+    <h4>分隔线样式</h4>
+    <div class="style-item"><span>颜色</span><input type="color" id="dividerColor" value="#888888"></div>
+    <div class="style-item"><span>粗细</span><input type="range" id="dividerThickness" min="1" max="12" value="1"><span id="dividerThicknessVal">1px</span></div>
+    <div class="style-item"><span>样式</span>
+      <select id="dividerStyle" style="background:#333; color:#fff; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px;">
+        <option value="solid">实线</option>
+        <option value="dashed">虚线</option>
+        <option value="dotted">点线</option>
+        <option value="double">双线</option>
+      </select>
+    </div>
   </div>
 
   <h4>文字样式（点击文字后激活）</h4>
@@ -773,7 +746,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v21';
+  var KEY_CONTENT = 'myPage.glass.v22';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -789,8 +762,12 @@
   var editMode = false;
   var activeTextEl = null;
   var activeShapeEl = null;
+  var activeDivider = null;      // 新增：当前选中的分隔线
   var DEFAULT_HTML = app.innerHTML;
   var customFonts = [];
+
+  // 修复1：用 WeakSet 记录已绑定的 handle，避免通过 data-* 属性被保存到 localStorage
+  var boundHandles = new WeakSet();
 
   var styleSettings = {
     opacity: 65, gradColor1: '#1c1c22', gradColor2: '#0d0d10',
@@ -860,6 +837,13 @@
   document.getElementById('gradAngle').addEventListener('input', function(e){ styleSettings.angle = e.target.value; applySliders(styleSettings); });
   document.getElementById('accentColor').addEventListener('input', function(e){ styleSettings.accent = e.target.value; applyColor(styleSettings.accent); applySliders(styleSettings); });
 
+  function rgbToHex(rgb){
+    if(!rgb) return '#4a9eff';
+    var m = rgb.match(/\d+/g);
+    if(!m) return '#4a9eff';
+    return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
+  }
+
   function updateShapeStyleUI(){
     var section = document.getElementById('shapeStyleSection');
     if(!activeShapeEl){ section.style.display = 'none'; return; }
@@ -879,12 +863,6 @@
     if(isShape){
       document.getElementById('shapeColor').value = rgbToHex(window.getComputedStyle(activeShapeEl).color);
     }
-  }
-  function rgbToHex(rgb){
-    if(!rgb) return '#4a9eff';
-    var m = rgb.match(/\d+/g);
-    if(!m) return '#4a9eff';
-    return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
   }
   document.getElementById('shapeColor').addEventListener('input', function(e){
     if(activeShapeEl && activeShapeEl.classList.contains('shape-block')){
@@ -929,6 +907,70 @@
     if(el) document.getElementById('stylePanel').classList.add('show');
   }
 
+  // ========= 新增：分隔线选中与样式控制 =========
+  function selectDivider(lineEl){
+    if(activeDivider) activeDivider.classList.remove('active');
+    activeDivider = lineEl;
+    if(lineEl){
+      lineEl.classList.add('active');
+      updateDividerStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+    } else {
+      document.getElementById('dividerStyleSection').style.display = 'none';
+    }
+  }
+
+  function updateDividerStyleUI(){
+    var section = document.getElementById('dividerStyleSection');
+    if(!activeDivider){ section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    var cs = window.getComputedStyle(activeDivider);
+    // 颜色
+    document.getElementById('dividerColor').value = rgbToHex(cs.backgroundColor) || '#888888';
+    // 粗细
+    var h = parseInt(cs.height) || 1;
+    document.getElementById('dividerThickness').value = h;
+    document.getElementById('dividerThicknessVal').textContent = h + 'px';
+    // 线型（背景是纯色，没有线型；用自定义属性记录）
+    var style = activeDivider.dataset.lineStyle || 'solid';
+    document.getElementById('dividerStyle').value = style;
+    // 更新实际显示
+    applyDividerLineStyle();
+  }
+
+  function applyDividerLineStyle(){
+    if(!activeDivider) return;
+    var style = activeDivider.dataset.lineStyle || 'solid';
+    var color = activeDivider.dataset.color || rgbToHex(window.getComputedStyle(activeDivider).backgroundColor) || '#888888';
+    var thickness = activeDivider.dataset.thickness || (parseInt(activeDivider.style.height) || 1);
+    // 使用 border-top 实现各种线型
+    activeDivider.style.background = 'transparent';
+    activeDivider.style.height = '0';
+    activeDivider.style.borderTop = thickness + 'px ' + style + ' ' + color;
+    activeDivider.style.borderRadius = '0';
+  }
+
+  document.getElementById('dividerColor').addEventListener('input', function(e){
+    if(!activeDivider) return;
+    activeDivider.dataset.color = e.target.value;
+    applyDividerLineStyle();
+    scheduleSave();
+  });
+  document.getElementById('dividerThickness').addEventListener('input', function(e){
+    if(!activeDivider) return;
+    activeDivider.dataset.thickness = e.target.value;
+    document.getElementById('dividerThicknessVal').textContent = e.target.value + 'px';
+    applyDividerLineStyle();
+    scheduleSave();
+  });
+  document.getElementById('dividerStyle').addEventListener('change', function(e){
+    if(!activeDivider) return;
+    activeDivider.dataset.lineStyle = e.target.value;
+    applyDividerLineStyle();
+    scheduleSave();
+  });
+
+  // ========= 字体导入 =========
   document.getElementById('fontInput').addEventListener('change', function(e){
     var file = e.target.files[0]; if(!file) return;
     var reader = new FileReader();
@@ -1050,16 +1092,39 @@
     toast(target ? '已链接到 ' + target : '已取消链接');
   });
 
+  // 修复3：点击任意可编辑文字 → 激活样式面板
   document.addEventListener('focusin', function(e){
     if(!editMode) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
     if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
       activeTextEl = el;
+      // 清除分隔线选中
+      if(activeDivider){ activeDivider.classList.remove('active'); activeDivider = null; document.getElementById('dividerStyleSection').style.display = 'none'; }
       updateTextStyleUI();
       document.getElementById('stylePanel').classList.add('show');
       el.style.transition = 'box-shadow 0.3s';
       el.style.boxShadow = '0 0 0 4px var(--accent)';
       setTimeout(function(){ el.style.boxShadow = ''; }, 600);
+    }
+  });
+
+  // 修复2：点击任何 block 里的文字（含新加的行列）都能激活样式；同时点击分隔线可选中
+  document.addEventListener('click', function(e){
+    if(!editMode) return;
+    // 优先处理分隔线点击
+    var line = e.target.closest('.divider-line');
+    if(line){
+      selectDivider(line);
+      e.stopPropagation();
+      return;
+    }
+    // 点击可编辑文字 → 更新 activeTextEl
+    var el = e.target.closest('[contenteditable="true"], .float-text-block');
+    if(el && !el.classList.contains('shape-block') && !el.classList.contains('image-frame-block')){
+      activeTextEl = el;
+      if(activeDivider){ activeDivider.classList.remove('active'); activeDivider = null; document.getElementById('dividerStyleSection').style.display = 'none'; }
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
     }
   });
 
@@ -1076,7 +1141,13 @@
         '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
       '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
-    if(editMode) nw.querySelector('.card-col').focus();
+    var newText = nw.querySelector('.card-col');
+    if(editMode){
+      activeTextEl = newText;             // 修复3：新建行列后立即激活
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+      newText.focus();
+    }
     bindResizeEvents(nw); scheduleSave(); toast('已添加行');
   };
   window.addColHere = function(btn){
@@ -1094,7 +1165,13 @@
         '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
       '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
-    if(editMode) nw.querySelector('.card-col').focus();
+    var newText = nw.querySelector('.card-col');
+    if(editMode){
+      activeTextEl = newText;
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+      newText.focus();
+    }
     bindResizeEvents(nw); scheduleSave(); toast('已添加列');
   };
   window.addTextBlockBelow = function(btn){
@@ -1109,11 +1186,17 @@
         '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
       '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
-    if(editMode) nw.querySelector('.text-block').focus();
+    var newText = nw.querySelector('.text-block');
+    if(editMode){
+      activeTextEl = newText;
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+      newText.focus();
+    }
     bindResizeEvents(nw); scheduleSave(); toast('已添加内容');
   };
 
-  // ========= 新增：分隔线 =========
+  // ========= 分隔线 =========
   window.addDivider = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div');
@@ -1129,6 +1212,16 @@
         '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
       '</div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
+    var line = nw.querySelector('.divider-line');
+    // 初始化样式数据
+    line.dataset.color = '#888888';
+    line.dataset.thickness = '1';
+    line.dataset.lineStyle = 'solid';
+    applyDividerLineStyle.call({}, undefined); // 不直接调用，通过选中方式初始化
+    line.style.background = 'transparent';
+    line.style.height = '0';
+    line.style.borderTop = '1px solid #888888';
+    if(editMode) selectDivider(line);
     scheduleSave();
     toast('已添加分隔线');
   };
@@ -1137,9 +1230,14 @@
     var wrapper = btn.closest('.block-wrapper'); var row = wrapper.closest('.card-row');
     if(row){ wrapper.remove(); if(row.querySelectorAll('.block-wrapper').length === 0) row.remove(); }
     else wrapper.remove();
+    if(activeDivider && !document.body.contains(activeDivider)){
+      activeDivider = null;
+      document.getElementById('dividerStyleSection').style.display = 'none';
+    }
     scheduleSave(); toast('已删除');
   };
 
+  // 修复1：改进的缩放绑定，使用 WeakSet 记录已绑定元素
   function bindResizeEvents(host){
     if(!host) return;
     var block, handle;
@@ -1151,8 +1249,9 @@
       handle = host.querySelector(':scope > .resize-handle');
     }
     if(!block || !handle) return;
-    if(handle.dataset.bound) return;
-    handle.dataset.bound = 'true';
+    // 修复：用 WeakSet 判重，避免 data-* 被序列化影响
+    if(boundHandles.has(handle)) return;
+    boundHandles.add(handle);
 
     var isResizing = false, startW, startH, startResX, startResY;
     function startResize(e){
@@ -1209,6 +1308,14 @@
         var h = document.createElement('div'); h.className = 'resize-handle'; block.appendChild(h);
       }
       bindResizeEvents(block);
+    });
+    // 初始化分隔线样式（确保旧版保存的分隔线颜色恢复）
+    document.querySelectorAll('.divider-line').forEach(function(line){
+      if(line.dataset.color){
+        line.style.background = 'transparent';
+        line.style.height = '0';
+        line.style.borderTop = (line.dataset.thickness || 1) + 'px ' + (line.dataset.lineStyle || 'solid') + ' ' + line.dataset.color;
+      }
     });
   }
 
@@ -1494,6 +1601,7 @@
       document.getElementById('framePicker').classList.remove('show');
       document.getElementById('collectionMenu').classList.remove('show');
       if(activeShapeEl){ activeShapeEl.classList.remove('selected'); activeShapeEl = null; updateShapeStyleUI(); }
+      if(activeDivider){ activeDivider.classList.remove('active'); activeDivider = null; document.getElementById('dividerStyleSection').style.display = 'none'; }
     }
     document.querySelectorAll('[data-edit], .text-block, .float-text-block, .card-col').forEach(function(el){
       if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
@@ -1513,6 +1621,7 @@
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
+    clone.querySelectorAll('.divider-block.active').forEach(function(el){ el.classList.remove('active'); });
     return clone.innerHTML;
   }
   var saveTimer;
@@ -1624,7 +1733,12 @@
         '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
       '</div>';
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; panel.insertBefore(wrapper, addBtn);
-    if(editMode) wrapper.querySelector('.text-block').focus();
+    if(editMode){
+      activeTextEl = wrapper.querySelector('.text-block');
+      updateTextStyleUI();
+      document.getElementById('stylePanel').classList.add('show');
+      activeTextEl.focus();
+    }
     bindResizeEvents(wrapper); scheduleSave(); toast('已添加自由文本块');
   };
 
@@ -1675,6 +1789,7 @@
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
+    clone.querySelectorAll('.divider-block.active').forEach(function(el){ el.classList.remove('active'); });
     clone.querySelectorAll('.collection-menu').forEach(function(el){ el.classList.remove('show'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
@@ -1700,6 +1815,7 @@
     var spBtn = document.getElementById('btnStylePanel');
     if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target)){
       if(e.target.closest('.shape-block') || e.target.closest('.image-frame-block')) return;
+      if(e.target.closest('.divider-line')) return;
       if(e.target.closest('[contenteditable="true"]')) return;
       sp.classList.remove('show');
     }
