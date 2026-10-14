@@ -10,6 +10,7 @@
     --glass-border: rgba(255, 255, 255, 0.12);
     --bg-color: #0d0d10;
     --bg-image: none;
+    --bg-pos: 50% 50%;
     --text: #f0f0f0;
     --text-sub: #999;
     --accent: #4a9eff;
@@ -32,14 +33,12 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
   html, body { max-width: 100vw; overflow-x: hidden; }
+
+  /* ===== 背景图用固定伪元素实现，兼容 iOS/安卓铺满 ===== */
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-color);
-    background-image: var(--bg-image);
-    background-size: cover !important;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-image: none;
     color: var(--text); min-height: 100vh;
     padding-top: calc(60px + var(--safe-top));
     padding-bottom: calc(40px + var(--safe-bottom));
@@ -47,6 +46,25 @@
     padding-right: var(--safe-right);
     transition: background-color 0.3s, color 0.3s;
     position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: -1;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: var(--bg-pos);
+    background-repeat: no-repeat;
+    background-color: var(--bg-color);
+    pointer-events: none;
+    will-change: transform;
+  }
+  @supports (-webkit-touch-callout: none) {
+    body::before { height: -webkit-fill-available; }
   }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -535,7 +553,7 @@
     font-family: monospace; backdrop-filter: blur(8px);
   }
 
-  /* ===== 只读模式：隐藏所有编辑相关元素 ===== */
+  /* ===== 只读模式 ===== */
   body.readonly .toolbar,
   body.readonly #btnEdit,
   body.readonly .edit-only,
@@ -663,7 +681,6 @@
 <audio id="bgMusic" src="" loop preload="none"></audio>
 <div class="music-player" id="musicPlayer" title="短按播放/暂停 · 长按换歌"><span id="musicIcon">♪</span></div>
 
-<!-- 音乐输入面板（自定义，不用系统 prompt） -->
 <div class="music-panel-backdrop" id="musicPanelBackdrop"></div>
 <div class="music-panel" id="musicPanel">
   <div class="music-panel-title">更换音乐</div>
@@ -948,8 +965,8 @@
   // ===== 只读模式检测 =====
   var isReadonly = false;
   try {
-    var _params = new URLSearchParams(window.location.search);
-    if(_params.has('view') || _params.has('readonly')) isReadonly = true;
+    var _p = new URLSearchParams(window.location.search);
+    isReadonly = _p.has('view') || _p.has('readonly');
   } catch(e){}
   if(isReadonly){
     document.body.classList.add('readonly');
@@ -994,20 +1011,10 @@
     applyColor(styleSettings.accent);
     applySliders(styleSettings);
     if(savedBgImg !== 'none'){
-      document.body.style.backgroundImage = 'url(' + savedBgImg + ')';
-      document.body.style.backgroundPosition = savedBgPos;
+      document.body.style.setProperty('--bg-image', 'url(' + savedBgImg + ')');
+      document.body.style.setProperty('--bg-pos', savedBgPos);
     }
   } catch(e){}
-
-  // 只读模式下，把所有可编辑元素禁用
-  if(isReadonly){
-    setTimeout(function(){
-      app.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-      document.querySelectorAll('.divider-line, .shape-block, .image-frame-block, .float-text-block').forEach(function(el){
-        el.style.pointerEvents = 'none';
-      });
-    }, 100);
-  }
 
   function applyTheme(dark){
     document.documentElement.classList.toggle('light', !dark);
@@ -1084,22 +1091,20 @@
 
   function playMusic(){
     if(!bgMusic.src || bgMusic.src === window.location.href){
-      if(!isReadonly) toast('请长按音乐按钮设置音乐');
+      toast('请长按音乐按钮设置音乐');
       return;
     }
     bgMusic.play().then(function(){
       musicPlayer.classList.add('playing');
       musicIcon.textContent = '❚❚';
-    }).catch(function(){ if(!isReadonly) toast('播放失败，链接可能无效'); });
+    }).catch(function(){ toast('播放失败，链接可能无效'); });
   }
   function pauseMusic(){
     bgMusic.pause();
     musicPlayer.classList.remove('playing');
     musicIcon.textContent = '♪';
   }
-
   function openMusicPanel(){
-    if(isReadonly) return;   // 只读模式下不弹
     musicPanelBackdrop.classList.add('show');
     musicPanel.classList.add('show');
     try { musicUrlInput.value = localStorage.getItem(KEY_MUSIC) || ''; } catch(e){ musicUrlInput.value = ''; }
@@ -1109,16 +1114,11 @@
     musicPanelBackdrop.classList.remove('show');
     musicPanel.classList.remove('show');
   }
-
   musicPanelBackdrop.addEventListener('click', closeMusicPanel);
   musicCancelBtn.addEventListener('click', closeMusicPanel);
-
   musicConfirmBtn.addEventListener('click', function(){
     var url = (musicUrlInput.value || '').trim();
-    if(!url){
-      toast('请输入音乐链接');
-      return;
-    }
+    if(!url){ toast('请输入音乐链接'); return; }
     try { localStorage.setItem(KEY_MUSIC, url); } catch(e){}
     bgMusic.src = url;
     bgMusic.load();
@@ -1126,7 +1126,6 @@
     playMusic();
     toast('音乐已更换');
   });
-
   musicClearBtn.addEventListener('click', function(){
     try { localStorage.removeItem(KEY_MUSIC); } catch(e){}
     bgMusic.pause();
@@ -1137,18 +1136,13 @@
     closeMusicPanel();
     toast('已清空音乐');
   });
-
   musicUrlInput.addEventListener('keydown', function(e){
-    if(e.key === 'Enter' || e.keyCode === 13){
-      e.preventDefault();
-      musicConfirmBtn.click();
-    }
+    if(e.key === 'Enter' || e.keyCode === 13){ e.preventDefault(); musicConfirmBtn.click(); }
   });
 
   var musicPressTimer = null;
   var musicLongPressed = false;
   var MUSIC_LONG_PRESS_MS = 600;
-
   function startMusicPress(){
     musicLongPressed = false;
     clearTimeout(musicPressTimer);
@@ -1165,7 +1159,6 @@
       if(bgMusic.paused) playMusic(); else pauseMusic();
     }
   }
-
   musicPlayer.addEventListener('mousedown', function(e){ e.preventDefault(); startMusicPress(); });
   musicPlayer.addEventListener('mouseup', onMusicRelease);
   musicPlayer.addEventListener('mouseleave', cancelMusicPress);
@@ -1198,7 +1191,6 @@
     imgPosOverlay.classList.remove('show');
     posState.image = null; posState.target = null; posState.isBg = false;
   }
-
   imgPosReset.addEventListener('click', function(){
     posState.posX = 50; posState.posY = 50;
     imgPosPreview.style.backgroundPosition = '50% 50%';
@@ -1207,9 +1199,8 @@
   imgPosConfirm.addEventListener('click', function(){
     if(!posState.target || !posState.image){ closePosPicker(); return; }
     if(posState.isBg){
-      document.body.style.backgroundImage = 'url(' + posState.image + ')';
-      document.body.style.backgroundPosition = posState.posX + '% ' + posState.posY + '%';
-      document.body.style.backgroundSize = 'cover';
+      document.body.style.setProperty('--bg-image', 'url(' + posState.image + ')');
+      document.body.style.setProperty('--bg-pos', posState.posX + '% ' + posState.posY + '%');
       try {
         localStorage.setItem(KEY_BG_IMG, posState.image);
         localStorage.setItem(KEY_BG_POS, posState.posX + '% ' + posState.posY + '%');
@@ -1246,7 +1237,6 @@
     imgPosPreview.style.backgroundPosition = newX + '% ' + newY + '%';
   }
   function onPosEnd(){ posDragging = false; }
-
   imgPosPreview.addEventListener('mousedown', onPosStart);
   imgPosPreview.addEventListener('touchstart', onPosStart, {passive: false});
   document.addEventListener('mousemove', onPosMove);
@@ -1334,7 +1324,7 @@
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  // ================= 样式面板绑定 =================
+  // ================= 样式面板 =================
   function updateShapeStyleUI(){
     var section = document.getElementById('shapeStyleSection');
     if(!activeShapeEl){ section.style.display = 'none'; return; }
@@ -1661,7 +1651,6 @@
 
   // ================= 增删行列 =================
   window.addRowHere = function(btn){
-    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
@@ -1671,7 +1660,6 @@
     scheduleSave(); toast('已添加行');
   };
   window.addColHere = function(btn){
-    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var targetBlock = wrapper.querySelector('.feed-text, .card-col, .text-block');
     var row = targetBlock.closest('.card-row');
@@ -1684,7 +1672,6 @@
     scheduleSave(); toast('已添加列');
   };
   window.addTextBlockBelow = function(btn){
-    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
     nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
@@ -1695,7 +1682,6 @@
   };
 
   window.addDivider = function(btn){
-    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div');
     nw.className = 'block-wrapper';
@@ -1712,7 +1698,6 @@
   };
 
   window.deleteBlock = function(btn){
-    if(isReadonly) return;
     var wrapper = btn.closest('.block-wrapper'); var row = wrapper.closest('.card-row');
     if(row){ wrapper.remove(); if(row.querySelectorAll('.block-wrapper').length === 0) row.remove(); }
     else wrapper.remove();
@@ -1777,7 +1762,6 @@
   }
 
   function createShape(type){
-    if(isReadonly) return;
     var shape = document.createElement('div');
     shape.className = 'shape-block';
     shape.dataset.shapeType = type;
@@ -1793,7 +1777,6 @@
   }
 
   function createImageFrame(shapeType){
-    if(isReadonly) return;
     var frame = document.createElement('div');
     frame.className = 'image-frame-block';
     frame.style.left = '40px'; frame.style.top = (window.scrollY + 300) + 'px';
@@ -1813,13 +1796,11 @@
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
-    if(isReadonly) return;
     e.stopPropagation();
     document.getElementById('framePicker').classList.remove('show');
     document.getElementById('shapePicker').classList.toggle('show');
   });
   document.getElementById('btnAddImageFrame').addEventListener('click', function(e){
-    if(isReadonly) return;
     e.stopPropagation();
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.toggle('show');
@@ -1838,7 +1819,6 @@
   });
 
   document.getElementById('btnAddFloat').addEventListener('click', function(){
-    if(isReadonly) return;
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
     floatBlock.style.left = '40px';
@@ -1858,7 +1838,6 @@
   });
 
   document.getElementById('btnAddPanel').addEventListener('click', function(){
-    if(isReadonly) return;
     var name = prompt('请输入新页面的名称（将保存在「合集」中）：', '新页面');
     if(!name) return;
     name = name.trim(); if(!name) return;
@@ -1946,7 +1925,6 @@
 
   navCollection.addEventListener('click', function(e){
     e.stopPropagation();
-    if(isReadonly) { /* 只读模式也允许打开合集菜单浏览 */ }
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.remove('show');
     document.getElementById('stylePanel').classList.remove('show');
@@ -1993,7 +1971,6 @@
   }
   var saveTimer;
   function scheduleSave(){
-    if(isReadonly) return;   // 只读模式不保存
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
       try { localStorage.setItem(KEY_CONTENT, serialize()); } catch(err) { toast('存储空间不足'); }
@@ -2017,7 +1994,7 @@
     }
     document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
     panel.style.display = 'block';
-    if(editMode && !isReadonly) toast('已跳转');
+    if(editMode) toast('已跳转');
   };
   window.switchTab = function(targetPanelId){
     var currentVisible = document.querySelector('.panel[style*="display: block"]');
@@ -2053,13 +2030,11 @@
   });
 
   document.getElementById('postBoxTrigger').addEventListener('click', function(e){
-    if(editMode && !isReadonly && e.target.closest('[data-edit]')) return;
-    window.switchTab('panel-1');
-    if(!isReadonly) toast('已跳转到个人信息页');
+    if(editMode && e.target.closest('[data-edit]')) return;
+    window.switchTab('panel-1'); toast('已跳转到个人信息页');
   });
 
   window.addCard = function(panelId){
-    if(isReadonly) return;
     var panel = document.getElementById(panelId); if(!panel) return;
     var card = document.createElement('div'); card.className = 'feed-card glass-card';
     card.innerHTML = '<button class="card-del" contenteditable="false" title="删除这张卡片">×</button>' +
@@ -2074,7 +2049,6 @@
     scheduleSave(); toast('已添加新卡片');
   };
   window.addTextBlock = function(panelId){
-    if(isReadonly) return;
     var panel = document.getElementById(panelId); if(!panel) return;
     var wrapper = document.createElement('div'); wrapper.className = 'block-wrapper';
     wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div><div class="resize-handle"></div>' +
@@ -2086,12 +2060,11 @@
 
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
-    if(!del || !editMode || isReadonly) return; e.preventDefault();
+    if(!del || !editMode) return; e.preventDefault();
     if(confirm('确定删除这张卡片吗？')){ del.closest('.feed-card').remove(); scheduleSave(); toast('卡片已删除'); }
   });
 
   document.getElementById('btnExport').addEventListener('click', function(){
-    if(isReadonly) return;
     var clone = document.documentElement.cloneNode(true);
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
@@ -2103,7 +2076,6 @@
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
   });
   document.getElementById('btnReset').addEventListener('click', function(){
-    if(isReadonly) return;
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
     app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); refreshLinkTargets(); toast('已重置');
   });
@@ -2128,18 +2100,10 @@
     }
   });
 
-  if(!isReadonly){
-    setEdit(false);
-    bindAllResizeEvents();
-    refreshCollectionMenu();
-    refreshLinkTargets();
-  } else {
-    // 只读模式初始化：隐藏所有编辑相关元素，恢复分隔线样式
-    document.querySelectorAll('.divider-line').forEach(function(line){
-      if(line.dataset.color) applyDividerLineStyle(line);
-    });
-    refreshCollectionMenu();
-  }
+  setEdit(false);
+  bindAllResizeEvents();
+  refreshCollectionMenu();
+  refreshLinkTargets();
 })();
 </script>
 </body>
