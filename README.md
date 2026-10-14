@@ -447,7 +447,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
   .image-frame-block.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,158,255,0.3); }
-  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; pointer-events: none; }
+  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block;  }
 
   .element-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
@@ -2139,6 +2139,7 @@ html.light .img-picker {
     else if(shapeType === 'rounded') frame.style.borderRadius = '16px';
     else frame.style.borderRadius = '0px';
     var img = document.createElement('img');
+    img.setAttribute('data-edit-img', '');
     img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="14" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E';
     frame.appendChild(img);
     var handle = document.createElement('div'); handle.className = 'resize-handle'; frame.appendChild(handle);
