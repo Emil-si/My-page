@@ -207,6 +207,7 @@
     padding: 12px; border: 1px dashed var(--glass-border);
     border-radius: 12px; background: rgba(255,255,255,0.02); min-height: 40px;
     word-break: break-all; overflow-wrap: break-word; position: relative;
+    padding-right: 20px;
   }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
@@ -234,6 +235,16 @@
   .block-action-btn:hover { transform: scale(1.1); }
   .block-action-btn.del { background: #e5484d; }
 
+  /* ============ 通用拖拽缩放手柄 ============ */
+  .resize-handle {
+    position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
+    background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
+    cursor: se-resize; z-index: 10; border-bottom-right-radius: 8px;
+    opacity: 0.6;
+  }
+  .resize-handle:hover { opacity: 1; }
+  body:not(.editing) .resize-handle { display: none !important; }
+
   /* ============ 浮动文本框层 ============ */
   #float-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -258,12 +269,6 @@
   }
   .float-text-block .drag-handle:hover { opacity: 1; }
   
-  .float-text-block .resize-handle {
-    position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
-    background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
-    cursor: se-resize; z-index: 3; border-bottom-right-radius: 10px;
-  }
-
   .float-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
     background: #e5484d; color: #fff; border-radius: 50%; border: none;
@@ -481,7 +486,6 @@
       <div class="cover-wrap">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='8' fill='%23444' text-anchor='middle' font-family='monospace'%3E点击更换封面图%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
-      <!-- 个人信息区 -->
       <div class="profile-info">
         <div class="profile-header-row">
           <div class="avatar-wrap">
@@ -492,7 +496,6 @@
             <div class="handle" data-edit>@InfernalBeyond.com</div>
           </div>
         </div>
-        <!-- 数据统计栏（包裹在 block-wrapper 中） -->
         <div class="block-wrapper" style="margin-bottom: 12px;">
           <div class="stats">
             <div><span data-edit>520</span> 正在关注</div>
@@ -514,7 +517,6 @@
         <p data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.What if life is consummated only by the way that time consumes it?What if to live is to be devoured by time and recycled?</p>
       </div>
 
-      <!-- 发帖框 -->
       <div class="post-box" id="postBoxTrigger">
         <input class="post-input" placeholder="说点什么..." data-edit>
         <div class="post-tools">
@@ -621,7 +623,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v12';
+  var KEY_CONTENT = 'myPage.glass.v13';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -736,7 +738,7 @@
     applySliders(styleSettings);
   });
 
-  // ============ 字体导入功能 ============
+  // ============ 字体导入 ============
   document.getElementById('fontInput').addEventListener('change', function(e) {
     var file = e.target.files[0];
     if(!file) return;
@@ -895,13 +897,16 @@
     }
   });
 
-  // ============ 增删行列（修复：增加删除键） ============
+  // ============ 增删行列（带缩放功能） ============
   window.addRowHere = function(btn) {
     var wrapper = btn.closest('.block-wrapper');
     var newWrapper = document.createElement('div');
     newWrapper.className = 'block-wrapper';
+    newWrapper.style.marginTop = '12px';
     newWrapper.innerHTML = `
-      <div class="card-col" contenteditable="true" style="width:100%;">新行内容</div>
+      <div class="card-col" contenteditable="true" style="width:100%;">新行内容
+        <div class="resize-handle"></div>
+      </div>
       <div class="block-actions">
         <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
         <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
@@ -910,8 +915,9 @@
     `;
     wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
     if(editMode) newWrapper.querySelector('.card-col').focus();
+    bindResizeEvents(newWrapper);
     scheduleSave();
-    toast('已添加行');
+    toast('已添加行，可拖拽右下角调整大小');
   };
 
   window.addColHere = function(btn) {
@@ -930,7 +936,9 @@
     newColWrapper.className = 'block-wrapper';
     newColWrapper.style.flex = '1';
     newColWrapper.innerHTML = `
-      <div class="card-col" contenteditable="true">新列内容</div>
+      <div class="card-col" contenteditable="true">新列内容
+        <div class="resize-handle"></div>
+      </div>
       <div class="block-actions">
         <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
         <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
@@ -939,18 +947,20 @@
     `;
     wrapper.parentNode.insertBefore(newColWrapper, wrapper.nextSibling);
     if(editMode) newColWrapper.querySelector('.card-col').focus();
+    bindResizeEvents(newColWrapper);
     scheduleSave();
-    toast('已添加列');
+    toast('已添加列，可拖拽右下角调整大小');
   };
 
-  // 在下方添加全宽文本块
   window.addTextBlockBelow = function(btn) {
     var wrapper = btn.closest('.block-wrapper');
     var newWrapper = document.createElement('div');
     newWrapper.className = 'block-wrapper';
     newWrapper.style.marginTop = '12px';
     newWrapper.innerHTML = `
-      <div class="text-block" contenteditable="true">点击输入新内容...</div>
+      <div class="text-block" contenteditable="true">点击输入新内容...
+        <div class="resize-handle"></div>
+      </div>
       <div class="block-actions">
         <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button>
         <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
@@ -959,11 +969,11 @@
     `;
     wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
     if(editMode) newWrapper.querySelector('.text-block').focus();
+    bindResizeEvents(newWrapper);
     scheduleSave();
-    toast('已在此处添加内容');
+    toast('已在此处添加内容，可拖拽右下角调整大小');
   };
 
-  // 删除块
   window.deleteBlock = function(btn) {
     var wrapper = btn.closest('.block-wrapper');
     var row = wrapper.closest('.card-row');
@@ -979,6 +989,76 @@
     scheduleSave();
     toast('已删除该内容');
   };
+
+  // ============ 通用缩放逻辑绑定 ============
+  function bindResizeEvents(wrapper) {
+    var block = wrapper.querySelector('.card-col, .text-block');
+    if(!block) return;
+    var handle = block.querySelector('.resize-handle');
+    if(!handle) return;
+
+    handle.addEventListener('mousedown', startResize);
+    handle.addEventListener('touchstart', startResize, {passive: false});
+
+    var isResizing = false;
+    var startW, startH, startResX, startResY;
+
+    function startResize(e) {
+      if(!editMode) return;
+      e.preventDefault(); e.stopPropagation();
+      isResizing = true;
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      startResX = clientX; startResY = clientY;
+      startW = block.offsetWidth; startH = block.offsetHeight;
+      
+      // 如果它在 flex 行里，调整宽度需要脱离 flex
+      if (block.closest('.card-row')) {
+        block.style.flex = 'none';
+      }
+      
+      document.addEventListener('mousemove', onResize);
+      document.addEventListener('touchmove', onResize, {passive: false});
+      document.addEventListener('mouseup', stopResize);
+      document.addEventListener('touchend', stopResize);
+    }
+
+    function onResize(e) {
+      if(!isResizing) return;
+      e.preventDefault();
+      var clientX = e.clientX || e.touches[0].clientX;
+      var clientY = e.clientY || e.touches[0].clientY;
+      var newW = Math.max(80, startW + (clientX - startResX));
+      var newH = Math.max(40, startH + (clientY - startResY));
+      block.style.width = newW + 'px';
+      block.style.height = newH + 'px';
+    }
+
+    function stopResize() {
+      isResizing = false;
+      document.removeEventListener('mousemove', onResize);
+      document.removeEventListener('touchmove', onResize);
+      document.removeEventListener('mouseup', stopResize);
+      document.removeEventListener('touchend', stopResize);
+      scheduleSave();
+    }
+  }
+
+  // 绑定现有块的缩放事件
+  function bindAllResizeEvents() {
+    document.querySelectorAll('.card-col, .text-block').forEach(function(block) {
+      if(!block.querySelector('.resize-handle')) {
+        var handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        block.appendChild(handle);
+      }
+      // 防止重复绑定
+      if(!block.dataset.resizeBound) {
+        block.dataset.resizeBound = 'true';
+        bindResizeEvents(block.closest('.block-wrapper') || block.parentNode);
+      }
+    });
+  }
 
   // 删除卡片
   app.addEventListener('click', function(e){
@@ -1060,39 +1140,39 @@
       scheduleSave();
     }
 
-    resizeHandle.addEventListener('mousedown', startResize);
-    resizeHandle.addEventListener('touchstart', startResize, {passive: false});
-    var isResizing = false;
-    var startW, startH, startResX, startResY;
-    function startResize(e) {
+    resizeHandle.addEventListener('mousedown', startFloatResize);
+    resizeHandle.addEventListener('touchstart', startFloatResize, {passive: false});
+    var isFloatResizing = false;
+    var fStartW, fStartH, fStartResX, fStartResY;
+    function startFloatResize(e) {
       if(!editMode) return;
       e.preventDefault(); e.stopPropagation();
-      isResizing = true;
+      isFloatResizing = true;
       var clientX = e.clientX || e.touches[0].clientX;
       var clientY = e.clientY || e.touches[0].clientY;
-      startResX = clientX; startResY = clientY;
-      startW = floatBlock.offsetWidth; startH = floatBlock.offsetHeight;
-      document.addEventListener('mousemove', onResize);
-      document.addEventListener('touchmove', onResize, {passive: false});
-      document.addEventListener('mouseup', stopResize);
-      document.addEventListener('touchend', stopResize);
+      fStartResX = clientX; fStartResY = clientY;
+      fStartW = floatBlock.offsetWidth; fStartH = floatBlock.offsetHeight;
+      document.addEventListener('mousemove', onFloatResize);
+      document.addEventListener('touchmove', onFloatResize, {passive: false});
+      document.addEventListener('mouseup', stopFloatResize);
+      document.addEventListener('touchend', stopFloatResize);
     }
-    function onResize(e) {
-      if(!isResizing) return;
+    function onFloatResize(e) {
+      if(!isFloatResizing) return;
       e.preventDefault();
       var clientX = e.clientX || e.touches[0].clientX;
       var clientY = e.clientY || e.touches[0].clientY;
-      var newW = Math.max(100, startW + (clientX - startResX));
-      var newH = Math.max(40, startH + (clientY - startResY));
+      var newW = Math.max(100, fStartW + (clientX - fStartResX));
+      var newH = Math.max(40, fStartH + (clientY - fStartResY));
       floatBlock.style.width = newW + 'px';
       floatBlock.style.height = newH + 'px'; 
     }
-    function stopResize() {
-      isResizing = false;
-      document.removeEventListener('mousemove', onResize);
-      document.removeEventListener('touchmove', onResize);
-      document.removeEventListener('mouseup', stopResize);
-      document.removeEventListener('touchend', stopResize);
+    function stopFloatResize() {
+      isFloatResizing = false;
+      document.removeEventListener('mousemove', onFloatResize);
+      document.removeEventListener('touchmove', onFloatResize);
+      document.removeEventListener('mouseup', stopFloatResize);
+      document.removeEventListener('touchend', stopFloatResize);
       scheduleSave();
     }
 
@@ -1225,7 +1305,9 @@
     var wrapper = document.createElement('div');
     wrapper.className = 'block-wrapper';
     wrapper.innerHTML = `
-      <div class="text-block" contenteditable="true">点击输入自由文本内容...</div>
+      <div class="text-block" contenteditable="true">点击输入自由文本内容...
+        <div class="resize-handle"></div>
+      </div>
       <div class="block-actions">
         <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button>
         <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
@@ -1235,6 +1317,7 @@
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; 
     panel.insertBefore(wrapper, addBtn);
     if(editMode) wrapper.querySelector('.text-block').focus();
+    bindResizeEvents(wrapper);
     scheduleSave();
     toast('已添加自由文本块');
   };
@@ -1290,7 +1373,9 @@
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
     
     if(on) { 
-      toast('编辑已开启，点击块右上角可增删行列'); 
+      // 开启编辑时，为所有现有块绑定缩放事件
+      bindAllResizeEvents();
+      toast('编辑已开启，点击块右下角可调大小'); 
     } else { 
       scheduleSave(); 
       toast('已保存'); 
