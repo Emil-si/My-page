@@ -5,7 +5,6 @@
 <title>个人主页</title>
 <style>
   :root{
-    --glass-blur: blur(24px) saturate(180%);
     --glass-border: rgba(255, 255, 255, 0.12);
     --bg-color: #0d0d10;
     --bg-image: none;
@@ -14,8 +13,8 @@
     --text-sub: #999;
     --accent: #4a9eff;
     --accent-text: #ffffff;
-    --card-bg-color: rgba(25, 25, 30, 0.65);
-    --card-gradient: linear-gradient(135deg, #1c1c22 0%, #0d0d10 100%);
+    --card-bg-color: rgba(25, 25, 30, 0.55);
+    --card-gradient: linear-gradient(135deg, rgba(28,28,34,0.75) 0%, rgba(13,13,16,0.75) 100%);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
@@ -26,45 +25,62 @@
     --bg-color: #f2f2f5;
     --text: #111;
     --text-sub: #666;
-    --card-bg-color: rgba(255, 255, 255, 0.75);
-    --card-gradient: linear-gradient(135deg, #ffffff 0%, #f0f0f5 100%);
+    --card-bg-color: rgba(255, 255, 255, 0.65);
+    --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(240,240,245,0.8) 100%);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
-  html, body { max-width: 100vw; overflow-x: hidden; }
-
-  /* ===== 背景图用固定伪元素实现，兼容 iOS/安卓铺满 ===== */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--bg-color);
-    background-image: none;
     color: var(--text); min-height: 100vh;
     padding-top: calc(60px + var(--safe-top));
     padding-bottom: calc(40px + var(--safe-bottom));
     padding-left: var(--safe-left);
     padding-right: var(--safe-right);
-    transition: background-color 0.3s, color 0.3s;
+    transition: color 0.3s;
     position: relative;
   }
-  body::before {
-    content: "";
+
+  /* ===== 独立全屏背景层 ===== */
+  .bg-layer {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    z-index: -1;
+    z-index: 0;
     background-image: var(--bg-image);
     background-size: cover;
     background-position: var(--bg-pos);
     background-repeat: no-repeat;
     background-color: var(--bg-color);
     pointer-events: none;
-    will-change: transform;
+    transition: background-color 0.3s;
   }
   @supports (-webkit-touch-callout: none) {
-    body::before { height: -webkit-fill-available; }
+    .bg-layer { height: -webkit-fill-available; }
   }
+
+  /* 主内容浮在背景层上方 */
+  .toolbar,
+  .top-nav,
+  .container,
+  .music-player,
+  .panel-nav,
+  .toast {
+    position: relative;
+    z-index: 2;
+  }
+  .toolbar { position: fixed; }
+  .top-nav { position: sticky; }
+  .music-player { position: fixed; }
+  .toast { position: fixed; }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -75,6 +91,12 @@
   .anim-zoomIn { animation: zoomIn 1s ease forwards; }
   .anim-slideLeft { animation: slideLeft 1s ease forwards; }
 
+  /* ===== 毛玻璃通用类（写死 blur 值，不依赖变量） ===== */
+  .glass {
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
   .toolbar{
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
     height: calc(50px + var(--safe-top));
@@ -82,17 +104,21 @@
     padding-left: calc(16px + var(--safe-left));
     padding-right: calc(16px + var(--safe-right));
     display: flex; align-items: center; gap: 8px;
-    background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.72);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
   }
-  html.light .toolbar { background: rgba(255, 255, 255, 0.75); }
+  html.light .toolbar { background: rgba(255, 255, 255, 0.72); }
   .toolbar::-webkit-scrollbar { display: none; }
   .toolbar .spacer{flex:1;}
   .tbtn{
     display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px;
     border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05);
     color: var(--text); cursor: pointer; font-size: 12px; font-family: monospace;
-    transition: all 0.2s; backdrop-filter: blur(8px); white-space: nowrap; flex-shrink: 0;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
   .tbtn:active{transform: scale(0.95);}
   .tbtn.on{background: var(--accent); color: var(--accent-text); border-color: var(--accent);}
@@ -106,7 +132,9 @@
     right: calc(16px + var(--safe-right));
     z-index: 9999;
     width: 280px; padding: 16px; border-radius: 16px;
-    background: rgba(20, 20, 25, 0.95); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.95);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: none; flex-direction: column; gap: 10px;
     color: #fff; font-size: 12px; max-height: 80vh; overflow-y: auto;
@@ -130,7 +158,8 @@
     padding: 22px 20px;
     border-radius: 20px;
     background: rgba(20, 20, 25, 0.98);
-    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 24px 80px rgba(0,0,0,0.7);
     color: #fff; font-size: 13px;
@@ -170,6 +199,7 @@
   .music-panel-backdrop {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     z-index: 10001;
     display: none;
@@ -180,7 +210,9 @@
     position: fixed;
     top: calc(60px + var(--safe-top));
     left: 50%; transform: translateX(-50%);
-    z-index: 10000; background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur);
+    z-index: 10000; background: rgba(20, 20, 25, 0.98);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 16px;
     padding: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     display: none; grid-template-columns: repeat(5, 1fr); gap: 8px;
@@ -200,11 +232,13 @@
     padding: 12px calc(16px + var(--safe-left)) 12px calc(16px + var(--safe-right));
     position: sticky; top: calc(50px + var(--safe-top));
     z-index: 998;
-    background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.72);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--glass-border);
     overflow-x: auto; scrollbar-width: none; align-items: center;
   }
-  html.light .top-nav { background: rgba(255, 255, 255, 0.75); }
+  html.light .top-nav { background: rgba(255, 255, 255, 0.72); }
   .top-nav::-webkit-scrollbar { display: none; }
   .nav-link {
     flex: 1 0 auto; text-align: center; padding: 8px 16px; border-radius: 20px;
@@ -225,7 +259,9 @@
     top: calc(108px + var(--safe-top));
     left: calc(16px + var(--safe-left));
     z-index: 10001;
-    background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.98);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 14px;
     padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     display: none; min-width: 180px; max-width: 80vw; max-height: 60vh; overflow-y: auto;
@@ -250,14 +286,16 @@
 
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
-    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
   .main-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
-    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 24px;
     padding: 0 0 24px 0; overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
@@ -300,7 +338,8 @@
 
   .feed-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
-    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative;
     word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
@@ -395,7 +434,9 @@
   .float-text-block {
     position: absolute; z-index: 998; min-width: 100px; min-height: 40px;
     padding: 14px; border-radius: 12px; border: 2px dashed var(--accent);
-    background: rgba(20, 20, 25, 0.85); backdrop-filter: blur(12px);
+    background: rgba(20, 20, 25, 0.85);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     color: var(--text); font-size: 15px; line-height: 1.5; word-break: break-all;
     cursor: move; outline: none; box-sizing: border-box; display: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: auto; touch-action: none;
@@ -438,7 +479,9 @@
   .panel-nav-btn {
     display: flex; align-items: center; justify-content: center;
     min-width: 48px; height: 48px; padding: 0 16px; border-radius: 24px;
-    background: var(--card-bg-color); backdrop-filter: var(--glass-blur);
+    background: var(--card-bg-color);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border); color: var(--text);
     font-size: 20px; cursor: pointer; transition: all 0.2s;
     font-family: inherit; user-select: none;
@@ -452,7 +495,9 @@
     right: calc(20px + var(--safe-right));
     z-index: 1000;
     width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(20, 20, 25, 0.8); backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.8);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
     display: flex; align-items: center; justify-content: center;
@@ -482,6 +527,7 @@
   .block-actions {
     position: absolute; top: 0; right: 0; display: flex; gap: 4px; z-index: 20;
     background: rgba(0,0,0,0.5); padding: 4px; border-radius: 6px;
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px); opacity: 0.85; transition: opacity 0.2s;
   }
   body.editing .block-actions { display: flex !important; }
@@ -504,7 +550,9 @@
 
   .img-pos-overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     z-index: 99999; display: none; flex-direction: column;
     align-items: center; justify-content: center;
     padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
@@ -549,7 +597,9 @@
     padding: 6px 14px; border-radius: 16px;
     background: rgba(255,255,255,0.15); color: #fff;
     border: none; font-size: 11px; cursor: pointer;
-    font-family: monospace; backdrop-filter: blur(8px);
+    font-family: monospace;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 
   /* ===== 只读模式 ===== */
@@ -625,9 +675,32 @@
     .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
     .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(16px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
-    .style-panel { width: calc(100vw - 24px); max-width: 340px; right: calc(12px + var(--safe-right)); padding: 12px; font-size: 11px; gap: 8px; }
-    .style-panel h4 { font-size: 12px; }
-    .style-btn { font-size: 10px; padding: 3px 6px; }
+    .style-panel {
+      top: auto !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      max-height: 60vh !important;
+      border-radius: 20px 20px 0 0 !important;
+      padding: 16px 16px calc(16px + var(--safe-bottom)) 16px !important;
+      box-shadow: 0 -12px 40px rgba(0,0,0,0.5) !important;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex !important;
+      flex-direction: column;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .style-panel.show { transform: translateY(0); visibility: visible; opacity: 1; }
+    .style-panel h4 { font-size: 13px !important; padding: 6px 0 !important; margin: 4px 0 !important; }
+    .style-item { margin-bottom: 8px !important; gap: 10px !important; }
+    .style-item span { font-size: 12px !important; flex-shrink: 0; min-width: 60px; }
+    .style-item input[type="range"] { height: 24px; }
+    .style-item input[type="color"] { width: 34px !important; height: 34px !important; border-radius: 8px !important; }
+    .style-btn { padding: 6px 12px !important; font-size: 12px !important; min-height: 32px; }
+    .font-select { padding: 6px 8px !important; font-size: 12px !important; min-height: 32px; }
     .shape-picker { padding: 10px; gap: 6px; max-width: calc(100vw - 24px); }
     .shape-pick-item { width: 40px; height: 40px; }
     .shape-pick-item svg { width: 24px; height: 24px; }
@@ -668,7 +741,9 @@
     .card-col, .text-block { padding: 6px 18px 6px 6px; font-size: 12px; }
     .panel-nav-btn { min-width: 40px; height: 40px; font-size: 16px; border-radius: 20px; }
     .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(14px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
-    .style-panel { width: calc(100vw - 20px); right: calc(10px + var(--safe-right)); padding: 10px; max-height: calc(100dvh - 100px); }
+    .style-panel { max-height: 65vh !important; padding: 12px 12px calc(12px + var(--safe-bottom)) 12px !important; }
+    .style-panel h4 { font-size: 12px !important; }
+    .style-item span { font-size: 11px !important; min-width: 50px; }
     .img-pos-preview { width: 94vw; height: 50vh; }
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
     body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
@@ -676,6 +751,8 @@
 </style>
 </head>
 <body>
+
+<div class="bg-layer"></div>
 
 <audio id="bgMusic" src="" loop preload="none"></audio>
 <div class="music-player" id="musicPlayer" title="短按播放/暂停 · 长按换歌"><span id="musicIcon">♪</span></div>
@@ -971,7 +1048,7 @@
     document.body.classList.add('readonly');
   }
 
-  var KEY_CONTENT = 'myPage.glass.v26';
+  var KEY_CONTENT = 'myPage.glass.v27';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -980,6 +1057,7 @@
   var KEY_MUSIC   = 'myPage.musicUrl.v2';
 
   var app = document.getElementById('app');
+  var bgLayer = document.querySelector('.bg-layer');
   var fileInput = document.getElementById('fileInput');
   var bgInput = document.getElementById('bgInput');
   var elementImageInput = document.getElementById('elementImageInput');
@@ -998,6 +1076,19 @@
     angle: 135, accent: '#4a9eff'
   };
 
+  // ===== 设置背景工具函数：优先用 CSS 变量控制 .bg-layer =====
+  function setBackgroundImage(dataUrl, pos){
+    if(!bgLayer) return;
+    if(dataUrl){
+      bgLayer.style.backgroundImage = 'url(' + dataUrl + ')';
+    } else {
+      bgLayer.style.backgroundImage = 'none';
+    }
+    bgLayer.style.backgroundPosition = pos || '50% 50%';
+    bgLayer.style.backgroundSize = 'cover';
+    bgLayer.style.backgroundRepeat = 'no-repeat';
+  }
+
   try {
     var saved = localStorage.getItem(KEY_CONTENT);
     if(saved) app.innerHTML = saved;
@@ -1009,9 +1100,8 @@
     applyTheme(savedTheme === 'dark');
     applyColor(styleSettings.accent);
     applySliders(styleSettings);
-    if(savedBgImg !== 'none'){
-      document.body.style.setProperty('--bg-image', 'url(' + savedBgImg + ')');
-      document.body.style.setProperty('--bg-pos', savedBgPos);
+    if(savedBgImg && savedBgImg !== 'none'){
+      setBackgroundImage(savedBgImg, savedBgPos);
     }
   } catch(e){}
 
@@ -1040,10 +1130,9 @@
       var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
       return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
     }
-    var bgColor = hexToRgba(settings.gradColor1, opacity);
     var gradColor1 = hexToRgba(settings.gradColor1, opacity);
     var gradColor2 = hexToRgba(settings.gradColor2, opacity);
-    document.documentElement.style.setProperty('--card-bg-color', bgColor);
+    document.documentElement.style.setProperty('--card-bg-color', hexToRgba(settings.gradColor1, opacity * 0.7));
     document.documentElement.style.setProperty('--card-gradient', 'linear-gradient(' + settings.angle + 'deg, ' + gradColor1 + ' 0%, ' + gradColor2 + ' 100%)');
     document.getElementById('opacitySlider').value = settings.opacity;
     document.getElementById('opacityVal').textContent = settings.opacity + '%';
@@ -1198,8 +1287,7 @@
   imgPosConfirm.addEventListener('click', function(){
     if(!posState.target || !posState.image){ closePosPicker(); return; }
     if(posState.isBg){
-      document.body.style.setProperty('--bg-image', 'url(' + posState.image + ')');
-      document.body.style.setProperty('--bg-pos', posState.posX + '% ' + posState.posY + '%');
+      setBackgroundImage(posState.image, posState.posX + '% ' + posState.posY + '%');
       try {
         localStorage.setItem(KEY_BG_IMG, posState.image);
         localStorage.setItem(KEY_BG_POS, posState.posX + '% ' + posState.posY + '%');
