@@ -821,6 +821,90 @@
     .music-panel { width: min(94vw, 340px); padding: 16px 14px; }
     body.readonly { padding-top: calc(6px + var(--safe-top)) !important; }
   }
+/* ===== 图片库面板 ===== */
+.img-picker {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 50vh;
+  background: rgba(20, 20, 25, 0.98);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid var(--glass-border);
+  border-radius: 20px 20px 0 0;
+  z-index: 10050;
+  display: none;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.5);
+}
+html.light .img-picker {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.15);
+}
+.img-picker.show { display: flex; transform: translateY(0); }
+.img-picker-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+.img-picker-title {
+  font-size: 13px; color: var(--accent);
+  font-family: monospace; letter-spacing: 0.1em;
+}
+.img-picker-actions { display: flex; gap: 8px; }
+.img-picker-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.img-picker-btn:hover { background: rgba(127,127,127,0.15); }
+.img-picker-btn.close {
+  color: #e5484d;
+  border-color: rgba(229,72,77,0.4);
+  font-size: 18px;
+  padding: 2px 10px;
+  line-height: 1.2;
+}
+.img-picker-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 12px;
+  padding-bottom: calc(12px + var(--safe-bottom));
+}
+@media (max-width: 480px) {
+  .img-picker-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.img-picker-item {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(127,127,127,0.1);
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+.img-picker-item:hover { border-color: var(--accent); transform: scale(1.03); }
+.img-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-picker-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 12px;
+  padding: 40px 0;
+  font-family: monospace;
+}
 </style>
 </head>
 <body>
@@ -1108,6 +1192,16 @@
   </div>
 </div>
 
+<div class="img-picker" id="imgPicker">
+  <div class="img-picker-header">
+    <div class="img-picker-title">选择图片</div>
+    <div class="img-picker-actions">
+      <button class="img-picker-btn" id="imgPickerUpload">📷 从相册上传</button>
+      <button class="img-picker-btn close" id="imgPickerClose">×</button>
+    </div>
+  </div>
+  <div class="img-picker-grid" id="imgPickerGrid"></div>
+</div>
 <div class="toast" id="toast"></div>
 <input type="file" id="fileInput" accept="image/*" hidden>
 <input type="file" id="bgInput" accept="image/*" hidden>
@@ -1487,21 +1581,7 @@
 
   document.getElementById('btnBgImage').addEventListener('click', function(){
     if(isReadonly) return;
-    var choice = prompt('更换背景图\n\n【推荐】直接输入 GitHub 仓库里的图片文件名，例如：\nIMG_9006.png\n\n留空点「确定」→ 从手机相册选图\n点「取消」→ 什么都不做', '');
-    if(choice === null) return;
-    choice = choice.trim();
-    if(choice){
-      if(bgImg){
-        bgImg.src = choice;
-        bgImg.classList.remove('hidden');
-        bgImg.style.objectPosition = '50% 50%';
-      }
-      try { localStorage.setItem(KEY_BG_IMG, choice); } catch(e){}
-      try { localStorage.setItem(KEY_BG_POS, '50% 50%'); } catch(e){}
-      toast('背景已替换为 ' + choice);
-      return;
-    }
-    bgInput.value = ''; bgInput.click();
+    openImgPicker(null, 'bg');
   });
   bgInput.addEventListener('change', function(){
     var file = bgInput.files && bgInput.files[0]; if(!file) return;
@@ -1515,24 +1595,9 @@
     }).catch(function(){ toast('图片处理失败'); });
   });
 
-  app.addEventListener('click', function(e){
-    if(!editMode || isReadonly) return;
-    var img = e.target.closest('img[data-edit-img]');
-    if(img){
-      e.preventDefault(); e.stopPropagation();
-      currentImg = img;
-      var choice = prompt('更换图片\n\n【推荐】直接输入 GitHub 仓库里的图片文件名，例如：\nIMG_8450.jpeg\n\n留空点「确定」→ 从手机相册选图\n点「取消」→ 什么都不做', '');
-      if(choice === null) return;
-      choice = choice.trim();
-      if(choice){
-        img.src = choice;
-        scheduleSave();
-        toast('已替换为 ' + choice);
-        return;
-      }
-      fileInput.value = '';
-      fileInput.click();
-    }
+  document.getElementById('btnBgImage').addEventListener('click', function(){
+    if(isReadonly) return;
+    openImgPicker(null, 'bg');
   });
   fileInput.addEventListener('change', function(){
     var file = fileInput.files && fileInput.files[0];
@@ -2225,6 +2290,95 @@
     }
   });
 
+  // ================= 图片库面板 =================
+  // ★ 你的图片文件名列表，以后加图片就在这里加一行
+  var GITHUB_IMAGES = [
+    'IMG_6273.jpeg',
+    'IMG_6334.jpeg',
+    'IMG_6394.jpeg',
+    'IMG_6395.jpeg',
+    'IMG_6396.jpeg',
+    'IMG_7871.jpeg',
+    'IMG_7872.jpeg',
+    'IMG_7873.jpeg',
+    'IMG_7874.jpeg',
+    'IMG_8450.jpeg',
+    'IMG_8451.jpeg',
+    'IMG_8452.jpeg',
+    'IMG_8453.jpeg',
+    'IMG_8454.jpeg',
+    'IMG_8455.jpeg',
+    'IMG_8456.jpeg',
+    'IMG_9006.png',
+    'IMG_9007.png',
+    'IMG_9008.png',
+    'IMG_9009.png',
+    'IMG_9010.png',
+    'IMG_9011.png',
+    'IMG_9012.png',
+    'IMG_9013.png',
+    'IMG_9014.png',
+    'IMG_9016.png'
+  ];
+
+  var imgPickerTargetType = 'normal';  // 'normal' 替换普通图片，'bg' 换背景
+
+  function buildImgPicker(){
+    var grid = document.getElementById('imgPickerGrid');
+    grid.innerHTML = '';
+    if(GITHUB_IMAGES.length === 0){
+      grid.innerHTML = '<div class="img-picker-empty">暂无图片<br>请把图片上传到 GitHub 仓库<br>然后把文件名加到代码里的 GITHUB_IMAGES 列表中</div>';
+      return;
+    }
+    GITHUB_IMAGES.forEach(function(name){
+      var item = document.createElement('div');
+      item.className = 'img-picker-item';
+      item.title = name;
+      var img = document.createElement('img');
+      img.src = name;   // 相对路径，指向同目录的 GitHub 图片
+      img.alt = name;
+      img.loading = 'lazy';
+      item.appendChild(img);
+      item.addEventListener('click', function(){
+        if(imgPickerTargetType === 'bg'){
+          setBackgroundImage(name, '50% 50%');
+          try {
+            localStorage.setItem(KEY_BG_IMG, name);
+            localStorage.setItem(KEY_BG_POS, '50% 50%');
+          } catch(e){}
+        } else if(currentImg){
+          currentImg.src = name;
+        }
+        scheduleSave();
+        toast('已替换为 ' + name);
+        closeImgPicker();
+      });
+      grid.appendChild(item);
+    });
+  }
+
+  function openImgPicker(targetImg, type){
+    imgPickerTargetType = type || 'normal';
+    currentImg = targetImg || null;
+    buildImgPicker();
+    document.getElementById('imgPicker').classList.add('show');
+  }
+
+  function closeImgPicker(){
+    document.getElementById('imgPicker').classList.remove('show');
+  }
+
+  document.getElementById('imgPickerClose').addEventListener('click', closeImgPicker);
+
+  // 「从相册上传」按钮 —— 走原来的本地相册上传逻辑
+  document.getElementById('imgPickerUpload').addEventListener('click', function(){
+    closeImgPicker();
+    if(imgPickerTargetType === 'bg'){
+      bgInput.value = ''; bgInput.click();
+    } else {
+      fileInput.value = ''; fileInput.click();
+    }
+  });
   function setEdit(on){
     if(isReadonly) return;
     editMode = on;
