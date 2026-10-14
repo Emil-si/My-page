@@ -1,4 +1,3 @@
-index.html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,22 +6,31 @@ index.html
 <title>我的主页</title>
 <style>
   :root{
-    --bg:#f8f9fa; --card:#ffffff; --text:#171717; --text-sub:#737373;
-    --border:#e5e5e5; --accent:#171717; --accent-text:#ffffff;
-    --bar:rgba(255,255,255,.78);
+    --bg: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    --card: rgba(255, 255, 255, 0.7);
+    --text:#1a1a1a; --text-sub:#666666;
+    --border: rgba(0,0,0,0.08); --accent:#1a1a1a; --accent-text:#ffffff;
+    --bar:rgba(255,255,255,0.6);
+    --shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    --blur: blur(16px);
   }
   html.dark{
-    --bg:#0c0d0e; --card:#171717; --text:#f5f5f5; --text-sub:#a3a3a3;
-    --border:#262626; --accent:#ffffff; --accent-text:#171717;
-    --bar:rgba(12,13,14,.78);
+    --bg: linear-gradient(135deg, #0b0c10 0%, #15171e 100%);
+    --card: rgba(30, 32, 38, 0.6);
+    --text:#f5f5f5; --text-sub:#a3a3a3;
+    --border: rgba(255,255,255,0.08); --accent:#ffffff; --accent-text:#171717;
+    --bar:rgba(15,17,22,0.6);
+    --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;
-    background:var(--bg); color:var(--text); font-weight:300;
-    transition:background .2s,color .2s; min-height:100vh;
-    padding-top:56px;
+    background: var(--bg);
+    background-attachment: fixed;
+    color:var(--text); font-weight:300;
+    transition:background .3s,color .3s; min-height:100vh;
+    padding-top:56px; padding-bottom: 90px; /* 给底部音乐按钮留出空间 */
   }
 
   /* ============ 顶部工具栏 ============ */
@@ -31,9 +39,9 @@ index.html
     height:56px; display:flex; align-items:center; gap:6px;
     padding:0 14px;
     background:var(--bar);
-    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
     border-bottom:1px solid var(--border);
-    transition:background .2s,border-color .2s;
+    transition:background .3s,border-color .3s;
   }
   .toolbar .spacer{flex:1;}
   .tbtn{
@@ -43,7 +51,7 @@ index.html
     color:var(--text); cursor:pointer;
     font-size:12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
     letter-spacing:.04em; white-space:nowrap;
-    transition:background .15s,color .15s,border-color .15s;
+    transition:all .2s;
   }
   .tbtn:hover{background:var(--border);}
   .tbtn:active{transform:scale(.96);}
@@ -57,7 +65,7 @@ index.html
   .brand{display:flex; align-items:center; gap:12px;}
   .brand-text{display:flex; flex-direction:column; gap:3px; min-width:0;}
   .brand-name{
-    font-size:15px; font-weight:400; letter-spacing:.08em;
+    font-size:15px; font-weight:500; letter-spacing:.08em;
     text-transform:uppercase; line-height:1.3;
   }
   .brand-sub{
@@ -66,21 +74,24 @@ index.html
   }
 
   /* ============ 图片容器 ============ */
-  .img-wrap{overflow:hidden; background:var(--border); flex:none;}
+  .img-wrap{overflow:hidden; background:var(--border); flex:none; position: relative;}
   .img-wrap img{width:100%; height:100%; object-fit:cover; display:block;}
-  .avatar-wrap{width:38px; height:38px; border-radius:12px;}
+  .avatar-wrap{width:42px; height:42px; border-radius:14px; box-shadow: var(--shadow);}
   .cover-wrap{
-    width:100%; aspect-ratio:16/9; border-radius:14px;
-    margin-bottom:18px;
+    width:100%; aspect-ratio:16/9; border-radius:16px;
+    margin-bottom:18px; box-shadow: var(--shadow);
   }
 
   /* ============ 导航 ============ */
   nav{
     display:flex; gap:4px; padding:5px;
-    background:var(--border); border-radius:12px;
+    background:var(--card); border-radius:12px;
     max-width:720px; margin:18px auto 0;
     overflow-x:auto; -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
   }
   nav::-webkit-scrollbar{display:none;}
   .nav-btn{
@@ -88,26 +99,29 @@ index.html
     background:transparent; color:var(--text-sub); cursor:pointer;
     font-size:11px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
     letter-spacing:.06em; white-space:nowrap;
-    transition:background .15s,color .15s;
+    transition:all .2s;
   }
-  .nav-btn.active{background:var(--accent); color:var(--accent-text);}
+  .nav-btn.active{background:var(--accent); color:var(--accent-text); font-weight:600;}
   .nav-btn:hover:not(.active){background:color-mix(in srgb,var(--bg) 65%,transparent);}
 
   /* ============ 内容区 ============ */
-  main{max-width:720px; margin:0 auto; padding:20px 20px 80px;}
+  main{max-width:720px; margin:0 auto; padding:20px 20px 40px;}
   .panel{display:none;}
-  .panel.active{display:block; animation:fade .25s ease;}
-  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .panel.active{display:block; animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
   .card{
     position:relative;
     background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:22px; margin-bottom:14px;
-    transition:background .2s,border-color .2s;
+    border-radius:18px; padding:24px; margin-bottom:16px;
+    transition:all .3s;
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--blur);
   }
-  .card h2{font-size:20px; font-weight:400; margin-bottom:10px; letter-spacing:.01em; line-height:1.4;}
+  .card:hover { transform: translateY(-2px); box-shadow: 0 15px 45px -10px rgba(0,0,0,0.15); }
+  .card h2{font-size:20px; font-weight:500; margin-bottom:10px; letter-spacing:.01em; line-height:1.4;}
   .card h3{
-    font-size:12px; font-weight:500; margin-bottom:8px;
+    font-size:12px; font-weight:600; margin-bottom:8px;
     color:var(--text-sub); text-transform:uppercase; letter-spacing:.1em;
   }
   .card p{font-size:14px; line-height:1.8; color:var(--text-sub);}
@@ -115,44 +129,64 @@ index.html
 
   .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
   .tag{
-    padding:4px 11px; border-radius:999px;
+    padding:4px 12px; border-radius:999px;
     border:1px solid var(--border); font-size:12px;
     color:var(--text-sub);
     font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    background: rgba(0,0,0,0.02);
   }
+  html.dark .tag { background: rgba(255,255,255,0.03); }
 
   /* 卡片删除按钮 */
   .card-del{
-    display:none; position:absolute; top:10px; right:10px;
-    width:24px; height:24px; border-radius:7px;
+    display:none; position:absolute; top:12px; right:12px;
+    width:26px; height:26px; border-radius:8px;
     border:1px solid var(--border); background:var(--card);
-    color:var(--text-sub); cursor:pointer; font-size:15px;
+    color:var(--text-sub); cursor:pointer; font-size:16px;
     line-height:1; align-items:center; justify-content:center;
-    z-index:2;
+    z-index:2; transition: all 0.2s;
   }
   .card-del:hover{background:#e5484d; color:#fff; border-color:#e5484d;}
   body.editing .card-del{display:flex;}
 
   /* 添加卡片按钮 */
   .add-card{
-    display:none; width:100%; padding:14px;
-    border:1px dashed var(--border); border-radius:14px;
+    display:none; width:100%; padding:16px;
+    border:2px dashed var(--border); border-radius:16px;
     background:transparent; color:var(--text-sub); cursor:pointer;
     font-size:12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-    letter-spacing:.06em; margin-bottom:14px;
-    transition:background .15s,border-color .15s;
+    letter-spacing:.06em; margin-bottom:16px;
+    transition:all .2s;
   }
-  .add-card:hover{background:var(--card); border-color:var(--text-sub);}
+  .add-card:hover{background:var(--card); border-color:var(--text-sub); backdrop-filter: var(--blur);}
   body.editing .add-card{display:block;}
 
   /* 底部 */
   footer{
-    max-width:720px; margin:0 auto; padding:0 20px 50px;
+    max-width:720px; margin:0 auto; padding:0 20px 20px;
     display:flex; justify-content:space-between; gap:12px;
     font-size:10px; color:var(--text-sub);
     font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
     letter-spacing:.06em;
   }
+
+  /* ============ 音乐播放器 ============ */
+  .music-player {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+    width: 50px; height: 50px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--border);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: var(--text); font-size: 22px;
+  }
+  .music-player:hover { transform: scale(1.1); }
+  .music-player.playing {
+    animation: spin 4s linear infinite;
+    background: var(--accent); color: var(--accent-text); border-color: var(--accent);
+  }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
 
   /* ============ 编辑状态提示 ============ */
   body.editing [data-edit]{
@@ -182,7 +216,7 @@ index.html
     display:flex; align-items:center; justify-content:center;
     background:rgba(0,0,0,.58); color:#fff;
     font-size:11px; font-family:ui-monospace,monospace;
-    letter-spacing:.06em;
+    letter-spacing:.06em; border-radius: inherit;
     opacity:0; transition:opacity .18s; pointer-events:none;
   }
   body.editing .img-wrap:hover::after{opacity:1;}
@@ -190,7 +224,7 @@ index.html
 
   /* 提示气泡 */
   .toast{
-    position:fixed; left:50%; bottom:28px; z-index:1000;
+    position:fixed; left:50%; bottom:90px; z-index:1000;
     transform:translateX(-50%) translateY(14px);
     padding:9px 16px; border-radius:10px;
     background:var(--accent); color:var(--accent-text);
@@ -198,6 +232,7 @@ index.html
     letter-spacing:.05em;
     opacity:0; pointer-events:none;
     transition:opacity .2s, transform .2s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
@@ -208,14 +243,23 @@ index.html
     .tbtn .ico{font-size:15px;}
     header{padding-top:22px;}
     .brand-name{font-size:13px;}
-    .card{padding:18px; border-radius:14px;}
+    .card{padding:18px; border-radius:16px;}
     .card h2{font-size:18px;}
     nav{border-radius:11px;}
     .nav-btn{font-size:10px; padding:7px 9px;}
+    .music-player { bottom: 16px; right: 16px; width: 46px; height: 46px; font-size: 20px; }
+    .toast { bottom: 80px; }
   }
 </style>
 </head>
 <body>
+
+<!-- ==================== 音乐播放器 ==================== -->
+<!-- 注意：将 src 替换为你自己的音乐链接，或者保留此默认无版权音乐 -->
+<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop preload="none"></audio>
+<div class="music-player" id="musicPlayer" title="播放/暂停音乐">
+  <span id="musicIcon">♪</span>
+</div>
 
 <!-- ==================== 工具栏 ==================== -->
 <div class="toolbar">
@@ -352,11 +396,33 @@ index.html
   var fileInput   = document.getElementById('fileInput');
   var importInput = document.getElementById('importInput');
   var toastEl     = document.getElementById('toast');
+  var musicPlayer = document.getElementById('musicPlayer');
+  var bgMusic     = document.getElementById('bgMusic');
+  var musicIcon   = document.getElementById('musicIcon');
 
   var editMode    = false;
   var currentImg  = null;
   var navEditEl   = null;
-  var DEFAULT_HTML = app.innerHTML;   // 初始内容备份
+  var DEFAULT_HTML = app.innerHTML;
+
+  /* ============ 音乐播放控制 ============ */
+  musicPlayer.addEventListener('click', function() {
+    if (bgMusic.paused) {
+      bgMusic.play().then(function() {
+        musicPlayer.classList.add('playing');
+        musicIcon.textContent = '❚❚'; // 暂停符号
+        toast('音乐播放中');
+      }).catch(function(err) {
+        toast('播放失败，请检查音乐链接');
+        console.error('播放失败:', err);
+      });
+    } else {
+      bgMusic.pause();
+      musicPlayer.classList.remove('playing');
+      musicIcon.textContent = '♪'; // 音符符号
+      toast('音乐已暂停');
+    }
+  });
 
   /* ============ 恢复已保存内容 ============ */
   try{
@@ -388,13 +454,12 @@ index.html
     toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
   }
 
-  /* ============ 序列化（保存前清理临时属性） ============ */
+  /* ============ 序列化 ============ */
   function serialize(){
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){
       el.removeAttribute('contenteditable');
     });
-    // 回到第一个标签页状态
     clone.querySelectorAll('.panel').forEach(function(p, i){
       p.classList.toggle('active', i === 0);
     });
@@ -414,8 +479,7 @@ index.html
     try{
       localStorage.setItem(KEY_CONTENT, serialize());
     }catch(err){
-      toast('保存失败：存储空间已满');
-      alert('保存失败：浏览器存储空间可能已满。\n\n建议：\n1. 减少图片数量或换用更小的图片\n2. 用「导出」把页面保存成 HTML 文件备份');
+      toast('保存失败：存储空间可能已满');
     }
   }
 
@@ -441,64 +505,43 @@ index.html
     btn.classList.toggle('on', on);
     btn.querySelector('.ico').textContent   = on ? '✓' : '✎';
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
-    if(on){
-      toast('编辑已开启 · 点文字直接改');
-    }else{
-      save();
-      toast('已保存');
-    }
+    if(on) toast('编辑已开启 · 点文字直接改');
+    else { save(); toast('已保存'); }
   }
 
-  document.getElementById('btnEdit').addEventListener('click', function(){
-    setEdit(!editMode);
-  });
+  document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
-  /* ============ 输入即保存 ============ */
-  app.addEventListener('input', function(){
-    if(editMode) scheduleSave();
-  });
+  app.addEventListener('input', function(){ if(editMode) scheduleSave(); });
 
   /* ============ 标签切换 ============ */
   nav.addEventListener('click', function(e){
     var btn = e.target.closest('.nav-btn');
-    if(!btn) return;
-    if(navEditEl) return;   // 正在编辑标签文字时不切换
+    if(!btn || navEditEl) return;
     var target = btn.getAttribute('data-target');
-    document.querySelectorAll('.panel').forEach(function(p){
-      p.classList.toggle('active', p.id === target);
-    });
-    document.querySelectorAll('.nav-btn').forEach(function(b){
-      b.classList.toggle('active', b === btn);
-    });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id === target); });
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b === btn); });
   });
 
-  /* ============ 导航标签：双击改名 ============ */
+  /* ============ 导航标签双击改名 ============ */
   nav.addEventListener('dblclick', function(e){
     if(!editMode) return;
     var el = e.target.closest('[data-edit-nav]');
     if(!el) return;
     el.setAttribute('contenteditable', 'plaintext-only');
     el.focus();
-    var range = document.createRange();
-    range.selectNodeContents(el);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+    var range = document.createRange(); range.selectNodeContents(el);
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
     navEditEl = el;
   });
-
   document.addEventListener('mousedown', function(e){
     if(navEditEl && !navEditEl.contains(e.target)){
-      navEditEl.removeAttribute('contenteditable');
-      navEditEl = null;
-      save();
+      navEditEl.removeAttribute('contenteditable'); navEditEl = null; save();
     }
   });
 
   /* ============ 图片压缩 ============ */
   function compressImage(file, maxSize, quality){
-    maxSize = maxSize || 1200;
-    quality = quality || 0.82;
+    maxSize = maxSize || 1200; quality = quality || 0.82;
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
       reader.onload = function(){
@@ -506,25 +549,18 @@ index.html
         img.onload = function(){
           var w = img.naturalWidth, h = img.naturalHeight;
           var scale = Math.min(1, maxSize / Math.max(w, h));
-          w = Math.max(1, Math.round(w * scale));
-          h = Math.max(1, Math.round(h * scale));
+          w = Math.max(1, Math.round(w * scale)); h = Math.max(1, Math.round(h * scale));
           var canvas = document.createElement('canvas');
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
           var out = '';
           try{ out = canvas.toDataURL('image/webp', quality); }catch(err){}
-          if(!out || out.indexOf('data:image/webp') !== 0){
-            out = canvas.toDataURL('image/jpeg', quality);
-          }
+          if(!out || out.indexOf('data:image/webp') !== 0) out = canvas.toDataURL('image/jpeg', quality);
           resolve(out);
         };
-        img.onerror = reject;
-        img.src = reader.result;
+        img.onerror = reject; img.src = reader.result;
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      reader.onerror = reject; reader.readAsDataURL(file);
     });
   }
 
@@ -532,12 +568,7 @@ index.html
   app.addEventListener('click', function(e){
     if(!editMode) return;
     var img = e.target.closest('img[data-edit-img]');
-    if(img){
-      e.preventDefault();
-      currentImg = img;
-      fileInput.value = '';
-      fileInput.click();
-    }
+    if(img){ e.preventDefault(); currentImg = img; fileInput.value = ''; fileInput.click(); }
   });
 
   fileInput.addEventListener('change', function(){
@@ -545,38 +576,8 @@ index.html
     if(!file || !currentImg) return;
     toast('正在处理图片…');
     compressImage(file).then(function(dataUrl){
-      currentImg.src = dataUrl;
-      save();
-      toast('图片已更新');
-    }).catch(function(){
-      toast('图片读取失败');
-    });
-  });
-
-  /* ============ 粘贴图片（编辑模式） ============ */
-  app.addEventListener('paste', function(e){
-    if(!editMode) return;
-    var items = e.clipboardData && e.clipboardData.items;
-    if(!items) return;
-    for(var i = 0; i < items.length; i++){
-      if(items[i].type.indexOf('image') === 0){
-        e.preventDefault();
-        var file = items[i].getAsFile();
-        toast('正在插入图片…');
-        compressImage(file, 1000, 0.8).then(function(dataUrl){
-          document.execCommand('insertHTML', false,
-            '<img src="' + dataUrl + '" style="max-width:100%;border-radius:12px;margin:8px 0;display:block">');
-          scheduleSave();
-          toast('图片已插入');
-        });
-        return;
-      }
-    }
-  });
-
-  /* ============ 防止编辑时点链接跳走 ============ */
-  app.addEventListener('click', function(e){
-    if(editMode && e.target.closest('a')) e.preventDefault();
+      currentImg.src = dataUrl; save(); toast('图片已更新');
+    }).catch(function(){ toast('图片读取失败'); });
   });
 
   /* ============ 添加 / 删除卡片 ============ */
@@ -585,93 +586,47 @@ index.html
     if(!panel) return;
     var card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML =
-      '<button class="card-del" contenteditable="false" title="删除这张卡片">×</button>' +
-      '<h3 data-edit>新卡片标题</h3>' +
-      '<p data-edit>点击这里输入内容。</p>';
-    var addBtn = panel.querySelector('.add-card');
-    panel.insertBefore(card, addBtn);
-    applyEditableState();
-    save();
+    card.innerHTML = '<button class="card-del" contenteditable="false" title="删除这张卡片">×</button><h3 data-edit>新卡片标题</h3><p data-edit>点击这里输入内容。</p>';
+    panel.insertBefore(card, panel.querySelector('.add-card'));
+    applyEditableState(); save();
     var target = card.querySelector('h3');
-    if(target){
-      target.focus();
-      var range = document.createRange();
-      range.selectNodeContents(target);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
+    if(target){ target.focus(); var range = document.createRange(); range.selectNodeContents(target); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); }
   };
 
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
     if(!del || !editMode) return;
     e.preventDefault();
-    var card = del.closest('.card');
-    if(card && confirm('确定删除这张卡片吗？')){
-      card.remove();
-      save();
-      toast('卡片已删除');
-    }
+    if(confirm('确定删除这张卡片吗？')){ del.closest('.card').remove(); save(); toast('卡片已删除'); }
   });
 
   /* ============ 导出 HTML ============ */
   document.getElementById('btnExport').addEventListener('click', function(){
     var clone = document.documentElement.cloneNode(true);
-    // 清理临时状态
     clone.querySelector('body').classList.remove('editing');
-    clone.querySelectorAll('[contenteditable]').forEach(function(el){
-      el.removeAttribute('contenteditable');
-    });
-    clone.querySelectorAll('.panel').forEach(function(p, i){
-      p.classList.toggle('active', i === 0);
-    });
-    clone.querySelectorAll('.nav-btn').forEach(function(b, i){
-      b.classList.toggle('active', i === 0);
-    });
+    clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+    clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); });
+    clone.querySelectorAll('.nav-btn').forEach(function(b, i){ b.classList.toggle('active', i === 0); });
     var editBtn = clone.querySelector('#btnEdit');
-    if(editBtn){
-      editBtn.classList.remove('on');
-      var ic = editBtn.querySelector('.ico');   if(ic) ic.textContent = '✎';
-      var lb = editBtn.querySelector('.label'); if(lb) lb.textContent = '编辑';
-    }
-
-    var html = '<!DOCTYPE html>\n' + clone.outerHTML;
-    var blob = new Blob([html], {type:'text/html;charset=utf-8'});
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href = url;
-    a.download = 'my-page.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    toast('已导出 my-page.html');
+    if(editBtn){ editBtn.classList.remove('on'); var ic = editBtn.querySelector('.ico'); if(ic) ic.textContent = '✎'; var lb = editBtn.querySelector('.label'); if(lb) lb.textContent = '编辑'; }
+    var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
+    var url  = URL.createObjectURL(blob); var a = document.createElement('a');
+    a.href = url; a.download = 'my-page.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000); toast('已导出 my-page.html');
   });
 
   /* ============ 导入 HTML ============ */
-  document.getElementById('btnImport').addEventListener('click', function(){
-    importInput.value = '';
-    importInput.click();
-  });
-
+  document.getElementById('btnImport').addEventListener('click', function(){ importInput.value = ''; importInput.click(); });
   importInput.addEventListener('change', function(){
-    var file = importInput.files && importInput.files[0];
-    if(!file) return;
+    var file = importInput.files && importInput.files[0]; if(!file) return;
     var reader = new FileReader();
     reader.onload = function(ev){
       try{
         var doc = new DOMParser().parseFromString(ev.target.result, 'text/html');
         var imported = doc.getElementById('app');
         if(!imported) throw new Error('no app');
-        app.innerHTML = imported.innerHTML;
-        applyEditableState();
-        save();
-        toast('导入成功');
-      }catch(err){
-        alert('导入失败：这个文件里没有找到可识别的内容。\n请选择由本页面「导出」生成的 HTML 文件。');
-      }
+        app.innerHTML = imported.innerHTML; applyEditableState(); save(); toast('导入成功');
+      }catch(err){ alert('导入失败：这个文件里没有找到可识别的内容。'); }
     };
     reader.readAsText(file);
   });
@@ -679,17 +634,12 @@ index.html
   /* ============ 重置 ============ */
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!confirm('确定要恢复初始内容吗？\n你所有修改都会被清空，且无法撤销。')) return;
-    app.innerHTML = DEFAULT_HTML;
-    applyEditableState();
-    save();
-    toast('已恢复初始内容');
+    app.innerHTML = DEFAULT_HTML; applyEditableState(); save(); toast('已恢复初始内容');
   });
 
   /* ============ 初始化 ============ */
   setEdit(false);
-
 })();
 </script>
-
 </body>
 </html>
