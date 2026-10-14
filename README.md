@@ -37,7 +37,6 @@
     padding-left:var(--safe-left); padding-right:var(--safe-right);
   }
 
-  /* 背景层 */
   #bgLayer{
     position:fixed; inset:0; z-index:0;
     background-color:var(--bg);
@@ -45,7 +44,7 @@
     pointer-events:none; transition:background-color .3s;
   }
 
-  /* 顶部工具栏 */
+  /* 工具栏 */
   #toolbar{
     position:fixed; top:0; left:0; right:0; z-index:100;
     height:calc(48px + var(--safe-top));
@@ -104,7 +103,6 @@
   }
   .navlink.collection.active{background:var(--accent); color:var(--accent-text);}
 
-  /* 合集下拉 */
   #collectionMenu{
     position:fixed;
     top:calc(100px + var(--safe-top));
@@ -130,7 +128,6 @@
   .citem.active{background:var(--accent); color:var(--accent-text);}
   .cempty{padding:8px 12px; font-size:11px; color:var(--sub); text-align:center;}
 
-  /* 主体 */
   #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10;}
   .panel{display:none;}
   .panel.active{display:block;}
@@ -211,30 +208,25 @@
     font-size:12px; font-weight:600; cursor:pointer;
   }
 
-  /* 动态卡片 */
-  .feed{display:flex; gap:10px; margin-bottom:10px;}
+  /* 动态 */
+  .feed{display:flex; gap:10px; margin-bottom:10px; align-items:center;}
   .feed .fav{width:36px; height:36px; border-radius:50%; overflow:hidden; background:#333; flex-shrink:0;}
   .feed .fav img{width:100%; height:100%; object-fit:cover; display:block;}
   .feed .meta{flex:1;}
   .feed .meta .n{font-size:13px; font-weight:600;}
   .feed .meta .h{font-size:11px; color:var(--sub); font-family:monospace;}
   .feed .time{font-size:11px; color:var(--sub);}
-  .feedtext{font-size:14px; line-height:1.6; margin-bottom:8px;}
 
-  /* 自由文本块 */
-  .textblock{
-    padding:10px 30px 10px 12px; border:1px dashed var(--border);
-    border-radius:12px; background:rgba(127,127,127,0.04);
-    position:relative; font-size:14px; line-height:1.6;
-    margin-bottom:8px; display:flex; align-items:center; justify-content:center;
-    text-align:center; min-height:40px;
+  /* 可编辑文字 */
+  .etext{
+    font-size:14px; line-height:1.6;
+    padding:4px 0; position:relative;
   }
-  .textblock:focus{outline:2px solid var(--accent); outline-offset:2px;}
 
   /* 分隔线 */
   .divider{
-    padding:10px 0; display:flex; align-items:center;
-    position:relative; margin-bottom:4px;
+    padding:8px 0; display:flex; align-items:center;
+    position:relative;
   }
   .divider .line{
     height:1px; background:var(--border); width:100%;
@@ -242,24 +234,30 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  /* 卡片内块工具条 */
-  .bwrap{position:relative;}
-  .btools{
-    position:absolute; top:-10px; right:0; z-index:20;
-    display:none; gap:3px;
-    background:rgba(0,0,0,0.55);
-    padding:3px; border-radius:6px;
+  /* 每行包裹 + 操作按钮 */
+  .bwrap{position:relative; padding-right:32px;}
+  .bwrap > .row-tools{
+    position:absolute;
+    top:0;
+    right:-4px;
+    display:none;
+    flex-direction:column;
+    gap:2px;
+    z-index:20;
   }
-  html.light .btools{background:rgba(255,255,255,0.85);}
-  body.editing .bwrap:hover .btools{display:flex;}
-  .btools button{
-    width:24px; height:24px; border-radius:4px;
-    border:none; background:var(--accent); color:var(--accent-text);
-    font-size:12px; cursor:pointer; padding:0; line-height:1;
+  body.editing .bwrap:hover > .row-tools,
+  body.editing .bwrap:focus-within > .row-tools{display:flex;}
+  .row-tools button{
+    width:26px; height:26px; border-radius:6px;
+    border:1px solid var(--border);
+    background:var(--accent); color:var(--accent-text);
+    font-size:13px; cursor:pointer; padding:0; line-height:1;
     display:flex; align-items:center; justify-content:center;
+    transition:all .15s;
   }
-  .btools button.del{background:#e5484d;}
-  .btools button.dvd{background:#7d90b8; font-size:15px;}
+  .row-tools button.dvd{background:#7d90b8; font-size:15px;}
+  .row-tools button.del{background:#e5484d;}
+  .row-tools button:hover{transform:scale(1.1);}
 
   /* 图形 / 图片框 / 浮动文本 */
   .shape{
@@ -289,7 +287,6 @@
   }
   body.editing .shape, body.editing .frame, body.editing .floater{display:block;}
 
-  /* 元素删除按钮 */
   .xdel{
     position:absolute; top:-10px; left:-10px;
     width:22px; height:22px; border-radius:50%;
@@ -302,7 +299,6 @@
   body.editing .frame:hover .xdel,
   body.editing .floater:hover .xdel{display:flex;}
 
-  /* 拖拽缩放手柄 */
   .rz{
     position:absolute; bottom:0; right:0;
     width:28px; height:28px;
@@ -363,7 +359,7 @@
   .navbtn:active{background:var(--accent); color:var(--accent-text);}
   .spacer30{width:44px;}
 
-  /* 底部额外按钮（加卡片/加文字） */
+  /* 底部额外按钮 */
   .extras{display:none; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
   body.editing .extras{display:flex;}
   .exbtn{
@@ -373,6 +369,53 @@
     cursor:pointer; transition:all .2s;
   }
   .exbtn:hover{background:rgba(127,127,127,0.08); color:var(--accent); border-color:var(--accent);}
+
+  /* ============ 样式面板 ============ */
+  #stylePanel{
+    position:fixed;
+    right:14px; top:calc(110px + var(--safe-top));
+    z-index:400;
+    width:260px;
+    background:var(--bar);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.5);
+    padding:14px;
+    display:none;
+    flex-direction:column;
+    gap:8px;
+    max-height:75vh;
+    overflow-y:auto;
+    font-size:12px;
+  }
+  #stylePanel.show{display:flex;}
+  .sp-title{
+    font-size:11px; color:var(--accent);
+    font-family:monospace; letter-spacing:.1em;
+    padding-bottom:6px; border-bottom:1px solid var(--border);
+    margin-bottom:4px;
+  }
+  .sp-row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;}
+  .sp-row > span{flex-shrink:0; font-size:11px; color:var(--sub);}
+  .sp-row input[type="range"]{flex:1; cursor:pointer; height:22px;}
+  .sp-row input[type="color"]{width:30px; height:30px; border:none; border-radius:8px; cursor:pointer; background:transparent;}
+  .sp-row select{
+    flex:1; padding:5px 8px; border-radius:8px;
+    background:rgba(127,127,127,0.08); color:var(--text);
+    border:1px solid var(--border); font-size:11px; outline:none;
+  }
+  .sp-group{display:flex; gap:4px; flex-wrap:wrap;}
+  .sp-btn{
+    padding:5px 10px; border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent; color:var(--text);
+    font-size:11px; font-family:monospace; cursor:pointer;
+    transition:all .15s;
+  }
+  .sp-btn:hover{background:rgba(127,127,127,0.12);}
+  .sp-btn.on{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
   /* 音乐按钮 */
   #musicBtn{
@@ -399,6 +442,14 @@
     background:rgba(74,158,255,0.08);
   }
 
+  /* 链接文字 */
+  .linktext{
+    cursor:pointer; text-decoration:underline;
+    text-decoration-style:dotted; text-underline-offset:4px;
+  }
+  .linktext:hover{color:var(--accent);}
+  .linktext::after{content:" ↗"; font-size:.8em; opacity:.7;}
+
   /* 图片库 */
   #picker{
     position:fixed; left:0; right:0; bottom:0;
@@ -415,15 +466,15 @@
   .ph{padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0;}
   .ptitle{font-size:12px; font-family:monospace; color:var(--accent); letter-spacing:.1em;}
   .pclose{
-    background-bottom:transparent; border:1px solid var(--border));
-);
-    color:var(--text); font-size: 20px; width:30px; height:30px;
+    background:transparent; border:1px solid var(--border);
+    color:var(--text); font-size:20px; width:30px; height:30px;
     border-radius:8px; cursor:pointer; line-height:1; padding:0;
   }
   .pgrid{
     flex:1; overflow-y:auto; padding:12px;
     display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
-    padding-bottom:calc(12px + var(--safe }
+    padding-bottom:calc(12px + var(--safe-bottom));
+  }
   .pgrid img{
     width:100%; aspect-ratio:1; object-fit:cover;
     border-radius:8px; cursor:pointer;
@@ -471,22 +522,23 @@
   }
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
-  /* 微信/老浏览器兜底 */
+  /* 微信兜底 */
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu,
-    #shapePicker, #framePicker{
+    #shapePicker, #framePicker, #stylePanel{
       background-color:rgba(20,20,25,0.96) !important;
       background-image:none !important;
     }
     html.light #toolbar, html.light #topnav, html.light .card,
     html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn,
-    html.light #collectionMenu, html.light #shapePicker, html.light #framePicker{
+    html.light #collectionMenu, html.light #shapePicker, html.light #framePicker,
+    html.light #stylePanel{
       background-color:rgba(255,255,255,0.97) !important;
       background-image:none !important;
     }
   }
 
-  /* 手机优化 */
+  /* 手机适配 */
   @media (max-width:640px){
     body{padding-top:calc(52px + var(--safe-top));}
     #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
@@ -501,10 +553,29 @@
     .avatar{width:64px; height:64px; border-width:2px;}
     .name{font-size:18px;}
     .profile{margin-top:-32px;}
-    .feedtext{font-size:13px;}
     .pgrid{grid-template-columns:repeat(3, 1fr);}
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
+
+    /* 样式面板：手机从底部滑出 */
+    #stylePanel{
+      top:auto !important;
+      bottom:0 !important;
+      left:0 !important;
+      right:0 !important;
+      width:100vw !important;
+      max-width:100vw !important;
+      max-height:55vh;
+      border-radius:20px 20px 0 0 !important;
+      padding:14px 14px calc(14px + var(--safe-bottom)) 14px;
+      transform:translateY(100%);
+      transition:transform .3s cubic-bezier(.2,.8,.2,1);
+      display:flex !important;
+      visibility:hidden;
+    }
+    #stylePanel.show{transform:translateY(0); visibility:visible;}
+    .sp-row > span{font-size:11px; min-width:52px;}
+    .sp-btn{padding:6px 12px; font-size:11px;}
   }
 </style>
 </head>
@@ -514,8 +585,9 @@
 
 <div id="toolbar">
   <button class="btn" id="btnEdit"><span class="ico">✎</span><span class="lbl">编辑</span></button>
+  <button class="btn edit-only" id="btnStyle"><span class="ico">⚙️</span><span class="lbl">样式</span></button>
   <button class="btn edit-only" id="btnBg"><span class="ico">🖼️</span><span class="lbl">背景</span></button>
-  <button class="btn edit-only" id="btnAddFloat"><span class="ico">＋</span><span class="lbl">文本</span></button>
+  <button class="btn edit-only" id="btnAddFloat"><span class="ico">＋</span><span class="lbl">浮动文本</span></button>
   <button class="btn edit-only" id="btnAddShape"><span class="ico">◆</span><span class="lbl">图形</span></button>
   <button class="btn edit-only" id="btnAddFrame"><span class="ico">🖼️</span><span class="lbl">图片框</span></button>
   <button class="btn edit-only" id="btnAddPanel"><span class="ico">📄</span><span class="lbl">新页面</span></button>
@@ -542,6 +614,44 @@
   <div id="collectionList"></div>
 </div>
 
+<!-- 样式面板 -->
+<div id="stylePanel">
+  <div class="sp-title">文字样式</div>
+  <div class="sp-row"><span>字号</span><input type="range" id="spFontSize" min="10" max="48" value="14"><span id="spFontSizeVal" style="min-width:34px;text-align:right;">14px</span></div>
+  <div class="sp-row"><span>字体</span>
+    <select id="spFontFamily">
+      <option value="default">系统默认</option>
+      <option value="'Courier New',monospace">等宽</option>
+      <option value="Georgia,serif">衬线</option>
+      <option value="'Comic Sans MS',cursive">手写</option>
+    </select>
+  </div>
+  <div class="sp-row"><span>对齐</span>
+    <div class="sp-group">
+      <button class="sp-btn" data-align="left">左</button>
+      <button class="sp-btn" data-align="center">中</button>
+      <button class="sp-btn" data-align="right">右</button>
+    </div>
+  </div>
+  <div class="sp-row"><span>颜色</span><input type="color" id="spTextColor" value="#f0f0f0"></div>
+  <div class="sp-row"><span>样式</span>
+    <div class="sp-group">
+      <button class="sp-btn" id="spBold">B</button>
+      <button class="sp-btn" id="spItalic">I</button>
+      <button class="sp-btn" id="spUnderline">U</button>
+    </div>
+  </div>
+  <div class="sp-row"><span>链接到</span>
+    <select id="spLink">
+      <option value="">无</option>
+      <option value="panel-0">WELCOME</option>
+      <option value="panel-1">PERSONAL INFO</option>
+      <option value="panel-2">MY STYLE</option>
+      <option value="panel-3">CATEGORIES</option>
+    </select>
+  </div>
+</div>
+
 <div id="app">
   <div id="floatLayer" style="position:absolute; inset:0; pointer-events:none; z-index:997;"></div>
 
@@ -556,8 +666,8 @@
           <img data-edit-img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23222'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
         </div>
         <div class="namebox">
-          <div class="name" data-edit>肆</div>
-          <div class="handle" data-edit>@InfernalBeyond.com</div>
+          <div class="name bwrap"><span class="etext" data-edit>肆</span></div>
+          <div class="handle bwrap"><span class="etext" data-edit>@InfernalBeyond.com</span></div>
         </div>
       </div>
       <div class="bwrap">
@@ -565,23 +675,32 @@
           <div><b data-edit>520</b> 正在关注</div>
           <div><b data-edit>1314</b> 关注者</div>
         </div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
+
       <div class="grid" id="grid0">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='26' fill='%23888' text-anchor='middle'%3E1%3C/text%3E%3C/svg%3E" alt="图1">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='26' fill='%23888' text-anchor='middle'%3E2%3C/text%3E%3C/svg%3E" alt="图2">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='26' fill='%23888' text-anchor='middle'%3E3%3C/text%3E%3C/svg%3E" alt="图3">
       </div>
       <div class="bwrap">
-        <div class="quote" data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
+
+      <div class="bwrap">
+        <div class="quote"><span class="etext" data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.</span></div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+        </div>
+      </div>
+
       <div class="post">
         <input type="text" placeholder="说点什么..." data-edit>
         <div class="postrow">
@@ -596,22 +715,22 @@
         <div class="feed">
           <div class="fav"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23555'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EW%3C/text%3E%3C/svg%3E" alt="动态头像"></div>
           <div class="meta">
-            <div class="n" data-edit>肆</div>
-            <div class="h" data-edit>@InfernalBeyond.com</div>
+            <div class="n"><span class="etext" data-edit>肆</span></div>
+            <div class="h"><span class="etext" data-edit>@InfernalBeyond.com</span></div>
           </div>
-          <div class="time" data-edit>7小时前</div>
+          <div class="time"><span class="etext" data-edit>7小时前</span></div>
         </div>
-        <div class="feedtext" data-edit>我要搓死了</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="etext" data-edit>我要搓死了</div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
     </div>
 
     <div class="extras">
-      <button class="exbtn" onclick="addTextBlock(this, 'panel-0')">＋ 自由文本块</button>
-      <button class="exbtn" onclick="addDivider(this, 'panel-0')">— 分隔线</button>
+      <button class="exbtn" onclick="addTextEnd(this, 'panel-0')">＋ 末尾加文字</button>
+      <button class="exbtn" onclick="addDividerEnd(this, 'panel-0')">— 末尾加分隔线</button>
     </div>
 
     <div class="pagenav">
@@ -624,16 +743,16 @@
   <section class="panel" id="panel-1">
     <div class="card">
       <div class="bwrap">
-        <div class="feedtext" data-edit>这里是个人信息区域，可以在编辑模式下自由修改文字和图片。</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="etext" data-edit>这里是个人信息区域，可以在编辑模式下自由修改文字和图片。</div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
     </div>
     <div class="extras">
-      <button class="exbtn" onclick="addTextBlock(this, 'panel-1')">＋ 自由文本块</button>
-      <button class="exbtn" onclick="addDivider(this, 'panel-1')">— 分隔线</button>
+      <button class="exbtn" onclick="addTextEnd(this, 'panel-1')">＋ 末尾加文字</button>
+      <button class="exbtn" onclick="addDividerEnd(this, 'panel-1')">— 末尾加分隔线</button>
     </div>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-0')">←</button>
@@ -645,16 +764,16 @@
   <section class="panel" id="panel-2">
     <div class="card">
       <div class="bwrap">
-        <div class="feedtext" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="etext" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
     </div>
     <div class="extras">
-      <button class="exbtn" onclick="addTextBlock(this, 'panel-2')">＋ 自由文本块</button>
-      <button class="exbtn" onclick="addDivider(this, 'panel-2')">— 分隔线</button>
+      <button class="exbtn" onclick="addTextEnd(this, 'panel-2')">＋ 末尾加文字</button>
+      <button class="exbtn" onclick="addDividerEnd(this, 'panel-2')">— 末尾加分隔线</button>
     </div>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-1')">←</button>
@@ -666,30 +785,29 @@
   <section class="panel" id="panel-3">
     <div class="card">
       <div class="bwrap">
-        <div class="feedtext" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+        <div class="etext" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
-      <div class="bwrap">
-        <div class="feedtext linktext" data-edit data-link="" style="margin-top:10px;cursor:pointer;text-decoration:underline;">→ 点击跳转到指定页面（在样式面板选择）</div>
-        <div class="btools">
-          <button onclick="addTextBlock(this)" title="加文字块">＋</button>
-          <button class="dvd" onclick="addDivider(this)" title="加分隔线">—</button>
+      <div class="bwrap" style="margin-top:8px;">
+        <div class="etext linktext" data-edit data-link="panel-0">→ 点击返回 WELCOME</div>
+        <div class="row-tools">
+          <button title="加文字" onclick="addTextAfter(this)">＋</button>
+          <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
         </div>
       </div>
     </div>
     <div class="extras">
-      <button class="exbtn" onclick="addTextBlock(this, 'panel-3')">＋ 自由文本块</button>
-      <button class="exbtn" onclick="addDivider(this, 'panel-3')">— 分隔线</button>
+      <button class="exbtn" onclick="addTextEnd(this, 'panel-3')">＋ 末尾加文字</button>
+      <button class="exbtn" onclick="addDividerEnd(this, 'panel-3')">— 末尾加分隔线</button>
     </div>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-2')">←</button>
       <div class="spacer30"></div>
     </div>
   </section>
-
 </div>
 
 <div id="musicBtn">♪</div>
@@ -742,7 +860,6 @@
 (function(){
   'use strict';
 
-  /* ==================== 配置 ==================== */
   var IMG_BASE = 'https://emil-si.github.io/My-page/';
   var IMAGES = [
     'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
@@ -753,7 +870,6 @@
     'IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png',
     'IMG_9014.png','IMG_9016.png'
   ];
-  /* ================================================= */
 
   var isReadonly = false;
   try {
@@ -762,10 +878,10 @@
   } catch(e){}
   if(isReadonly) document.body.classList.add('readonly');
 
-  var K_THEME = 'myPage.theme.v2';
-  var K_BG    = 'myPage.bg.v2';
-  var K_CONTENT = 'myPage.content.v3';
-  var K_MUSIC = 'myPage.music.v2';
+  var K_THEME = 'myPage.theme.v3';
+  var K_BG    = 'myPage.bg.v3';
+  var K_CONTENT = 'myPage.content.v4';
+  var K_MUSIC = 'myPage.music.v3';
 
   var app = document.getElementById('app');
   var bgLayer = document.getElementById('bgLayer');
@@ -782,9 +898,7 @@
     var s = null;
     try { s = localStorage.getItem(K_THEME); } catch(e){}
     if(s === 'dark' || s === 'light') return s;
-    try {
-      if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-    } catch(e){}
+    try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){}
     return 'light';
   }
   function applyTheme(t){
@@ -800,13 +914,13 @@
     toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天');
   });
 
-  // ==================== 提示 ====================
+  // ==================== Toast ====================
   var toastTimer;
   function toast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1500);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400);
   }
 
   // ==================== 背景 ====================
@@ -825,16 +939,11 @@
     if(savedContent) app.innerHTML = savedContent;
   } catch(e){}
 
-  // 恢复后重新绑定所有内容
-  bindAll();
-
   function serialize(){
     var clone = app.cloneNode(true);
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    clone.querySelectorAll('.shape.selected').forEach(function(el){ el.classList.remove('selected'); });
     return clone.innerHTML;
   }
-
   var saveTimer;
   function save(){
     clearTimeout(saveTimer);
@@ -846,7 +955,6 @@
       }
     }, 300);
   }
-
   app.addEventListener('input', function(){ if(editMode) save(); });
 
   // ==================== 编辑模式 ====================
@@ -858,25 +966,21 @@
       if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
       else el.removeAttribute('contenteditable');
     });
-    document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){
-      if(on){ el.style.display = ''; } else { el.style.display = 'none'; }
-    });
     var btn = document.getElementById('btnEdit');
     btn.classList.toggle('on', on);
     btn.querySelector('.ico').textContent = on ? '✓' : '✎';
     btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
+    if(!on) { document.getElementById('stylePanel').classList.remove('show'); }
     if(on) { bindAll(); toast('编辑已开启'); }
     else { save(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
-  // ==================== 图片绑定 + 点击打开图片库 ====================
+  // ==================== 图片点击 → 图片库 ====================
   function bindImg(img){
     if(!img || img.dataset.bound === '1') return;
     img.dataset.bound = '1';
-
     var t0 = 0, x0 = 0, y0 = 0, moved = false;
-
     function down(e){
       t0 = Date.now(); moved = false;
       var p = e.touches ? e.touches[0] : e;
@@ -888,13 +992,10 @@
     }
     function up(e){
       if(!editMode || isReadonly) return;
-      if(moved) return;
-      if(Date.now() - t0 > 700) return;
-      e.preventDefault();
-      e.stopPropagation();
+      if(moved || Date.now() - t0 > 700) return;
+      e.preventDefault(); e.stopPropagation();
       openPicker(img, false);
     }
-
     img.addEventListener('mousedown', down, true);
     img.addEventListener('touchstart', down, true);
     img.addEventListener('mousemove', move, true);
@@ -905,7 +1006,6 @@
   // ==================== 图片库 ====================
   var picker = document.getElementById('picker');
   var pickerGrid = document.getElementById('pickerGrid');
-
   function openPicker(img, isBg){
     activeImg = img || null;
     bgMode = !!isBg;
@@ -913,20 +1013,15 @@
     IMAGES.forEach(function(name){
       var url = IMG_BASE + name;
       var el = document.createElement('img');
-      el.src = url;
-      el.alt = name;
-      el.loading = 'lazy';
+      el.src = url; el.alt = name; el.loading = 'lazy';
       el.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         if(bgMode){
           setBg(url);
           try { localStorage.setItem(K_BG, url); } catch(e){}
           toast('背景已更新');
         } else if(activeImg){
-          activeImg.src = url;
-          save();
-          toast('图片已更新');
+          activeImg.src = url; save(); toast('图片已更新');
         }
         closePicker();
       });
@@ -936,8 +1031,7 @@
   }
   function closePicker(){
     picker.classList.remove('show');
-    activeImg = null;
-    bgMode = false;
+    activeImg = null; bgMode = false;
   }
   document.getElementById('pickerClose').addEventListener('click', closePicker);
   document.getElementById('btnBg').addEventListener('click', function(e){
@@ -945,98 +1039,192 @@
     openPicker(null, true);
   });
 
-  // ==================== 文字块 & 分隔线 ====================
-  window.addTextBlock = function(btn, panelId){
-    var wrap = btn.closest('.bwrap') || btn.closest('.extras');
-    var container;
-    if(panelId){
-      container = document.getElementById(panelId).querySelector('.card') || document.getElementById(panelId);
-    } else if(wrap && wrap.classList.contains('bwrap')){
-      container = wrap.parentNode;
-    } else {
-      container = btn.closest('.card') || btn.closest('.panel');
-    }
-    if(!container) return;
-
-    var newWrap = document.createElement('div');
-    newWrap.className = 'bwrap';
-    newWrap.style.marginTop = '8px';
-    newWrap.innerHTML = '<div class="textblock" data-edit>点击输入新内容...</div>' +
-      '<div class="btools">' +
-        '<button onclick="addTextBlock(this)">＋</button>' +
-        '<button class="dvd" onclick="addDivider(this)">—</button>' +
-        '<button class="del" onclick="deleteBlock(this)">×</button>' +
+  // ==================== 增删行 ====================
+  function makeTextRow(content){
+    var wrap = document.createElement('div');
+    wrap.className = 'bwrap';
+    wrap.style.marginTop = '8px';
+    wrap.innerHTML = '<div class="etext" data-edit>' + (content || '点击输入新内容...') + '</div>' +
+      '<div class="row-tools">' +
+        '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
+        '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
+        '<button class="del" onclick="deleteRow(this)">×</button>' +
       '</div>';
+    return wrap;
+  }
 
-    if(wrap && wrap.parentNode){
-      wrap.parentNode.insertBefore(newWrap, wrap.nextSibling);
-    } else {
-      container.appendChild(newWrap);
-    }
+  function makeDividerRow(){
+    var wrap = document.createElement('div');
+    wrap.className = 'bwrap';
+    wrap.style.marginTop = '6px';
+    wrap.innerHTML = '<div class="divider"><div class="line"></div></div>' +
+      '<div class="row-tools">' +
+        '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
+        '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
+        '<button class="del" onclick="deleteRow(this)">×</button>' +
+      '</div>';
+    return wrap;
+  }
 
+  window.addTextAfter = function(btn){
+    var wrap = btn.closest('.bwrap');
+    var newRow = makeTextRow();
+    wrap.parentNode.insertBefore(newRow, wrap.nextSibling);
     if(editMode){
-      var tb = newWrap.querySelector('.textblock');
+      var tb = newRow.querySelector('.etext');
       tb.setAttribute('contenteditable', 'true');
-      activeTextEl = tb;
+      tb.focus();
+      selectText(tb);
+    }
+    save(); toast('已添加文字');
+  };
+
+  window.addDividerAfter = function(btn){
+    var wrap = btn.closest('.bwrap');
+    var newRow = makeDividerRow();
+    wrap.parentNode.insertBefore(newRow, wrap.nextSibling);
+    save(); toast('已添加分隔线');
+  };
+
+  window.deleteRow = function(btn){
+    var wrap = btn.closest('.bwrap');
+    if(confirm('删除这一行？')){ wrap.remove(); save(); toast('已删除'); }
+  };
+
+  window.addTextEnd = function(btn, panelId){
+    var panel = document.getElementById(panelId);
+    var card = panel.querySelector('.card');
+    var newRow = makeTextRow();
+    card.appendChild(newRow);
+    if(editMode){
+      var tb = newRow.querySelector('.etext');
+      tb.setAttribute('contenteditable', 'true');
       tb.focus();
     }
-    save();
-    toast('已添加文字块');
+    save(); toast('已添加文字');
+  };
+  window.addDividerEnd = function(btn, panelId){
+    var panel = document.getElementById(panelId);
+    var card = panel.querySelector('.card');
+    card.appendChild(makeDividerRow());
+    save(); toast('已添加分隔线');
   };
 
-  window.addDivider = function(btn, panelId){
-    var wrap = btn.closest('.bwrap') || btn.closest('.extras');
-    var container;
-    if(panelId){
-      container = document.getElementById(panelId).querySelector('.card') || document.getElementById(panelId);
-    } else if(wrap && wrap.classList.contains('bwrap')){
-      container = wrap.parentNode;
-    } else {
-      container = btn.closest('.card') || btn.closest('.panel');
+  // ==================== 样式面板 ====================
+  var stylePanel = document.getElementById('stylePanel');
+
+  document.getElementById('btnStyle').addEventListener('click', function(e){
+    e.stopPropagation();
+    stylePanel.classList.toggle('show');
+  });
+
+  function selectText(el){
+    activeTextEl = el;
+    var cs = getComputedStyle(el);
+    document.getElementById('spFontSize').value = parseInt(cs.fontSize) || 14;
+    document.getElementById('spFontSizeVal').textContent = (parseInt(cs.fontSize) || 14) + 'px';
+    document.getElementById('spTextColor').value = rgbToHex(cs.color);
+    var ff = cs.fontFamily.split(',')[0].replace(/['"]/g,'');
+    var sel = document.getElementById('spFontFamily');
+    var found = false;
+    for(var i=0;i<sel.options.length;i++){
+      if(sel.options[i].value.indexOf(ff) !== -1){ sel.value = sel.options[i].value; found = true; break; }
     }
-    if(!container) return;
+    if(!found) sel.value = 'default';
+    document.getElementById('spLink').value = el.getAttribute('data-link') || '';
+  }
 
-    var newWrap = document.createElement('div');
-    newWrap.className = 'bwrap';
-    newWrap.style.marginTop = '6px';
-    newWrap.innerHTML = '<div class="divider"><div class="line"></div></div>' +
-      '<div class="btools">' +
-        '<button class="dvd" onclick="addDivider(this)">—</button>' +
-        '<button class="del" onclick="deleteBlock(this)">×</button>' +
-      '</div>';
+  function rgbToHex(c){
+    if(!c) return '#f0f0f0';
+    var m = c.match(/\d+/g);
+    if(!m) return '#f0f0f0';
+    return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
+  }
 
-    if(wrap && wrap.parentNode){
-      wrap.parentNode.insertBefore(newWrap, wrap.nextSibling);
+  document.getElementById('spFontSize').addEventListener('input', function(e){
+    if(!activeTextEl) return;
+    activeTextEl.style.fontSize = e.target.value + 'px';
+    document.getElementById('spFontSizeVal').textContent = e.target.value + 'px';
+    save();
+  });
+  document.getElementById('spTextColor').addEventListener('input', function(e){
+    if(!activeTextEl) return;
+    activeTextEl.style.color = e.target.value;
+    save();
+  });
+  document.getElementById('spFontFamily').addEventListener('change', function(e){
+    if(!activeTextEl) return;
+    activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value;
+    save();
+  });
+  document.querySelectorAll('#stylePanel .sp-btn[data-align]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!activeTextEl) return;
+      activeTextEl.style.textAlign = this.getAttribute('data-align');
+      activeTextEl.style.display = 'block';
+      save();
+    });
+  });
+  document.getElementById('spBold').addEventListener('click', function(){
+    if(!activeTextEl) return;
+    var on = activeTextEl.style.fontWeight === 'bold';
+    activeTextEl.style.fontWeight = on ? 'normal' : 'bold';
+    this.classList.toggle('on', !on);
+    save();
+  });
+  document.getElementById('spItalic').addEventListener('click', function(){
+    if(!activeTextEl) return;
+    var on = activeTextEl.style.fontStyle === 'italic';
+    activeTextEl.style.fontStyle = on ? 'normal' : 'italic';
+    this.classList.toggle('on', !on);
+    save();
+  });
+  document.getElementById('spUnderline').addEventListener('click', function(){
+    if(!activeTextEl) return;
+    var on = activeTextEl.style.textDecoration === 'underline';
+    activeTextEl.style.textDecoration = on ? 'none' : 'underline';
+    this.classList.toggle('on', !on);
+    save();
+  });
+  document.getElementById('spLink').addEventListener('change', function(e){
+    if(!activeTextEl) return;
+    var v = e.target.value;
+    if(v){
+      activeTextEl.setAttribute('data-link', v);
+      activeTextEl.classList.add('linktext');
     } else {
-      container.appendChild(newWrap);
+      activeTextEl.removeAttribute('data-link');
+      activeTextEl.classList.remove('linktext');
     }
     save();
-    toast('已添加分隔线');
-  };
+    toast(v ? '已链接到 ' + v : '已取消链接');
+  });
 
-  window.deleteBlock = function(btn){
-    var wrap = btn.closest('.bwrap');
-    if(wrap) wrap.remove();
-    save();
-    toast('已删除');
-  };
+  // 点击可编辑文字时，自动弹出样式面板
+  document.addEventListener('focusin', function(e){
+    if(!editMode || isReadonly) return;
+    var el = e.target.closest('[contenteditable="true"]');
+    if(el){
+      selectText(el);
+      stylePanel.classList.add('show');
+    }
+  });
 
   // ==================== 链接跳转 ====================
   document.addEventListener('click', function(e){
     if(editMode) return;
     var el = e.target.closest('[data-link]');
     if(el && el.getAttribute('data-link')){
-      var target = el.getAttribute('data-link');
-      if(target && document.getElementById(target)){
+      var t = el.getAttribute('data-link');
+      if(document.getElementById(t)){
         e.preventDefault();
-        window.switchTab(target);
+        window.switchTab(t);
       }
     }
   });
 
-  // ==================== 顶部导航 ====================
+  // ==================== 页面切换 ====================
   var navHistory = [];
-
   window.switchTab = function(id){
     var cur = document.querySelector('.panel.active');
     if(cur && cur.id !== id){
@@ -1050,7 +1238,6 @@
     refreshCollectionActive();
     window.scrollTo(0, 0);
   };
-
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){
     n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); });
   });
@@ -1059,14 +1246,10 @@
   var navCollection = document.getElementById('navCollection');
   var collectionMenu = document.getElementById('collectionMenu');
   var collectionList = document.getElementById('collectionList');
-
   function refreshCollectionMenu(){
     collectionList.innerHTML = '';
     var items = document.querySelectorAll('#app .panel[data-collection="true"]');
-    if(items.length === 0){
-      collectionList.innerHTML = '<div class="cempty">暂无页面</div>';
-      return;
-    }
+    if(items.length === 0){ collectionList.innerHTML = '<div class="cempty">暂无页面</div>'; return; }
     items.forEach(function(p){
       var d = document.createElement('div');
       d.className = 'citem';
@@ -1080,26 +1263,28 @@
     });
     refreshCollectionActive();
   }
-
   function refreshCollectionActive(){
     var cur = document.querySelector('.panel.active');
     if(!cur) return;
-    var isCollection = cur.getAttribute('data-collection') === 'true';
-    navCollection.classList.toggle('active', isCollection);
+    var isC = cur.getAttribute('data-collection') === 'true';
+    navCollection.classList.toggle('active', isC);
     collectionList.querySelectorAll('.citem').forEach(function(c){
       c.classList.toggle('active', c.getAttribute('data-panel') === cur.id);
     });
   }
-
   navCollection.addEventListener('click', function(e){
     e.stopPropagation();
     if(collectionMenu.classList.contains('show')) collectionMenu.classList.remove('show');
     else { refreshCollectionMenu(); collectionMenu.classList.add('show'); }
   });
-
   document.addEventListener('click', function(e){
     if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){
       collectionMenu.classList.remove('show');
+    }
+    var sp = document.getElementById('stylePanel');
+    var spBtn = document.getElementById('btnStyle');
+    if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){
+      sp.classList.remove('show');
     }
   });
 
@@ -1108,7 +1293,6 @@
     var name = prompt('新页面名称（会加入合集）:', '新页面');
     if(!name) return;
     name = name.trim(); if(!name) return;
-
     var panels = document.querySelectorAll('#app .panel');
     var used = {}; panels.forEach(function(p){ used[p.id] = true; });
     var idx = 0; while(used['panel-' + idx]) idx++;
@@ -1121,29 +1305,36 @@
     sec.dataset.name = name;
     sec.innerHTML = '<div class="card">' +
       '<div class="bwrap">' +
-        '<div class="feedtext" data-edit>新页面内容...</div>' +
-        '<div class="btools">' +
-          '<button onclick="addTextBlock(this)">＋</button>' +
-          '<button class="dvd" onclick="addDivider(this)">—</button>' +
-          '<button class="del" onclick="deleteBlock(this)">×</button>' +
+        '<div class="etext" data-edit>新页面内容...</div>' +
+        '<div class="row-tools">' +
+          '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
+          '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
+          '<button class="del" onclick="deleteRow(this)">×</button>' +
         '</div>' +
       '</div>' +
       '</div>' +
       '<div class="extras">' +
-        '<button class="exbtn" onclick="addTextBlock(this, \'' + newId + '\')">＋ 自由文本块</button>' +
-        '<button class="exbtn" onclick="addDivider(this, \'' + newId + '\')">— 分隔线</button>' +
+        '<button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button>' +
+        '<button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button>' +
+      '</div>' +
+      '<div class="pagenav">' +
+        '<button class="navbtn" onclick="window.goBack()">←</button>' +
+        '<div class="spacer30"></div>' +
       '</div>';
 
     app.appendChild(sec);
     if(editMode){
-      sec.querySelectorAll('[data-edit]').forEach(function(el){
-        el.setAttribute('contenteditable', 'true');
-      });
+      sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
     }
-    refreshCollectionMenu();
-    save();
-    toast('已添加：' + name);
+    refreshCollectionMenu(); save(); toast('已添加：' + name);
   });
+
+  // ==================== 返回 ====================
+  window.goBack = function(){
+    var prev = navHistory.pop();
+    if(prev) window.switchTab(prev);
+    else window.switchTab('panel-0');
+  };
 
   // ==================== 重置 ====================
   document.getElementById('btnReset').addEventListener('click', function(){
@@ -1176,21 +1367,15 @@
   function makeShape(type){
     var el = document.createElement('div');
     el.className = 'shape';
-    el.dataset.type = type;
     el.style.left = '40px';
     el.style.top = (window.scrollY + 200) + 'px';
     el.style.width = '80px';
     el.style.height = '80px';
     el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
-    el.innerHTML = shapeSVG(type) +
-      '<div class="rz"></div>' +
-      '<button class="xdel">×</button>';
+    el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>';
     floatLayer.appendChild(el);
-    makeMovable(el);
-    bindXDel(el);
-    bindResize(el);
-    save();
-    toast('已添加图形');
+    makeMovable(el); bindXDel(el); bindResize(el);
+    save(); toast('已添加图形');
   }
 
   function makeFrame(shape){
@@ -1202,7 +1387,6 @@
     el.style.height = '120px';
     if(shape === 'circle') el.style.borderRadius = '50%';
     else if(shape === 'rounded') el.style.borderRadius = '16px';
-    else el.style.borderRadius = '0';
 
     var img = document.createElement('img');
     img.setAttribute('data-edit-img', '');
@@ -1211,12 +1395,8 @@
     el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
 
     floatLayer.appendChild(el);
-    makeMovable(el);
-    bindXDel(el);
-    bindResize(el);
-    bindImg(img);
-    save();
-    toast('已添加图片框');
+    makeMovable(el); bindXDel(el); bindResize(el); bindImg(img);
+    save(); toast('已添加图片框');
   }
 
   function makeFloater(){
@@ -1226,15 +1406,12 @@
     el.style.left = '40px';
     el.style.top = (window.scrollY + 150) + 'px';
     el.style.width = '160px';
-    el.innerHTML = '自由文本';
+    el.textContent = '自由文本';
     el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
     floatLayer.appendChild(el);
-    makeMovable(el);
-    bindXDel(el);
-    bindResize(el);
+    makeMovable(el); bindXDel(el); bindResize(el);
     setTimeout(function(){ el.focus(); }, 50);
-    save();
-    toast('已添加浮动文本');
+    save(); toast('已添加浮动文本');
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
@@ -1247,10 +1424,7 @@
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.toggle('show');
   });
-  document.getElementById('btnAddFloat').addEventListener('click', function(){
-    makeFloater();
-  });
-
+  document.getElementById('btnAddFloat').addEventListener('click', makeFloater);
   document.querySelectorAll('#shapePicker .pick').forEach(function(p){
     p.addEventListener('click', function(){
       makeShape(this.dataset.shape);
@@ -1267,7 +1441,6 @@
   // ==================== 拖拽 / 缩放 / 删除 ====================
   function makeMovable(el){
     var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
-
     function down(e){
       if(!editMode) return;
       if(e.target.classList.contains('rz')) return;
@@ -1346,15 +1519,13 @@
     });
   }
 
-  // ==================== 初始化绑定 ====================
+  // ==================== 绑定所有 ====================
   function bindAll(){
     document.querySelectorAll('img[data-edit-img]').forEach(bindImg);
     document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){
       if(!el.dataset.moveBound){
         el.dataset.moveBound = '1';
-        makeMovable(el);
-        bindXDel(el);
-        bindResize(el);
+        makeMovable(el); bindXDel(el); bindResize(el);
         var img = el.querySelector('img');
         if(img) bindImg(img);
       }
@@ -1366,7 +1537,6 @@
   var musicBtn = document.getElementById('musicBtn');
   var dialog = document.getElementById('musicDialog');
   var musicInput = document.getElementById('musicInput');
-
   try {
     var savedMusic = localStorage.getItem(K_MUSIC);
     if(savedMusic) music.src = savedMusic;
@@ -1387,40 +1557,28 @@
   function playPause(){
     if(!music.src || music.src === location.href){ toast('请长按按钮设置音乐'); return; }
     if(music.paused){
-      music.play().then(function(){
-        musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚';
-      }).catch(function(){ toast('播放失败'); });
+      music.play().then(function(){ musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚'; })
+        .catch(function(){ toast('播放失败'); });
     } else {
       music.pause(); musicBtn.classList.remove('playing'); musicBtn.textContent = '♪';
     }
   }
   musicBtn.addEventListener('mousedown', function(e){ e.preventDefault(); startPress(); });
-  musicBtn.addEventListener('mouseup', function(e){
-    cancelPress();
-    if(!longPressed){ e.preventDefault(); playPause(); }
-  });
+  musicBtn.addEventListener('mouseup', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); playPause(); } });
   musicBtn.addEventListener('mouseleave', cancelPress);
   musicBtn.addEventListener('touchstart', function(){ startPress(); }, {passive:true});
-  musicBtn.addEventListener('touchend', function(e){
-    cancelPress();
-    if(!longPressed){ e.preventDefault(); playPause(); }
-  });
+  musicBtn.addEventListener('touchend', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); playPause(); } });
   musicBtn.addEventListener('touchcancel', cancelPress);
   musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-
-  document.getElementById('musicCancel').addEventListener('click', function(){
-    dialog.classList.remove('show');
-  });
+  document.getElementById('musicCancel').addEventListener('click', function(){ dialog.classList.remove('show'); });
   document.getElementById('musicOk').addEventListener('click', function(){
     var url = musicInput.value.trim();
     if(!url){ toast('请输入链接'); return; }
     try { localStorage.setItem(K_MUSIC, url); } catch(e){}
     music.src = url; music.load();
     dialog.classList.remove('show');
-    music.play().then(function(){
-      musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚';
-      toast('音乐播放中');
-    }).catch(function(){ toast('播放失败'); });
+    music.play().then(function(){ musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚'; toast('音乐播放中'); })
+      .catch(function(){ toast('播放失败'); });
   });
 
   // ==================== 初始化 ====================
