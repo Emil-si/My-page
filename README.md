@@ -30,21 +30,25 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
-  html, body{
+  html, body {
     max-width: 100vw;
     overflow-x: hidden;
-    width: 100%;
   }
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--bg-color); background-image: var(--bg-image);
-    background-size: cover; background-position: center; background-attachment: fixed;
+    background-color: var(--bg-color);
+    background-image: var(--bg-image);
+    background-size: cover !important;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: var(--text); min-height: 100vh;
     padding-top: calc(60px + var(--safe-top));
-    padding-bottom: calc(30px + var(--safe-bottom));
+    padding-bottom: calc(90px + var(--safe-bottom));
     padding-left: var(--safe-left);
     padding-right: var(--safe-right);
-    transition: background 0.3s, color 0.3s; position: relative; overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+    position: relative;
   }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -65,7 +69,6 @@
     display: flex; align-items: center; gap: 8px;
     background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none;
-    box-sizing: border-box;
   }
   html.light .toolbar { background: rgba(255, 255, 255, 0.75); }
   .toolbar::-webkit-scrollbar { display: none; }
@@ -92,7 +95,6 @@
     border: 1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: none; flex-direction: column; gap: 10px;
     color: #fff; font-size: 12px; max-height: 80vh; overflow-y: auto;
-    box-sizing: border-box;
   }
   .style-panel.show { display: flex; }
   .style-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -112,7 +114,6 @@
     border: 1px solid var(--glass-border); border-radius: 16px;
     padding: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     display: none; grid-template-columns: repeat(5, 1fr); gap: 8px;
-    box-sizing: border-box; max-width: calc(100vw - 20px);
   }
   .shape-picker.show { display: grid; }
   .shape-pick-item {
@@ -127,15 +128,11 @@
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px;
     padding: 12px calc(16px + var(--safe-left)) 12px calc(16px + var(--safe-right));
-    position: sticky;
-    top: calc(50px + var(--safe-top));
+    position: sticky; top: calc(50px + var(--safe-top));
     z-index: 998;
     background: rgba(20, 20, 25, 0.75); backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border);
-    overflow-x: auto; scrollbar-width: none;
-    align-items: center;
-    box-sizing: border-box;
-    width: 100%;
+    overflow-x: auto; scrollbar-width: none; align-items: center;
   }
   html.light .top-nav { background: rgba(255, 255, 255, 0.75); }
   .top-nav::-webkit-scrollbar { display: none; }
@@ -146,7 +143,6 @@
     transition: all 0.2s ease; cursor: pointer; white-space: nowrap;
   }
   .nav-link.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-
   .nav-collection {
     flex: 0 0 auto !important; display: flex; align-items: center; justify-content: center;
     padding: 8px 12px !important; min-width: 40px; color: var(--text) !important;
@@ -159,11 +155,10 @@
     top: calc(108px + var(--safe-top));
     left: calc(16px + var(--safe-left));
     z-index: 10001;
-    background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    background: rgba(20, 20, 25, 0.98); backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 14px;
     padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-    display: none; min-width: 180px; max-width: calc(100vw - 32px); max-height: 60vh; overflow-y: auto;
-    box-sizing: border-box;
+    display: none; min-width: 180px; max-width: 80vw; max-height: 60vh; overflow-y: auto;
   }
   html.light .collection-menu { background: rgba(255, 255, 255, 0.98); }
   .collection-menu.show { display: block; animation: fadeIn 0.2s ease; }
@@ -181,23 +176,14 @@
   .collection-item.active { background: var(--accent); color: var(--accent-text); }
   .collection-empty { padding: 8px 12px; font-size: 12px; color: var(--text-sub); text-align: center; }
 
-  .container {
-    max-width: 640px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 16px;
-    position: relative;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
+  .container { max-width: 640px; width: 100%; margin: 0 auto; padding: 16px; position: relative; box-sizing: border-box; }
 
   .glass-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 24px; padding: 16px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 16px; position: relative;
-    word-break: break-all; overflow-wrap: break-word;
-    max-width: 100%; box-sizing: border-box;
+    word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
   .main-card {
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
@@ -208,7 +194,7 @@
     max-width: 100%; box-sizing: border-box;
   }
   .cover-wrap { width: 100%; height: 240px; background: #1a1a1a; position: relative; overflow: hidden; }
-  .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(10%); }
+  .cover-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; filter: grayscale(10%); }
   .cover-wrap::after {
     content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
     background: linear-gradient(to bottom, transparent 0%, var(--card-bg-color) 100%);
@@ -222,17 +208,17 @@
     width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--glass-border);
     background: var(--glass-bg); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex: none;
   }
-  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-  .name-handle { flex: 1; min-width: 0; }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+  .name-handle { flex: 1; }
   .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 4px; }
-  .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; word-break: break-all; }
-  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; flex-wrap: wrap; }
+  .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; }
+  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; }
   .stats span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
   .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 24px 24px 24px; }
   .grid-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); position: relative; }
-  .grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .grid-item img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
   .quote-block { margin: 0 24px 24px 24px; padding: 16px; border: 1px solid var(--glass-border); border-radius: 16px; background: rgba(255,255,255,0.02); }
   .quote-block p { font-size: 14px; line-height: 1.8; color: var(--text-sub); font-style: italic; }
   .post-box { margin: 0 24px 16px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: all 0.2s; }
@@ -246,12 +232,11 @@
     background-color: var(--card-bg-color); background-image: var(--card-gradient);
     backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; margin-bottom: 16px; position: relative;
-    word-break: break-all; overflow-wrap: break-word;
-    max-width: 100%; box-sizing: border-box;
+    word-break: break-all; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;
   }
-  .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .feed-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #333; flex: none; }
-  .feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .feed-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #333; }
+  .feed-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
   .feed-name { font-size: 14px; font-weight: 600; }
   .feed-handle { font-size: 12px; color: var(--text-sub); font-family: monospace; }
   .feed-time { font-size: 12px; color: var(--text-sub); margin-left: auto; }
@@ -267,10 +252,8 @@
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
-    box-sizing: border-box;
   }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
-
   .text-block {
     padding: 12px 22px 12px 12px;
     border: 1px dashed var(--glass-border);
@@ -278,7 +261,6 @@
     word-break: break-all; overflow-wrap: break-word; position: relative;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden; line-height: 1.5;
-    box-sizing: border-box;
   }
   .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
@@ -290,7 +272,6 @@
     height: 1px; background: var(--glass-border); width: 100%;
     border-radius: 1px; transition: all 0.2s;
   }
-  body.editing .divider-block .divider-line { opacity: 0.85; }
   body.editing .divider-block:hover .divider-line { opacity: 1; }
   body.editing .divider-block.active .divider-line {
     box-shadow: 0 0 0 3px rgba(74,158,255,0.3); opacity: 1;
@@ -311,7 +292,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
   .image-frame-block.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,158,255,0.3); }
-  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .image-frame-block img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; pointer-events: none; }
 
   .element-del {
     position: absolute; top: -12px; left: -12px; width: 24px; height: 24px;
@@ -333,7 +314,6 @@
     opacity: 0.9; touch-action: none; user-select: none; pointer-events: auto;
   }
   .resize-handle:hover { opacity: 1; }
-
   .shape-block > .resize-handle,
   .image-frame-block > .resize-handle,
   .float-text-block > .resize-handle { display: none; }
@@ -364,6 +344,20 @@
     font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 4;
   }
   body.editing .float-text-block:hover .float-del { display: flex; }
+
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 998;
+    height: calc(70px + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
+    display: flex; justify-content: space-around; align-items: center;
+    background: rgba(20, 20, 25, 0.8); backdrop-filter: var(--glass-blur);
+    border-top: 1px solid var(--glass-border);
+  }
+  html.light .bottom-nav { background: rgba(255, 255, 255, 0.8); }
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--text-sub); cursor: pointer; }
+  .bottom-nav-item.active { color: var(--accent); }
+  .bottom-nav-item .icon { font-size: 20px; }
 
   .card-del {
     display: none; position: absolute; top: 12px; right: 12px;
@@ -398,7 +392,7 @@
 
   .music-player {
     position: fixed;
-    bottom: calc(30px + var(--safe-bottom));
+    bottom: calc(85px + var(--safe-bottom));
     right: calc(20px + var(--safe-right));
     z-index: 1000;
     width: 52px; height: 52px; border-radius: 50%;
@@ -423,7 +417,7 @@
     content: "点击换图"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; z-index: 5; pointer-events: none;
   }
-  .toast { position: fixed; left: 50%; bottom: calc(90px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
+  .toast { position: fixed; left: 50%; bottom: calc(100px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--accent-text); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 2000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .block-actions {
@@ -449,11 +443,81 @@
   .link-text:hover { color: var(--accent); transform: translateX(2px); }
   .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 
-  img, video, svg { max-width: 100%; }
-  .card-col img, .text-block img, .feed-text img { max-width: 100%; height: auto; }
+  /* ===== 图片位置选择器 ===== */
+  .img-pos-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    z-index: 99999; display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+    box-sizing: border-box;
+  }
+  .img-pos-overlay.show { display: flex; }
+  .img-pos-title {
+    color: #fff; font-size: 15px; margin-bottom: 14px;
+    font-family: monospace; letter-spacing: 0.1em;
+    text-align: center;
+  }
+  .img-pos-preview {
+    width: min(92vw, 500px);
+    height: min(60vh, 500px);
+    border-radius: 14px;
+    background-color: #1a1a1a;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    cursor: grab;
+    touch-action: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    user-select: none;
+  }
+  .img-pos-preview:active { cursor: grabbing; }
+  .img-pos-preview::after {
+    content: ""; position: absolute; inset: 0;
+    border: 2px dashed rgba(255,255,255,0.35);
+    border-radius: 14px;
+    pointer-events: none;
+  }
+  .img-pos-crosshair {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  .img-pos-crosshair::before,
+  .img-pos-crosshair::after {
+    content: ""; position: absolute; background: rgba(255,255,255,0.25);
+  }
+  .img-pos-crosshair::before { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-0.5px); }
+  .img-pos-crosshair::after { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-0.5px); }
+  .img-pos-tip {
+    color: rgba(255,255,255,0.7); font-size: 12px;
+    margin-top: 14px; font-family: monospace; text-align: center; line-height: 1.6;
+  }
+  .img-pos-btns {
+    display: flex; gap: 12px; margin-top: 18px;
+  }
+  .img-pos-btn {
+    padding: 10px 28px; border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08); color: #fff;
+    font-size: 14px; cursor: pointer;
+    font-family: monospace; letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .img-pos-btn:hover { background: rgba(255,255,255,0.15); }
+  .img-pos-btn.confirm { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .img-pos-reset {
+    position: absolute; top: 12px; right: 12px;
+    padding: 6px 14px; border-radius: 16px;
+    background: rgba(255,255,255,0.15); color: #fff;
+    border: none; font-size: 11px; cursor: pointer;
+    font-family: monospace; backdrop-filter: blur(8px);
+  }
 
+  /* ===== 手机适配 ===== */
   @media (max-width: 640px) {
-    body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(20px + var(--safe-bottom)); }
+    body { padding-top: calc(54px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); }
     .toolbar { height: calc(46px + var(--safe-top)); padding: 0 10px; padding-top: var(--safe-top); gap: 5px; }
     .tbtn { padding: 5px 10px; font-size: 11px; border-radius: 16px; }
     .tbtn .label { display: none; }
@@ -489,7 +553,10 @@
     .panel-nav { margin-top: 12px; padding: 6px 0; gap: 12px; }
     .panel-nav-btn { min-width: 42px; height: 42px; font-size: 18px; padding: 0 12px; border-radius: 21px; }
     .panel-nav-spacer { min-width: 42px; }
-    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(20px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
+    .bottom-nav { height: calc(58px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
+    .bottom-nav-item { font-size: 9px; }
+    .bottom-nav-item .icon { font-size: 17px; }
+    .music-player { width: 44px; height: 44px; font-size: 18px; bottom: calc(68px + var(--safe-bottom)); right: calc(12px + var(--safe-right)); }
     .style-panel { width: calc(100vw - 24px); max-width: 340px; right: calc(12px + var(--safe-right)); padding: 12px; font-size: 11px; gap: 8px; }
     .style-panel h4 { font-size: 12px; }
     .style-btn { font-size: 10px; padding: 3px 6px; }
@@ -503,69 +570,38 @@
     .resize-handle { width: 22px; height: 22px; }
     .add-card-btn { padding: 12px; font-size: 12px; }
     .card-del { width: 26px; height: 26px; font-size: 14px; }
+    .img-pos-preview { width: 92vw; height: 55vh; }
   }
 
   @media (max-width: 480px) {
     html, body { max-width: 100vw; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-    body { padding-top: calc(50px + var(--safe-top)); padding-bottom: calc(16px + var(--safe-bottom)); }
+    body { padding-top: calc(50px + var(--safe-top)); padding-bottom: calc(76px + var(--safe-bottom)); }
     .toolbar { height: calc(44px + var(--safe-top)); padding: 0 8px; padding-top: var(--safe-top); gap: 4px; }
     .tbtn { padding: 4px 8px; font-size: 10px; border-radius: 14px; }
-    .tbtn .label { display: none; }
-    .tbtn .ico { font-size: 14px; }
     .top-nav { top: calc(44px + var(--safe-top)); padding: 6px 8px; gap: 3px; }
     .nav-link { padding: 5px 10px; font-size: 10px; letter-spacing: 0.03em; border-radius: 14px; }
     .nav-collection { padding: 5px 8px !important; min-width: 32px; }
     .nav-collection svg { width: 14px; height: 14px; }
     .container { padding: 10px; }
     .glass-card, .feed-card { padding: 12px; border-radius: 16px; margin-bottom: 10px; }
-    .main-card { border-radius: 16px; }
     .cover-wrap { height: 150px; }
     .avatar-wrap { width: 56px; height: 56px; }
     .name { font-size: 18px; }
     .handle { font-size: 11px; }
     .stats { font-size: 12px; gap: 12px; }
     .profile-info { padding: 10px 14px 0; }
-    .profile-header-row { gap: 10px; }
     .image-grid { margin: 0 14px 14px 14px; gap: 5px; }
     .quote-block { margin: 0 14px 14px 14px; padding: 10px; }
     .quote-block p { font-size: 12px; line-height: 1.6; }
     .post-box { margin: 0 14px 10px 14px; padding: 10px; }
-    .post-input { font-size: 13px; }
-    .publish-btn { padding: 5px 14px; font-size: 11px; }
-    .feed-text { font-size: 13px; padding-right: 14px; }
-    .feed-avatar { width: 32px; height: 32px; }
-    .feed-name { font-size: 12px; }
-    .feed-handle, .feed-time { font-size: 10px; }
+    .feed-text { font-size: 13px; }
     .card-col, .text-block { padding: 6px 18px 6px 6px; font-size: 12px; }
-    .divider-block { padding: 6px 0; }
-    .panel-nav { margin-top: 10px; gap: 10px; }
-    .panel-nav-btn { min-width: 40px; height: 40px; padding: 0 10px; font-size: 16px; border-radius: 20px; }
-    .panel-nav-spacer { min-width: 40px; }
-    .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(16px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
-    .style-panel { width: calc(100vw - 20px); max-width: 340px; right: calc(10px + var(--safe-right)); padding: 10px; font-size: 11px; gap: 6px; max-height: calc(100dvh - 100px); }
-    .style-panel h4 { font-size: 11px; }
-    .style-btn { padding: 3px 6px; font-size: 10px; }
-    .shape-picker { padding: 8px; gap: 5px; max-width: calc(100vw - 20px); border-radius: 12px; }
-    .shape-pick-item { width: 36px; height: 36px; border-radius: 8px; }
-    .shape-pick-item svg { width: 20px; height: 20px; }
-    .collection-menu { top: calc(90px + var(--safe-top)); left: calc(10px + var(--safe-left)); min-width: 130px; max-width: calc(100vw - 20px); border-radius: 12px; }
-    .collection-item { padding: 7px 10px; font-size: 12px; }
-    .block-actions { padding: 2px; gap: 2px; border-radius: 5px; }
-    .block-action-btn { width: 24px; height: 24px; font-size: 12px; border-radius: 3px; }
-    .block-action-btn.divider { font-size: 14px; }
-    .resize-handle { width: 20px; height: 20px; }
-    .add-card-btn { padding: 10px; font-size: 11px; border-radius: 12px; }
-    .card-del { width: 24px; height: 24px; font-size: 13px; border-radius: 6px; }
-    .tbtn, .nav-link, .panel-nav-btn, .block-action-btn,
-    .music-player, .publish-btn, .card-del, .element-del,
-    .add-card-btn, .collection-item { touch-action: manipulation; }
-  }
-
-  @media (max-width: 380px) {
-    .nav-link { padding: 5px 9px; font-size: 10px; letter-spacing: 0.05em; }
-    .container { padding: 8px; }
-    .glass-card, .feed-card { padding: 10px; }
-    .name { font-size: 17px; }
+    .panel-nav-btn { min-width: 40px; height: 40px; font-size: 16px; border-radius: 20px; }
+    .bottom-nav { height: calc(54px + var(--safe-bottom)); padding-bottom: var(--safe-bottom); }
+    .bottom-nav-item .icon { font-size: 15px; }
+    .music-player { width: 40px; height: 40px; font-size: 16px; bottom: calc(62px + var(--safe-bottom)); right: calc(10px + var(--safe-right)); }
+    .style-panel { width: calc(100vw - 20px); right: calc(10px + var(--safe-right)); padding: 10px; max-height: calc(100dvh - 100px); }
+    .img-pos-preview { width: 94vw; height: 50vh; }
   }
 </style>
 </head>
@@ -817,6 +853,27 @@
 
 </div>
 
+<div class="bottom-nav">
+  <div class="bottom-nav-item active"><span class="icon">⊞</span><span>Desk</span></div>
+  <div class="bottom-nav-item"><span class="icon">👤</span><span>Space</span></div>
+  <div class="bottom-nav-item"><span class="icon">👥</span><span>Friends</span></div>
+  <div class="bottom-nav-item"><span class="icon">⚙️</span><span>设置</span></div>
+</div>
+
+<!-- ===== 图片位置选择器 ===== -->
+<div class="img-pos-overlay" id="imgPosOverlay">
+  <div class="img-pos-title">选择展示位置</div>
+  <div class="img-pos-preview" id="imgPosPreview">
+    <div class="img-pos-crosshair"></div>
+    <button class="img-pos-reset" id="imgPosReset">居中</button>
+  </div>
+  <div class="img-pos-tip">拖动图片调整显示区域<br>上下左右都可以移动</div>
+  <div class="img-pos-btns">
+    <button class="img-pos-btn" id="imgPosCancel">取消</button>
+    <button class="img-pos-btn confirm" id="imgPosConfirm">确定</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <input type="file" id="fileInput" accept="image/*" hidden>
 <input type="file" id="bgInput" accept="image/*" hidden>
@@ -829,6 +886,7 @@
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
+  var KEY_BG_POS  = 'myPage.bgPos.v1';
   var KEY_STYLE   = 'myPage.styleSettings.v1';
 
   var app = document.getElementById('app');
@@ -855,12 +913,16 @@
     if(saved) app.innerHTML = saved;
     var savedTheme = localStorage.getItem(KEY_THEME) || 'dark';
     var savedBgImg = localStorage.getItem(KEY_BG_IMG) || 'none';
+    var savedBgPos = localStorage.getItem(KEY_BG_POS) || '50% 50%';
     var savedStyle = localStorage.getItem(KEY_STYLE);
     if(savedStyle) styleSettings = JSON.parse(savedStyle);
     applyTheme(savedTheme === 'dark');
     applyColor(styleSettings.accent);
     applySliders(styleSettings);
-    if(savedBgImg !== 'none'){ document.body.style.backgroundImage = 'url(' + savedBgImg + ')'; }
+    if(savedBgImg !== 'none'){
+      document.body.style.backgroundImage = 'url(' + savedBgImg + ')';
+      document.body.style.backgroundPosition = savedBgPos;
+    }
   } catch(e){}
 
   function applyTheme(dark){
@@ -920,6 +982,191 @@
     return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
   }
 
+  // ========== 图片位置选择器 ==========
+  var imgPosOverlay = document.getElementById('imgPosOverlay');
+  var imgPosPreview = document.getElementById('imgPosPreview');
+  var imgPosReset = document.getElementById('imgPosReset');
+  var imgPosCancel = document.getElementById('imgPosCancel');
+  var imgPosConfirm = document.getElementById('imgPosConfirm');
+
+  var posState = {
+    image: null,        // dataURL
+    posX: 50,           // 0-100
+    posY: 50,
+    target: null,       // 'background' 或实际 img 元素
+    isBg: false
+  };
+
+  var posDragging = false, posStartX = 0, posStartY = 0, posStartPosX = 50, posStartPosY = 50;
+
+  function openPosPicker(imageDataURL, target, isBg, initialX, initialY){
+    posState.image = imageDataURL;
+    posState.target = target;
+    posState.isBg = !!isBg;
+    posState.posX = (typeof initialX === 'number') ? initialX : 50;
+    posState.posY = (typeof initialY === 'number') ? initialY : 50;
+    imgPosPreview.style.backgroundImage = 'url(' + imageDataURL + ')';
+    imgPosPreview.style.backgroundPosition = posState.posX + '% ' + posState.posY + '%';
+    imgPosOverlay.classList.add('show');
+  }
+
+  function closePosPicker(){
+    imgPosOverlay.classList.remove('show');
+    posState.image = null;
+    posState.target = null;
+    posState.isBg = false;
+  }
+
+  imgPosReset.addEventListener('click', function(){
+    posState.posX = 50; posState.posY = 50;
+    imgPosPreview.style.backgroundPosition = '50% 50%';
+  });
+
+  imgPosCancel.addEventListener('click', closePosPicker);
+
+  imgPosConfirm.addEventListener('click', function(){
+    if(!posState.target || !posState.image){
+      closePosPicker();
+      return;
+    }
+    if(posState.isBg){
+      document.body.style.backgroundImage = 'url(' + posState.image + ')';
+      document.body.style.backgroundPosition = posState.posX + '% ' + posState.posY + '%';
+      document.body.style.backgroundSize = 'cover';
+      try {
+        localStorage.setItem(KEY_BG_IMG, posState.image);
+        localStorage.setItem(KEY_BG_POS, posState.posX + '% ' + posState.posY + '%');
+      } catch(e){ toast('背景图太大，无法保存'); }
+    } else {
+      var img = posState.target;
+      img.src = posState.image;
+      img.style.objectPosition = posState.posX + '% ' + posState.posY + '%';
+    }
+    scheduleSave();
+    toast('图片已更新');
+    closePosPicker();
+  });
+
+  function onPosStart(e){
+    e.preventDefault();
+    posDragging = true;
+    var p = e.touches ? e.touches[0] : e;
+    posStartX = p.clientX; posStartY = p.clientY;
+    posStartPosX = posState.posX;
+    posStartPosY = posState.posY;
+  }
+  function onPosMove(e){
+    if(!posDragging) return;
+    e.preventDefault();
+    var p = e.touches ? e.touches[0] : e;
+    var rect = imgPosPreview.getBoundingClientRect();
+    var dx = p.clientX - posStartX;
+    var dy = p.clientY - posStartY;
+    // 拖动灵敏度：100px 约 40%
+    var newX = posStartPosX - (dx / rect.width) * 100;
+    var newY = posStartPosY - (dy / rect.height) * 100;
+    newX = Math.max(0, Math.min(100, newX));
+    newY = Math.max(0, Math.min(100, newY));
+    posState.posX = newX;
+    posState.posY = newY;
+    imgPosPreview.style.backgroundPosition = newX + '% ' + newY + '%';
+  }
+  function onPosEnd(){ posDragging = false; }
+
+  imgPosPreview.addEventListener('mousedown', onPosStart);
+  imgPosPreview.addEventListener('touchstart', onPosStart, {passive: false});
+  document.addEventListener('mousemove', onPosMove);
+  document.addEventListener('touchmove', onPosMove, {passive: false});
+  document.addEventListener('mouseup', onPosEnd);
+  document.addEventListener('touchend', onPosEnd);
+
+  // 压缩图片为 dataURL
+  function compressImage(file, maxSize, quality){
+    maxSize = maxSize || 1400;
+    quality = quality || 0.85;
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var img = new Image();
+        img.onload = function(){
+          var w = img.width, h = img.height;
+          var scale = Math.min(1, maxSize / Math.max(w, h));
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          var out = '';
+          try { out = canvas.toDataURL('image/jpeg', quality); } catch(e){}
+          if(!out) out = canvas.toDataURL('image/png');
+          resolve(out);
+        };
+        img.onerror = reject;
+        img.src = ev.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ========== 背景图上传 ==========
+  document.getElementById('btnBgImage').addEventListener('click', function(){
+    bgInput.value = '';
+    bgInput.click();
+  });
+  bgInput.addEventListener('change', function(){
+    var file = bgInput.files && bgInput.files[0];
+    if(!file) return;
+    compressImage(file, 1600, 0.82).then(function(dataUrl){
+      var savedPos = '50% 50%';
+      try { savedPos = localStorage.getItem(KEY_BG_POS) || '50% 50%'; } catch(e){}
+      var parts = savedPos.split(' ');
+      var initX = parseFloat(parts[0]) || 50;
+      var initY = parseFloat(parts[1]) || 50;
+      openPosPicker(dataUrl, null, true, initX, initY);
+    }).catch(function(){ toast('图片处理失败'); });
+  });
+
+  // ========== 卡片图片上传 ==========
+  app.addEventListener('click', function(e){
+    if(!editMode) return;
+    var img = e.target.closest('img[data-edit-img]');
+    if(img){
+      e.preventDefault(); e.stopPropagation();
+      currentImg = img;
+      fileInput.value = '';
+      fileInput.click();
+    }
+  });
+  fileInput.addEventListener('change', function(){
+    var file = fileInput.files && fileInput.files[0];
+    if(!file || !currentImg) return;
+    var targetImg = currentImg;
+    compressImage(file, 1200, 0.85).then(function(dataUrl){
+      // 解析现有 object-position
+      var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
+      var parts = cur.split(' ');
+      var initX = parseFloat(parts[0]) || 50;
+      var initY = parseFloat(parts[1]) || 50;
+      openPosPicker(dataUrl, targetImg, false, initX, initY);
+    }).catch(function(){ toast('图片处理失败'); });
+  });
+
+  // 图形/图片框图片上传
+  elementImageInput.addEventListener('change', function(){
+    var file = elementImageInput.files && elementImageInput.files[0];
+    if(!file || !currentElementImg) return;
+    var targetImg = currentElementImg;
+    compressImage(file, 1000, 0.85).then(function(dataUrl){
+      var cur = window.getComputedStyle(targetImg).objectPosition || '50% 50%';
+      var parts = cur.split(' ');
+      var initX = parseFloat(parts[0]) || 50;
+      var initY = parseFloat(parts[1]) || 50;
+      openPosPicker(dataUrl, targetImg, false, initX, initY);
+    }).catch(function(){ toast('图片处理失败'); });
+  });
+
+  // ========== 其他功能（保留原有） ==========
   function updateShapeStyleUI(){
     var section = document.getElementById('shapeStyleSection');
     if(!activeShapeEl){ section.style.display = 'none'; return; }
@@ -1191,7 +1438,7 @@
     }
   });
 
-  // ================= resize 事件委托（稳定可靠） =================
+  // ================= resize 事件委托 =================
   var resizingState = null;
 
   function onResizePointerDown(e){
@@ -1203,19 +1450,15 @@
       ? host.querySelector('.card-col, .text-block')
       : host;
     if(!block) return;
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     var p = e.touches ? e.touches[0] : e;
     resizingState = {
       block: block,
-      startX: p.clientX,
-      startY: p.clientY,
-      startW: block.offsetWidth,
-      startH: block.offsetHeight
+      startX: p.clientX, startY: p.clientY,
+      startW: block.offsetWidth, startH: block.offsetHeight
     };
     if(block.closest('.card-row')) block.style.flex = 'none';
   }
-
   function onResizePointerMove(e){
     if(!resizingState) return;
     e.preventDefault();
@@ -1231,13 +1474,11 @@
       document.getElementById('shapeHeightVal').textContent = newH + 'px';
     }
   }
-
   function onResizePointerUp(){
     if(!resizingState) return;
     resizingState = null;
     scheduleSave();
   }
-
   document.addEventListener('mousedown', onResizePointerDown, true);
   document.addEventListener('touchstart', onResizePointerDown, {passive: false, capture: true});
   document.addEventListener('mousemove', onResizePointerMove);
@@ -1245,13 +1486,9 @@
   document.addEventListener('mouseup', onResizePointerUp);
   document.addEventListener('touchend', onResizePointerUp);
 
-  // 空函数保留（其它代码可能调用）
-  function bindResizeEvents(){}
   function bindAllResizeEvents(){
     document.querySelectorAll('.divider-line').forEach(function(line){
-      if(line.dataset.color){
-        applyDividerLineStyle(line);
-      }
+      if(line.dataset.color) applyDividerLineStyle(line);
     });
   }
 
@@ -1259,22 +1496,10 @@
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
-    nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div>' +
-      '<div class="resize-handle"></div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
-        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div>';
+    nw.innerHTML = '<div class="card-col" contenteditable="true" style="width:100%;">新行内容</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var newText = nw.querySelector('.card-col');
-    if(editMode){
-      activeTextEl = newText;
-      updateTextStyleUI();
-      document.getElementById('stylePanel').classList.add('show');
-      newText.focus();
-    }
+    if(editMode){ activeTextEl = newText; updateTextStyleUI(); document.getElementById('stylePanel').classList.add('show'); newText.focus(); }
     scheduleSave(); toast('已添加行');
   };
   window.addColHere = function(btn){
@@ -1283,43 +1508,19 @@
     var row = targetBlock.closest('.card-row');
     if(!row){ row = document.createElement('div'); row.className = 'card-row'; wrapper.parentNode.insertBefore(row, wrapper); row.appendChild(wrapper); }
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.flex = '1';
-    nw.innerHTML = '<div class="card-col" contenteditable="true">新列内容</div>' +
-      '<div class="resize-handle"></div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
-        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div>';
+    nw.innerHTML = '<div class="card-col" contenteditable="true">新列内容</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var newText = nw.querySelector('.card-col');
-    if(editMode){
-      activeTextEl = newText;
-      updateTextStyleUI();
-      document.getElementById('stylePanel').classList.add('show');
-      newText.focus();
-    }
+    if(editMode){ activeTextEl = newText; updateTextStyleUI(); document.getElementById('stylePanel').classList.add('show'); newText.focus(); }
     scheduleSave(); toast('已添加列');
   };
   window.addTextBlockBelow = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
-    nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div>' +
-      '<div class="resize-handle"></div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button>' +
-        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div>';
+    nw.innerHTML = '<div class="text-block" contenteditable="true">点击输入新内容...</div><div class="resize-handle"></div><div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var newText = nw.querySelector('.text-block');
-    if(editMode){
-      activeTextEl = newText;
-      updateTextStyleUI();
-      document.getElementById('stylePanel').classList.add('show');
-      newText.focus();
-    }
+    if(editMode){ activeTextEl = newText; updateTextStyleUI(); document.getElementById('stylePanel').classList.add('show'); newText.focus(); }
     scheduleSave(); toast('已添加内容');
   };
 
@@ -1327,16 +1528,8 @@
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div');
     nw.className = 'block-wrapper';
-    nw.style.marginTop = '8px';
-    nw.style.marginBottom = '8px';
-    nw.innerHTML =
-      '<div class="divider-block">' +
-        '<div class="divider-line"></div>' +
-      '</div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="再添加一条分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div>';
+    nw.style.marginTop = '8px'; nw.style.marginBottom = '8px';
+    nw.innerHTML = '<div class="divider-block"><div class="divider-line"></div></div><div class="block-actions"><button class="block-action-btn divider" onclick="addDivider(this)" title="再添加一条分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     wrapper.parentNode.insertBefore(nw, wrapper.nextSibling);
     var line = nw.querySelector('.divider-line');
     line.dataset.color = '#888888';
@@ -1344,8 +1537,7 @@
     line.dataset.lineStyle = 'solid';
     applyDividerLineStyle(line);
     if(editMode) selectDivider(line);
-    scheduleSave();
-    toast('已添加分隔线');
+    scheduleSave(); toast('已添加分隔线');
   };
 
   window.deleteBlock = function(btn){
@@ -1359,7 +1551,6 @@
     scheduleSave(); toast('已删除');
   };
 
-  // ================= 拖拽 =================
   function makeDraggable(el){
     var isDragging = false, startX, startY, startLeft, startTop;
     function onStart(e){
@@ -1372,9 +1563,7 @@
       var p = e.touches ? e.touches[0] : e;
       startX = p.clientX; startY = p.clientY;
       startLeft = el.offsetLeft; startTop = el.offsetTop;
-      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){
-        selectShape(el);
-      }
+      if(el.classList.contains('shape-block') || el.classList.contains('image-frame-block')){ selectShape(el); }
       document.addEventListener('mousemove', onMove);
       document.addEventListener('touchmove', onMove, {passive: false});
       document.addEventListener('mouseup', onEnd);
@@ -1421,26 +1610,20 @@
     shape.dataset.shapeType = type;
     shape.style.left = '40px';
     shape.style.top = (window.scrollY + 200) + 'px';
-    shape.style.width = '90px';
-    shape.style.height = '90px';
+    shape.style.width = '90px'; shape.style.height = '90px';
     shape.style.color = styleSettings.accent;
     shape.innerHTML = getShapeSVG(type) + '<div class="resize-handle"></div><button class="element-del" contenteditable="false">×</button>';
     var del = shape.querySelector('.element-del');
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图形吗？')){ shape.remove(); if(activeShapeEl === shape){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     document.getElementById('float-layer').appendChild(shape);
-    makeDraggable(shape);
-    selectShape(shape);
-    scheduleSave();
-    toast('已添加图形');
+    makeDraggable(shape); selectShape(shape); scheduleSave(); toast('已添加图形');
   }
 
   function createImageFrame(shapeType){
     var frame = document.createElement('div');
     frame.className = 'image-frame-block';
-    frame.style.left = '40px';
-    frame.style.top = (window.scrollY + 300) + 'px';
-    frame.style.width = '120px';
-    frame.style.height = '120px';
+    frame.style.left = '40px'; frame.style.top = (window.scrollY + 300) + 'px';
+    frame.style.width = '120px'; frame.style.height = '120px';
     if(shapeType === 'circle') frame.style.borderRadius = '50%';
     else if(shapeType === 'rounded') frame.style.borderRadius = '16px';
     else frame.style.borderRadius = '0px';
@@ -1452,10 +1635,7 @@
     del.onclick = function(e){ e.stopPropagation(); if(confirm('删除这个图片框吗？')){ frame.remove(); if(activeShapeEl === frame){ activeShapeEl = null; updateShapeStyleUI(); } scheduleSave(); } };
     frame.appendChild(del);
     document.getElementById('float-layer').appendChild(frame);
-    makeDraggable(frame);
-    selectShape(frame);
-    scheduleSave();
-    toast('已添加图片框');
+    makeDraggable(frame); selectShape(frame); scheduleSave(); toast('已添加图片框');
   }
 
   document.getElementById('btnAddShape').addEventListener('click', function(e){
@@ -1481,26 +1661,6 @@
     });
   });
 
-  elementImageInput.addEventListener('change', function(){
-    var file = elementImageInput.files && elementImageInput.files[0];
-    if(!file || !currentElementImg) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      var img = new Image();
-      img.onload = function(){
-        var canvas = document.createElement('canvas');
-        var MAX = 800; var w = img.width, h = img.height;
-        var scale = Math.min(1, MAX / Math.max(w, h)); w *= scale; h *= scale;
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        currentElementImg.src = canvas.toDataURL('image/jpeg', 0.8);
-        scheduleSave(); toast('图片已更新');
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
   document.getElementById('btnAddFloat').addEventListener('click', function(){
     var floatBlock = document.createElement('div');
     floatBlock.className = 'float-text-block';
@@ -1517,20 +1677,16 @@
     floatBlock.appendChild(del);
     floatBlock.addEventListener('focusin', function(){ activeTextEl = floatBlock; updateTextStyleUI(); });
     document.getElementById('float-layer').appendChild(floatBlock);
-    makeDraggable(floatBlock);
-    floatBlock.focus();
-    scheduleSave(); toast('浮动文本已添加');
+    makeDraggable(floatBlock); floatBlock.focus(); scheduleSave(); toast('浮动文本已添加');
   });
 
   document.getElementById('btnAddPanel').addEventListener('click', function(){
     var name = prompt('请输入新页面的名称（将保存在「合集」中）：', '新页面');
     if(!name) return;
-    name = name.trim();
-    if(!name) return;
+    name = name.trim(); if(!name) return;
 
     var panels = document.querySelectorAll('#app .panel');
-    var usedIds = {};
-    panels.forEach(function(p){ usedIds[p.id] = true; });
+    var usedIds = {}; panels.forEach(function(p){ usedIds[p.id] = true; });
     var newIndex = 0;
     while(usedIds['panel-' + newIndex]) newIndex++;
     var newPanelId = 'panel-' + newIndex;
@@ -1561,17 +1717,13 @@
         '<div class="panel-nav-spacer"></div>' +
       '</div>';
     document.getElementById('app').appendChild(newPanel);
-
     if(editMode){
       newPanel.querySelectorAll('[data-edit]').forEach(function(el){
         el.setAttribute('contenteditable', 'true');
         el.setAttribute('spellcheck', 'false');
       });
     }
-
-    refreshCollectionMenu();
-    refreshLinkTargets();
-    scheduleSave();
+    refreshCollectionMenu(); refreshLinkTargets(); scheduleSave();
     toast('已添加到合集：' + name);
   });
 
@@ -1579,10 +1731,7 @@
     var list = document.getElementById('collectionList');
     list.innerHTML = '';
     var items = document.querySelectorAll('#app .panel[data-collection="true"]');
-    if(items.length === 0){
-      list.innerHTML = '<div class="collection-empty">暂无页面</div>';
-      return;
-    }
+    if(items.length === 0){ list.innerHTML = '<div class="collection-empty">暂无页面</div>'; return; }
     items.forEach(function(p){
       var item = document.createElement('a');
       item.className = 'collection-item';
@@ -1671,7 +1820,6 @@
   }
 
   var navHistory = [];
-
   var originalSwitchTab = function(targetPanelId){
     document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
     document.querySelectorAll('#collectionList .collection-item').forEach(function(l){ l.classList.remove('active'); });
@@ -1690,7 +1838,6 @@
     panel.style.display = 'block';
     if(editMode) toast('已跳转');
   };
-
   window.switchTab = function(targetPanelId){
     var currentVisible = document.querySelector('.panel[style*="display: block"]');
     if(currentVisible && currentVisible.id !== targetPanelId){
@@ -1700,14 +1847,9 @@
     originalSwitchTab(targetPanelId);
     refreshLinkTargets();
   };
-
   window.goBack = function(){
-    if(navHistory.length > 0){
-      var prev = navHistory.pop();
-      originalSwitchTab(prev);
-    } else {
-      originalSwitchTab('panel-0');
-    }
+    if(navHistory.length > 0){ var prev = navHistory.pop(); originalSwitchTab(prev); }
+    else { originalSwitchTab('panel-0'); }
   };
 
   document.addEventListener('click', function(e){
@@ -1716,8 +1858,7 @@
     if(linkEl){
       var target = linkEl.getAttribute('data-link');
       if(target && document.getElementById(target)){
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         window.switchTab(target);
       }
     }
@@ -1742,14 +1883,8 @@
       '<div class="feed-header"><div class="feed-avatar"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23555\'/%3E%3Ctext x=\'50\' y=\'69\' font-size=\'40\' fill=\'%23fff\' text-anchor=\'middle\' font-family=\'monospace\'%3EN%3C/text%3E%3C/svg%3E"></div>' +
       '<div><div class="feed-name" data-edit>新朋友</div><div class="feed-handle" data-edit>@newuser</div></div>' +
       '<div class="feed-time" data-edit>刚刚</div></div>' +
-      '<div class="block-wrapper"><div class="feed-text" data-edit>点击这里输入内容...</div>' +
-      '<div class="resize-handle"></div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>' +
-        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div></div>' +
+      '<div class="block-wrapper"><div class="feed-text" data-edit>点击这里输入内容...</div><div class="resize-handle"></div>' +
+      '<div class="block-actions"><button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div></div>' +
       '<div class="feed-footer"><span>💬 评论</span></div>';
     var addBtn = panel.querySelector('.add-card-btn'); panel.insertBefore(card, addBtn);
     if(editMode) card.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
@@ -1758,59 +1893,12 @@
   window.addTextBlock = function(panelId){
     var panel = document.getElementById(panelId); if(!panel) return;
     var wrapper = document.createElement('div'); wrapper.className = 'block-wrapper';
-    wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div>' +
-      '<div class="resize-handle"></div>' +
-      '<div class="block-actions">' +
-        '<button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button>' +
-        '<button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>' +
-        '<button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button>' +
-        '<button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>' +
-      '</div>';
+    wrapper.innerHTML = '<div class="text-block" contenteditable="true">点击输入自由文本内容...</div><div class="resize-handle"></div>' +
+      '<div class="block-actions"><button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button><button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button><button class="block-action-btn divider" onclick="addDivider(this)" title="添加分隔线">—</button><button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button></div>';
     var addBtn = panel.querySelectorAll('.add-card-btn')[1]; panel.insertBefore(wrapper, addBtn);
-    if(editMode){
-      activeTextEl = wrapper.querySelector('.text-block');
-      updateTextStyleUI();
-      document.getElementById('stylePanel').classList.add('show');
-      activeTextEl.focus();
-    }
+    if(editMode){ activeTextEl = wrapper.querySelector('.text-block'); updateTextStyleUI(); document.getElementById('stylePanel').classList.add('show'); activeTextEl.focus(); }
     scheduleSave(); toast('已添加自由文本块');
   };
-
-  document.getElementById('btnBgImage').addEventListener('click', function(){ bgInput.value = ''; bgInput.click(); });
-  bgInput.addEventListener('change', function(){
-    var file = bgInput.files && bgInput.files[0]; if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      document.body.style.backgroundImage = 'url(' + ev.target.result + ')';
-      try { localStorage.setItem(KEY_BG_IMG, ev.target.result); } catch(e){ toast('背景图太大'); }
-      toast('背景已更新');
-    };
-    reader.readAsDataURL(file);
-  });
-
-  app.addEventListener('click', function(e){
-    if(!editMode) return;
-    var img = e.target.closest('img[data-edit-img]');
-    if(img){ e.preventDefault(); e.stopPropagation(); currentImg = img; fileInput.value = ''; fileInput.click(); }
-  });
-  fileInput.addEventListener('change', function(){
-    var file = fileInput.files && fileInput.files[0]; if(!file || !currentImg) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      var img = new Image();
-      img.onload = function(){
-        var canvas = document.createElement('canvas');
-        var MAX = 800; var w = img.width, h = img.height;
-        var scale = Math.min(1, MAX / Math.max(w, h)); w *= scale; h *= scale;
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        currentImg.src = canvas.toDataURL('image/jpeg', 0.8);
-        scheduleSave(); toast('图片已更新');
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
 
   app.addEventListener('click', function(e){
     var del = e.target.closest('.card-del');
@@ -1824,7 +1912,7 @@
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.shape-block.selected, .image-frame-block.selected').forEach(function(el){ el.classList.remove('selected'); });
     clone.querySelectorAll('.divider-block.active').forEach(function(el){ el.classList.remove('active'); });
-    clone.querySelectorAll('.collection-menu').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('.collection-menu, .img-pos-overlay').forEach(function(el){ el.classList.remove('show'); });
     var blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-profile.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('已导出文件');
