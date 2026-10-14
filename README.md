@@ -155,7 +155,7 @@
   .name { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 4px; }
   .handle { font-size: 14px; color: var(--text-sub); font-family: monospace; }
   
-  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; margin-bottom: 24px; }
+  .stats { display: flex; justify-content: flex-start; gap: 20px; font-size: 14px; }
   .stats span { font-weight: 600; color: var(--text); }
   .stats span:last-child { font-weight: 400; color: var(--text-sub); margin-left: 4px; }
 
@@ -202,6 +202,14 @@
   }
   .card-col:hover, .feed-text:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
+  /* 全宽文本块 */
+  .text-block {
+    padding: 12px; border: 1px dashed var(--glass-border);
+    border-radius: 12px; background: rgba(255,255,255,0.02); min-height: 40px;
+    word-break: break-all; overflow-wrap: break-word; position: relative;
+  }
+  .text-block:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+
   /* ============ 通用块操作按钮（常驻显示） ============ */
   .block-wrapper {
     position: relative;
@@ -215,7 +223,6 @@
   }
   .block-actions:hover { opacity: 1; }
   
-  /* 在编辑模式下，所有带有 data-edit 的文本块显示操作按钮 */
   body.editing .block-actions { display: flex !important; }
   body:not(.editing) .block-actions { display: none !important; }
 
@@ -474,6 +481,7 @@
       <div class="cover-wrap">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='8' fill='%23444' text-anchor='middle' font-family='monospace'%3E点击更换封面图%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
+      <!-- 个人信息区 -->
       <div class="profile-info">
         <div class="profile-header-row">
           <div class="avatar-wrap">
@@ -484,9 +492,15 @@
             <div class="handle" data-edit>@InfernalBeyond.com</div>
           </div>
         </div>
-        <div class="stats">
-          <div><span data-edit>520</span> 正在关注</div>
-          <div><span data-edit>1,314</span> 关注者</div>
+        <!-- 数据统计栏（包裹在 block-wrapper 中） -->
+        <div class="block-wrapper" style="margin-bottom: 12px;">
+          <div class="stats">
+            <div><span data-edit>520</span> 正在关注</div>
+            <div><span data-edit>1,314</span> 关注者</div>
+          </div>
+          <div class="block-actions">
+            <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在此栏下方添加内容">＋</button>
+          </div>
         </div>
       </div>
       
@@ -522,13 +536,12 @@
         </div>
         <div class="feed-time" data-edit>7小时前</div>
       </div>
-      <!-- 文本块包装器，自带常驻操作按钮 -->
       <div class="block-wrapper">
         <div class="feed-text" data-edit>这里是暗网吗</div>
         <div class="block-actions">
-          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
-          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
-          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
       <div class="feed-footer">
@@ -547,9 +560,9 @@
       <div class="block-wrapper">
         <div class="feed-text" data-edit>这里是个人信息区域，你可以在编辑模式下自由修改文字和图片。</div>
         <div class="block-actions">
-          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
-          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
-          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
     </div>
@@ -564,9 +577,9 @@
       <div class="block-wrapper">
         <div class="feed-text" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
         <div class="block-actions">
-          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
-          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
-          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
     </div>
@@ -581,9 +594,9 @@
       <div class="block-wrapper">
         <div class="feed-text" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
         <div class="block-actions">
-          <button class="block-action-btn" onclick="addRowHere(this)" title="在此处添加行">＋</button>
-          <button class="block-action-btn" onclick="addColHere(this)" title="在此处添加列">▥</button>
-          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除此块">×</button>
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
     </div>
@@ -608,7 +621,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v11';
+  var KEY_CONTENT = 'myPage.glass.v12';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -784,7 +797,6 @@
       document.getElementById('bgOpacityVal').textContent = '0%';
     }
 
-    // 动画状态同步
     var animSelect = document.getElementById('textAnimation');
     var classes = activeTextEl.className;
     if(classes.includes('anim-fadeIn')) animSelect.value = 'fadeIn';
@@ -806,7 +818,6 @@
     if(activeTextEl) {
       var anim = e.target.value;
       activeTextEl.classList.remove('anim-fadeIn', 'anim-slideUp', 'anim-zoomIn', 'anim-slideLeft');
-      // 触发重绘以重启动画
       void activeTextEl.offsetWidth;
       if(anim !== 'none') {
         activeTextEl.classList.add('anim-' + anim);
@@ -887,7 +898,6 @@
   // ============ 增删行列（修复：增加删除键） ============
   window.addRowHere = function(btn) {
     var wrapper = btn.closest('.block-wrapper');
-    var card = btn.closest('.feed-card, .main-card');
     var newWrapper = document.createElement('div');
     newWrapper.className = 'block-wrapper';
     newWrapper.innerHTML = `
@@ -898,7 +908,6 @@
         <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
       </div>
     `;
-    // 插入到当前包装器后面
     wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
     if(editMode) newWrapper.querySelector('.card-col').focus();
     scheduleSave();
@@ -907,19 +916,16 @@
 
   window.addColHere = function(btn) {
     var wrapper = btn.closest('.block-wrapper');
-    var card = btn.closest('.feed-card, .main-card');
-    var targetBlock = wrapper.querySelector('.feed-text, .card-col');
+    var targetBlock = wrapper.querySelector('.feed-text, .card-col, .text-block');
     
     var row = targetBlock.closest('.card-row');
     if(!row) {
-      // 如果当前块不在行内，创建新行并包裹当前块
       row = document.createElement('div');
       row.className = 'card-row';
       wrapper.parentNode.insertBefore(row, wrapper);
       row.appendChild(wrapper);
     }
     
-    // 创建新列
     var newColWrapper = document.createElement('div');
     newColWrapper.className = 'block-wrapper';
     newColWrapper.style.flex = '1';
@@ -931,11 +937,30 @@
         <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
       </div>
     `;
-    // 插入到当前包装器后面
     wrapper.parentNode.insertBefore(newColWrapper, wrapper.nextSibling);
     if(editMode) newColWrapper.querySelector('.card-col').focus();
     scheduleSave();
     toast('已添加列');
+  };
+
+  // 在下方添加全宽文本块
+  window.addTextBlockBelow = function(btn) {
+    var wrapper = btn.closest('.block-wrapper');
+    var newWrapper = document.createElement('div');
+    newWrapper.className = 'block-wrapper';
+    newWrapper.style.marginTop = '12px';
+    newWrapper.innerHTML = `
+      <div class="text-block" contenteditable="true">点击输入新内容...</div>
+      <div class="block-actions">
+        <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加内容">＋</button>
+        <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+        <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
+      </div>
+    `;
+    wrapper.parentNode.insertBefore(newWrapper, wrapper.nextSibling);
+    if(editMode) newWrapper.querySelector('.text-block').focus();
+    scheduleSave();
+    toast('已在此处添加内容');
   };
 
   // 删除块
@@ -944,14 +969,11 @@
     var row = wrapper.closest('.card-row');
     
     if(row) {
-      // 如果它在行内，删除该包装器
       wrapper.remove();
-      // 如果行内没有其他块了，删除整行
       if(row.querySelectorAll('.block-wrapper').length === 0) {
         row.remove();
       }
     } else {
-      // 如果不在行内，删除包装器
       wrapper.remove();
     }
     scheduleSave();
@@ -1004,7 +1026,6 @@
     };
     floatBlock.appendChild(delBtn);
 
-    // 拖拽
     dragHandle.addEventListener('mousedown', startDrag);
     dragHandle.addEventListener('touchstart', startDrag, {passive: false});
     var isDragging = false;
@@ -1039,7 +1060,6 @@
       scheduleSave();
     }
 
-    // 缩放
     resizeHandle.addEventListener('mousedown', startResize);
     resizeHandle.addEventListener('touchstart', startResize, {passive: false});
     var isResizing = false;
@@ -1207,7 +1227,7 @@
     wrapper.innerHTML = `
       <div class="text-block" contenteditable="true">点击输入自由文本内容...</div>
       <div class="block-actions">
-        <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+        <button class="block-action-btn" onclick="addTextBlockBelow(this)" title="在下方添加文本">＋</button>
         <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
         <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
       </div>
