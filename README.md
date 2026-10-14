@@ -100,7 +100,6 @@
   .shape-pick-item svg { width: 30px; height: 30px; }
   .shape-picker-title { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); }
 
-  /* ===== 顶部导航栏 ===== */
   .top-nav {
     max-width: 640px; margin: 0 auto; display: flex; gap: 6px; padding: 12px 16px;
     position: sticky; top: 50px; z-index: 998;
@@ -118,7 +117,6 @@
   }
   .nav-link.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 
-  /* 合集按钮 */
   .nav-collection {
     flex: 0 0 auto !important; display: flex; align-items: center; justify-content: center;
     padding: 8px 12px !important; min-width: 40px;
@@ -127,7 +125,6 @@
   .nav-collection.active { background: var(--accent) !important; color: var(--accent-text) !important; border-color: var(--accent) !important; }
   .nav-collection svg { display: block; }
 
-  /* 合集下拉菜单 */
   .collection-menu {
     position: fixed; top: 108px; left: 16px;
     z-index: 10001;
@@ -409,6 +406,17 @@
   }
   .block-action-btn:hover { transform: scale(1.1); }
   .block-action-btn.del { background: #e5484d; }
+
+  /* ===== 新增：可点击链接文字样式 ===== */
+  .link-text {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 4px;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .link-text:hover { color: var(--accent); transform: translateX(2px); }
+  .link-text::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -482,9 +490,9 @@
   <div class="style-item"><span>边框粗细</span><input type="range" id="borderWidth" min="1" max="5" value="1"><span id="borderWidthVal">1px</span></div>
   <div class="style-item"><span>边框圆角</span><input type="range" id="borderRadius" min="0" max="20" value="0"><span id="borderRadiusVal">0px</span></div>
   <div class="style-item"><span>边框</span><button class="style-btn" id="btnToggleBorder">添加边框</button></div>
+  <div class="style-item"><span>链接目标</span><select id="linkTargetSelect" class="font-select" style="width:130px;"><option value="">无</option></select></div>
 </div>
 
-<!-- 顶部导航栏（合集按钮 + 四个主页面） -->
 <div class="top-nav" id="topNav">
   <a class="nav-link nav-collection" id="navCollection" title="合集">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
@@ -499,7 +507,6 @@
   <a class="nav-link" data-target="panel-3">CATEGORIES</a>
 </div>
 
-<!-- 合集下拉菜单 -->
 <div class="collection-menu" id="collectionMenu">
   <div class="collection-menu-title">合集</div>
   <div id="collectionList"></div>
@@ -583,7 +590,7 @@
     <button class="add-card-btn" onclick="addCard('panel-1')">＋ 添加动态卡片</button>
     <button class="add-card-btn" onclick="addTextBlock('panel-1')">＋ 添加自由文本块</button>
     <div class="panel-nav">
-      <button class="panel-nav-btn" onclick="window.switchTab('panel-0')" title="上一页">←</button>
+      <button class="panel-nav-btn" onclick="window.goBack()" title="上一页">←</button>
       <button class="panel-nav-btn" onclick="window.switchTab('panel-2')" title="下一页">→</button>
     </div>
   </div>
@@ -603,7 +610,7 @@
     <button class="add-card-btn" onclick="addCard('panel-2')">＋ 添加动态卡片</button>
     <button class="add-card-btn" onclick="addTextBlock('panel-2')">＋ 添加自由文本块</button>
     <div class="panel-nav">
-      <button class="panel-nav-btn" onclick="window.switchTab('panel-1')" title="上一页">←</button>
+      <button class="panel-nav-btn" onclick="window.goBack()" title="上一页">←</button>
       <button class="panel-nav-btn" onclick="window.switchTab('panel-3')" title="下一页">→</button>
     </div>
   </div>
@@ -619,11 +626,19 @@
           <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
         </div>
       </div>
+      <div class="block-wrapper">
+        <div class="feed-text link-text" data-edit data-link="" style="margin-top:12px;">→ 点击跳转到我的新页面（示例）</div>
+        <div class="block-actions">
+          <button class="block-action-btn" onclick="addRowHere(this)" title="添加行">＋</button>
+          <button class="block-action-btn" onclick="addColHere(this)" title="添加列">▥</button>
+          <button class="block-action-btn del" onclick="deleteBlock(this)" title="删除">×</button>
+        </div>
+      </div>
     </div>
     <button class="add-card-btn" onclick="addCard('panel-3')">＋ 添加动态卡片</button>
     <button class="add-card-btn" onclick="addTextBlock('panel-3')">＋ 添加自由文本块</button>
     <div class="panel-nav">
-      <button class="panel-nav-btn" onclick="window.switchTab('panel-2')" title="上一页">←</button>
+      <button class="panel-nav-btn" onclick="window.goBack()" title="上一页">←</button>
       <div class="panel-nav-spacer"></div>
     </div>
   </div>
@@ -645,7 +660,7 @@
 <script>
 (function(){
   'use strict';
-  var KEY_CONTENT = 'myPage.glass.v19';
+  var KEY_CONTENT = 'myPage.glass.v20';
   var KEY_THEME   = 'myPage.theme.v1';
   var KEY_COLOR   = 'myPage.color.v1';
   var KEY_BG_IMG  = 'myPage.bgImage.v1';
@@ -847,6 +862,11 @@
       document.getElementById('bgOpacity').value = 0;
       document.getElementById('bgOpacityVal').textContent = '0%';
     }
+    // 同步链接目标下拉框
+    var linkSelect = document.getElementById('linkTargetSelect');
+    if(linkSelect){
+      linkSelect.value = activeTextEl.getAttribute('data-link') || '';
+    }
   }
 
   document.getElementById('fontSize').addEventListener('input', function(e){ if(activeTextEl){ activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('fontSizeVal').textContent = e.target.value + 'px'; } });
@@ -904,6 +924,21 @@
     }
   });
 
+  // ========== 新增：链接目标下拉框 ==========
+  document.getElementById('linkTargetSelect').addEventListener('change', function(e){
+    if(!activeTextEl) return;
+    var target = e.target.value;
+    if(target){
+      activeTextEl.setAttribute('data-link', target);
+      activeTextEl.classList.add('link-text');
+    } else {
+      activeTextEl.removeAttribute('data-link');
+      activeTextEl.classList.remove('link-text');
+    }
+    scheduleSave();
+    toast(target ? '已链接到 ' + target : '已取消链接');
+  });
+
   document.addEventListener('focusin', function(e){
     if(!editMode) return;
     var el = e.target.closest('[contenteditable="true"], .float-text-block');
@@ -917,7 +952,6 @@
     }
   });
 
-  // ========= 增删行列 =========
   window.addRowHere = function(btn){
     var wrapper = btn.closest('.block-wrapper');
     var nw = document.createElement('div'); nw.className = 'block-wrapper'; nw.style.marginTop = '12px';
@@ -1195,14 +1229,12 @@
     scheduleSave(); toast('浮动文本已添加');
   });
 
-  // ========= 新增页面：折叠进合集 =========
   document.getElementById('btnAddPanel').addEventListener('click', function(){
     var name = prompt('请输入新页面的名称（将保存在「合集」中）：', '新页面');
     if(!name) return;
     name = name.trim();
     if(!name) return;
 
-    // 生成唯一 ID
     var panels = document.querySelectorAll('#app .panel');
     var usedIds = {};
     panels.forEach(function(p){ usedIds[p.id] = true; });
@@ -1210,10 +1242,8 @@
     while(usedIds['panel-' + newIndex]) newIndex++;
     var newPanelId = 'panel-' + newIndex;
 
-    // 找出最后一张主面板的 ID（用于上一页跳转）
     var lastPanelId = panels.length ? panels[panels.length - 1].id : 'panel-0';
 
-    // 创建新面板，标记 data-collection="true" 并保存名称
     var newPanel = document.createElement('div');
     newPanel.id = newPanelId;
     newPanel.className = 'panel';
@@ -1235,12 +1265,11 @@
       '<button class="add-card-btn" onclick="addCard(\'' + newPanelId + '\')" style="margin-bottom:8px;">＋ 添加动态卡片</button>' +
       '<button class="add-card-btn" onclick="addTextBlock(\'' + newPanelId + '\')">＋ 添加自由文本块</button>' +
       '<div class="panel-nav">' +
-        '<button class="panel-nav-btn" onclick="window.switchTab(\'' + lastPanelId + '\')" title="上一页">←</button>' +
+        '<button class="panel-nav-btn" onclick="window.goBack()" title="上一页">←</button>' +
         '<div class="panel-nav-spacer"></div>' +
       '</div>';
     document.getElementById('app').appendChild(newPanel);
 
-    // 如果当前是编辑模式，应用可编辑状态
     if(editMode){
       newPanel.querySelectorAll('[data-edit]').forEach(function(el){
         el.setAttribute('contenteditable', 'true');
@@ -1249,11 +1278,11 @@
     }
 
     refreshCollectionMenu();
+    refreshLinkTargets();
     scheduleSave();
     toast('已添加到合集：' + name);
   });
 
-  // ========= 合集菜单 =========
   function refreshCollectionMenu(){
     var list = document.getElementById('collectionList');
     list.innerHTML = '';
@@ -1275,16 +1304,33 @@
     });
   }
 
+  // ========== 新增：链接目标下拉框刷新 ==========
+  function refreshLinkTargets(){
+    var select = document.getElementById('linkTargetSelect');
+    if(!select) return;
+    var cur = activeTextEl ? (activeTextEl.getAttribute('data-link') || '') : '';
+    select.innerHTML = '<option value="">无</option>';
+    document.querySelectorAll('#app .panel').forEach(function(p){
+      var opt = document.createElement('option');
+      opt.value = p.id;
+      var name = p.dataset.name || p.id;
+      var navEl = document.querySelector('.nav-link[data-target="' + p.id + '"]');
+      if(navEl && !p.dataset.name) name = navEl.textContent.trim();
+      if(p.dataset.collection === 'true') name = '合集 · ' + name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+    select.value = cur;
+  }
+
   var navCollection = document.getElementById('navCollection');
   var collectionMenu = document.getElementById('collectionMenu');
 
   navCollection.addEventListener('click', function(e){
     e.stopPropagation();
-    // 关闭其他面板
     document.getElementById('shapePicker').classList.remove('show');
     document.getElementById('framePicker').classList.remove('show');
     document.getElementById('stylePanel').classList.remove('show');
-    // 切换菜单
     if(collectionMenu.classList.contains('show')){
       collectionMenu.classList.remove('show');
     } else {
@@ -1293,7 +1339,6 @@
     }
   });
 
-  // ========= 编辑模式 =========
   function setEdit(on){
     editMode = on;
     document.body.classList.toggle('editing', on);
@@ -1312,7 +1357,7 @@
     btn.classList.toggle('on', on);
     btn.querySelector('.ico').textContent = on ? '✓' : '✎';
     btn.querySelector('.label').textContent = on ? '完成' : '编辑';
-    if(on){ bindAllResizeEvents(); toast('编辑已开启'); }
+    if(on){ bindAllResizeEvents(); refreshLinkTargets(); toast('编辑已开启'); }
     else { scheduleSave(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
@@ -1332,7 +1377,10 @@
     }, 400);
   }
 
-  function switchTab(targetPanelId){
+  // ========== 新增：历史记录 + 跳转 ==========
+  var navHistory = [];
+
+  var originalSwitchTab = function(targetPanelId){
     document.querySelectorAll('.nav-link').forEach(function(l){ l.classList.remove('active'); });
     document.querySelectorAll('#collectionList .collection-item').forEach(function(l){ l.classList.remove('active'); });
     
@@ -1352,19 +1400,53 @@
     document.querySelectorAll('.panel').forEach(function(p){ p.style.display = 'none'; });
     panel.style.display = 'block';
     if(editMode) toast('已跳转');
-  }
-  window.switchTab = switchTab;
+  };
+
+  // 包装 switchTab，记录历史
+  window.switchTab = function(targetPanelId){
+    var currentVisible = document.querySelector('.panel[style*="display: block"]');
+    if(currentVisible && currentVisible.id !== targetPanelId){
+      navHistory.push(currentVisible.id);
+      if(navHistory.length > 50) navHistory.shift();
+    }
+    originalSwitchTab(targetPanelId);
+    refreshLinkTargets();
+  };
+
+  // 返回上一页
+  window.goBack = function(){
+    if(navHistory.length > 0){
+      var prev = navHistory.pop();
+      originalSwitchTab(prev);
+    } else {
+      originalSwitchTab('panel-0');
+    }
+  };
+
+  // 链接文字点击跳转
+  document.addEventListener('click', function(e){
+    if(editMode) return;
+    var linkEl = e.target.closest('[data-link]');
+    if(linkEl){
+      var target = linkEl.getAttribute('data-link');
+      if(target && document.getElementById(target)){
+        e.preventDefault();
+        e.stopPropagation();
+        window.switchTab(target);
+      }
+    }
+  });
 
   document.getElementById('topNav').addEventListener('click', function(e){
     var link = e.target.closest('.nav-link');
     if(!link) return;
-    if(link.id === 'navCollection') return; // 合集按钮单独处理
-    switchTab(link.getAttribute('data-target'));
+    if(link.id === 'navCollection') return;
+    window.switchTab(link.getAttribute('data-target'));
   });
 
   document.getElementById('postBoxTrigger').addEventListener('click', function(e){
     if(editMode && e.target.closest('[data-edit]')) return;
-    switchTab('panel-1'); toast('已跳转到个人信息页');
+    window.switchTab('panel-1'); toast('已跳转到个人信息页');
   });
 
   window.addCard = function(panelId){
@@ -1448,7 +1530,7 @@
   });
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
-    app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); toast('已重置');
+    app.innerHTML = DEFAULT_HTML; setEdit(false); scheduleSave(); refreshCollectionMenu(); refreshLinkTargets(); toast('已重置');
   });
 
   var bgMusic = document.getElementById('bgMusic'); var musicPlayer = document.getElementById('musicPlayer'); var musicIcon = document.getElementById('musicIcon');
@@ -1461,7 +1543,6 @@
     }
   });
 
-  // 全局点击：关闭下拉菜单/面板
   document.addEventListener('click', function(e){
     var sp = document.getElementById('stylePanel');
     var spBtn = document.getElementById('btnStylePanel');
@@ -1476,7 +1557,6 @@
     var frameP = document.getElementById('framePicker');
     var frameBtn = document.getElementById('btnAddImageFrame');
     if(frameP.classList.contains('show') && !frameP.contains(e.target) && !frameBtn.contains(e.target)) frameP.classList.remove('show');
-    // 合集菜单：点击外部关闭
     if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){
       collectionMenu.classList.remove('show');
     }
@@ -1485,6 +1565,7 @@
   setEdit(false);
   bindAllResizeEvents();
   refreshCollectionMenu();
+  refreshLinkTargets();
 })();
 </script>
 </body>
