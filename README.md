@@ -845,14 +845,32 @@
     opacity: 1;
     transform: scale(1);
   }
+/* 开屏编辑提示 */
+  .splash-tip {
+    position: absolute;
+    bottom: 20px;
+    font-size: 10px;
+    color: var(--sub);
+    font-family: monospace;
+    opacity: 0.6;
+  }
+  
+  /* 正在被编辑的卡片文字，给个高亮框提示 */
+  [data-splash-edit][contenteditable="true"] {
+    outline: 2px dashed var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+    cursor: text;
+  }
 </style>
 </head>
 <body>
 <!-- ==================== 开屏动画 ==================== -->
 <div id="splash">
   <div class="splash-card">
-    <div class="splash-title">肆</div>
-    <div class="splash-desc">点击下方按钮进入我的主页</div>
+    <div class="splash-title" data-splash-edit="title">肆</div>
+    <div class="splash-desc" data-splash-edit="desc">双击此文字可修改</div>
+    <div class="splash-tip">💡 双击文字直接编辑，回车保存</div>
   </div>
   
   <button class="splash-enter-btn" id="splashEnterBtn">
@@ -2418,47 +2436,53 @@
   // ==================== 开屏动画逻辑 ====================
   var splash = document.getElementById('splash');
   var splashCard = document.querySelector('.splash-card');
-  var splashBtn = document.querySelector('.splash-enter-btn');
+  var splashBtn = document.getElementById('splashEnterBtn');
   
-  if (splash && splashCard) {
-    // 1. 页面加载后，卡片自动从底部滑出
+  if (splash && splashCard && splashBtn) {
+    // 1. 页面加载 200ms 后，卡片从底部滑入到屏幕正中心
     setTimeout(function() {
-      splashCard.classList.add('reveal-center');
-      if (splashBtn) splashBtn.classList.add('show');
-    }, 300);
+      splashCard.classList.add('slide-in');
+      splashBtn.classList.add('show');
+    }, 200);
     
-    // 2. 点击卡片任意位置，直接快速上滑至屏幕中央
-    splashCard.addEventListener('click', function() {
-      if (!splashCard.classList.contains('reveal-center')) return; // 如果已经在中央则不处理
-      // 点击时，直接触发“进入主页”逻辑
-      // 但用户要求是“点击卡片直接到屏幕中间”，而不是进入主页，
-      // 所以我们让卡片在点击时直接执行“进入主页”前置操作：快速滑出
-      // 这里我们通过修改过渡时间来加快，或者直接触发进入主页
-      // 为了符合“点击可让卡片直接到达屏幕中间”，我们修改 CSS 让它在1.2s内从底部到中央
-      // 实际上我们用 JS 控制即可
-      // 我们的逻辑是：用户点击卡片，执行进入主页操作吗？不，用户要的是点击卡片滑到中间
-      // 卡片默认就是滑到中间，所以用户点击卡片应该是为了“跳过动画”快速居中
-      // 如果我们只是想让它快速居中，可以临时改变过渡时间
-      splashCard.style.transition = 'bottom 0.4s ease';
-      splashCard.classList.add('reveal-center');
+    // 2. 双击开屏卡片文字 → 直接编辑
+    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
+      el.addEventListener('dblclick', function(e){
+        e.stopPropagation();
+        el.setAttribute('contenteditable', 'true');
+        el.focus();
+        // 全选文字方便覆盖
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      });
+      // 回车或失焦保存
+      el.addEventListener('blur', function(){ 
+        el.removeAttribute('contenteditable'); 
+      });
+      el.addEventListener('keydown', function(e){
+        if (e.key === 'Enter'){ 
+          e.preventDefault(); 
+          el.blur(); 
+        }
+      });
     });
     
     // 3. 点击右下角胶囊按钮：进入主页 + 播放背景音乐
     splashBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       
-      // 【关键修改】触发音乐播放，利用这个点击事件解除浏览器的自动播放限制
-      if (typeof playMusic === 'function') {
-        // 调用你原有的 playMusic 函数
-        playMusic();
-      } else if (typeof music !== 'undefined' && music.src) {
-        // 兼容备份：如果 playMusic 作用域不可用，直接让 audio 标签播放
-        music.play().catch(function(err){
-          console.log('音乐播放被浏览器拦截:', err);
-        });
+      // 触发音乐播放（利用点击事件解除浏览器限制）
+      try {
+        if (typeof playMusic === 'function') { playMusic(); }
+        else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
+      } catch(err) {
+        console.log('音乐播放未触发:', err);
       }
       
-      // 切换到第一页
+      // 切换回第一页
       if (typeof window.switchTab === 'function') {
         window.switchTab('panel-0');
       }
@@ -2466,15 +2490,24 @@
       // 触发主页文字特效
       setTimeout(playPageEffects, 400);
       
-      // 淡出开屏
+      // 淡出并移除开屏层
       splash.classList.add('hide');
       setTimeout(function() {
         splash.remove();
       }, 600);
     });
     
-    // 4. 页面加载时，如果当前面板是 panel-0，播放特效
-    setTimeout(playPageEffects, 1600);
+    // 4. 防止开屏卡片内部点击穿透影响其他元素
+    splashCard.addEventListener('click', function(e) {
+      // 如果是正在编辑文字，不要触发其他逻辑
+      if (e.target.getAttribute('contenteditable') === 'true') return;
+    });
+    
+    // 5. 启动主页文字特效（在后台准备，等开屏消失后可见）
+    setTimeout(playPageEffects, 1500);
+  } else {
+    // 如果开屏元素不存在，直接显示页面
+    console.error('开屏元素未找到，请检查 HTML 结构！');
   }
 
   // ==================== 初始化 ====================
