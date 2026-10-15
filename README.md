@@ -771,13 +771,9 @@
       <button class="sp-btn" id="spUnderline">U</button>
     </div>
   </div>
-  <div class="sp-row"><span>链接到</span>
+<div class="sp-row"><span>链接到</span>
     <select id="spLink">
       <option value="">无</option>
-      <option value="panel-0">WELCOME</option>
-      <option value="panel-1">PERSONAL INFO</option>
-      <option value="panel-2">MY STYLE</option>
-      <option value="panel-3">CATEGORIES</option>
     </select>
   </div>
 
@@ -1429,7 +1425,30 @@
     save(); 
     toast('已添加新卡片');
   };
-
+// ==================== 动态刷新“链接到”下拉菜单 ====================
+  function refreshLinkOptions(){
+    var sel = document.getElementById('spLink');
+    if(!sel) return;
+    
+    // 保存当前选中的值，避免刷新后丢失
+    var currentVal = sel.value;
+    
+    // 清空并保留“无”选项
+    sel.innerHTML = '<option value="">无</option>';
+    
+    // 遍历所有页面，提取 ID 和名称
+    document.querySelectorAll('#app .panel').forEach(function(p){
+      var opt = document.createElement('option');
+      opt.value = p.id;
+      // 优先使用 data-name，没有则用标题，再没有则用 ID
+      opt.textContent = p.dataset.name || (p.querySelector('.navlink') ? p.querySelector('.navlink').textContent : p.id);
+      sel.appendChild(opt);
+    });
+    
+    // 还原之前的选择
+    if(currentVal) sel.value = currentVal;
+  }
+  
   // ==================== 样式面板 ====================
   var stylePanel = document.getElementById('stylePanel');
 
@@ -1649,7 +1668,7 @@
     if(editMode){
       sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
     }
-    refreshCollectionMenu(); save(); toast('已添加：' + name);
+    refreshCollectionMenu(); refreshLinkOptions();save(); toast('已添加：' + name);
   });
 
   // ==================== 返回 ====================
@@ -1667,6 +1686,7 @@
     setEdit(false);
     save();
     refreshCollectionMenu();
+    refreshLinkOptions();：
     toast('已重置');
   });
 
@@ -1755,6 +1775,7 @@
           setEdit(false);
           save();
           refreshCollectionMenu();
+          refreshLinkOptions();
           toast('导入成功');
         } catch(err){
           alert('导入失败：文件里没有识别到内容');
@@ -2135,6 +2156,7 @@
   // ==================== 初始化 ====================
   bindAll();
   refreshCollectionMenu();
+  refreshLinkOptions();
   setEdit(false);
 
 })();
