@@ -789,7 +789,6 @@
 
   <section class="panel active" id="panel-0">
     <div class="card">
-      <!-- 新增：删除卡片按钮（编辑模式下显示） -->
       <div class="card-actions">
         <button onclick="deleteCard(this)">× 删除卡片</button>
       </div>
@@ -876,7 +875,6 @@
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-0')">— 末尾加分隔线</button>
     </div>
 
-    <!-- 新增：底部添加卡片按钮 -->
     <button class="add-card-btn" onclick="addCard(this, 'panel-0')">＋ 添加新卡片</button>
 
     <div class="pagenav">
@@ -1784,12 +1782,22 @@
     return s[type] || s.circle;
   }
 
+  // 辅助函数：获取当前屏幕中心相对于 #app 的坐标
+  function getCenterPos(elWidth, elHeight) {
+      var appRect = app.getBoundingClientRect();
+      var left = (window.innerWidth / 2) - appRect.left - (elWidth / 2);
+      var top = (window.innerHeight / 2) - appRect.top - (elHeight / 2);
+      if (left < 10) left = 10;
+      if (top < 10) top = 10;
+      return { left: left, top: top };
+  }
+
   function makeShape(type){
     var el = document.createElement('div');
     el.className = 'shape';
-    // 修复：出现在当前屏幕正中心
-    el.style.left = (window.innerWidth / 2 - 40) + 'px';
-    el.style.top = (window.scrollY + window.innerHeight / 2 - 40) + 'px';
+    var pos = getCenterPos(80, 80);
+    el.style.left = pos.left + 'px';
+    el.style.top = pos.top + 'px';
     el.style.width = '80px';
     el.style.height = '80px';
     el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
@@ -1802,9 +1810,9 @@
   function makeFrame(shape){
     var el = document.createElement('div');
     el.className = 'frame';
-    // 修复：出现在当前屏幕正中心
-    el.style.left = (window.innerWidth / 2 - 60) + 'px';
-    el.style.top = (window.scrollY + window.innerHeight / 2 - 60) + 'px';
+    var pos = getCenterPos(120, 120);
+    el.style.left = pos.left + 'px';
+    el.style.top = pos.top + 'px';
     el.style.width = '120px';
     el.style.height = '120px';
     if(shape === 'circle') el.style.borderRadius = '50%';
@@ -1825,9 +1833,9 @@
     var el = document.createElement('div');
     el.className = 'floater';
     el.contentEditable = 'true';
-    // 修复：出现在当前屏幕正中心
-    el.style.left = (window.innerWidth / 2 - 80) + 'px';
-    el.style.top = (window.scrollY + window.innerHeight / 2 - 40) + 'px';
+    var pos = getCenterPos(160, 40);
+    el.style.left = pos.left + 'px';
+    el.style.top = pos.top + 'px';
     el.style.width = '160px';
     el.textContent = '自由文本';
     el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
