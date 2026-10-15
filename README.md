@@ -231,7 +231,7 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    display: none; /* 关键修复：默认隐藏 */
+    display: none; /* 默认隐藏 */
     flex-direction: row;
     gap: 8px;
     opacity: 0.8;
@@ -271,7 +271,7 @@
     touch-action: none;
     user-select: none;
     filter: drop-shadow(0 4px 12px rgba(0,0,0,.3));
-    display: block; /* 默认显示 */
+    display: block;
   }
   .shape svg{width:100%; height:100%; display:block; pointer-events:none;}
   .frame{
@@ -282,7 +282,7 @@
     cursor:move;
     pointer-events:auto; touch-action:none; user-select:none;
     box-shadow:0 6px 24px rgba(0,0,0,.3);
-    display: block; /* 默认显示 */
+    display: block;
   }
   .frame img{width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;}
   .floater{
@@ -295,7 +295,7 @@
     color:var(--text); font-size:14px; line-height:1.5;
     word-break:break-word; cursor:move; outline:none;
     pointer-events:auto; touch-action:none;
-    display: block; /* 默认显示 */
+    display: block;
   }
 
   .xdel{
@@ -782,20 +782,29 @@
   </div>
   <div class="sp-row"><span>文字特效</span>
     <select id="spFxType">
-      <option value="none">无特效</option>
-      <option value="fx-slide-up">上滑出现</option>
-      <option value="fx-fade-in">淡入出现</option>
-      <option value="fx-scale-in">缩放出现</option>
+      <option value="none">无 特效</option>
+     个 <option出现 value="fx-sl</ide-up">上滑出现</option>
+      <optionoption value="fx-fade-in">淡入出现</option>
+>
+      <option value="fx-scale-in">缩放出现     </option>
     </select>
   </div>
   <div class="sp-row"><span>出场顺序</span>
     <select id="spFxOrder">
       <option value="0">第 1 个出现</option>
-      <option value="1">第 2 个出现</option>
-      <option value="2">第 3 个出现</option>
+      <option value="1">第 2 <option value="2">第 3 个出现</option>
       <option value="3">第 4 个出现</option>
       <option value="4">第 5 个出现</option>
     </select>
+  </div>
+  <div class="sp-row" id="spShapeColorRow" style="display:none;">
+    <span>图形颜色</span>
+    <input type="color" id="spShapeColor" value="#4a9eff">
+  </div>
+  <div class="sp-row" id="spShapeOpacityRow" style="display:none;">
+    <span>透明度</span>
+    <input type="range" id="spShapeOpacity" min="0" max="100" value="100">
+    <span id="spShapeOpacityVal" style="min-width:34px;text-align:right;">100%</span>
   </div>
   <div class="sp-note">💡 想分享给朋友看：编辑完 → 点「⬇ 导出」下载 HTML → 上传到 GitHub → 分享新链接。</div>
 </div>
@@ -1025,6 +1034,9 @@
   var app = document.getElementById('app'), bgLayer = document.getElementById('bgLayer'), toastEl = document.getElementById('toast');
   var editMode = false, activeImg = null, bgMode = false, activeTextEl = null, DEFAULT_HTML = app.innerHTML;
 
+  // 修复：新增选中浮动元素的全局变量，用于控制颜色和透明度
+  var activeFloater = null;
+
   // ==================== 主题 ====================
   function resolveTheme(){ var s = null; try { s = localStorage.getItem(K_THEME); } catch(e){} if(s === 'dark' || s === 'light') return s; try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){} return 'light'; }
   function applyTheme(t){ document.documentElement.classList.toggle('light', t === 'light'); document.getElementById('themeIcon').textContent = (t === 'dark') ? '☀' : '◐'; }
@@ -1057,10 +1069,28 @@
     if(isReadonly) return; editMode = on; document.body.classList.toggle('editing', on);
     document.querySelectorAll('[data-edit]').forEach(function(el){ if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); } else el.removeAttribute('contenteditable'); });
     var btn = document.getElementById('btnEdit'); btn.classList.toggle('on', on); btn.querySelector('.ico').textContent = on ? '✓' : '✎'; btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
-    if(!on) { document.getElementById('stylePanel').classList.remove('show'); } if(on) { bindAll(); toast('编辑已开启'); } else { save(); toast('已保存'); }
+    if(!on) { document.getElementById('stylePanel').classList.remove('show'); }
+    if(on) { bindAll(); toast('编辑已开启'); }
+    else { save(); toast('已保存'); }
+    // 切换编辑模式时，更新浮动元素可见性（只有当前页面的可见）
+    updateFloatersVisibility();
   }
   var btnEdit = document.getElementById('btnEdit');
   if (btnEdit) btnEdit.addEventListener('click', function(){ setEdit(!editMode); });
+
+  // ==================== 浮动元素可见性管理（核心） ====================
+  function updateFloatersVisibility() {
+    var activePanelId = document.querySelector('.panel.active').id;
+    document.querySelectorAll('.shape, .frame, .floater').forEach(function(el) {
+      if (el.dataset.panelId === activePanelId) {
+        el.style.display = 'block';
+        el.style.pointerEvents = 'auto';
+      } else {
+        el.style.display = 'none';
+        el.style.pointerEvents = 'none';
+      }
+    });
+  }
 
   // ==================== 图片点击 ====================
   var __imgPressStart = 0, __imgPressX = 0, __imgPressY = 0, __imgPressTarget = null, __lastImgOpen = 0;
@@ -1118,7 +1148,11 @@
   if (btnStyle) btnStyle.addEventListener('click', function(e){ e.stopPropagation(); stylePanel.classList.toggle('show'); });
 
   function selectText(el){
-    activeTextEl = el; var cs = getComputedStyle(el);
+    activeTextEl = el; activeFloater = null; // 选中文字时，取消图形选中
+    document.getElementById('spShapeColorRow').style.display = 'none';
+    document.getElementById('spShapeOpacityRow').style.display = 'none';
+    
+    var cs = getComputedStyle(el);
     document.getElementById('spFontSize').value = parseInt(cs.fontSize) || 14; document.getElementById('spFontSizeVal').textContent = (parseInt(cs.fontSize) || 14) + 'px';
     document.getElementById('spTextColor').value = rgbToHex(cs.color);
     var ff = cs.fontFamily.split(',')[0].replace(/['"]/g,''); var sel = document.getElementById('spFontFamily'); var found = false;
@@ -1128,6 +1162,27 @@
     var fxType = 'none'; if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up'; else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in'; else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
     document.getElementById('spFxType').value = fxType; document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
   }
+
+  // 选中图形时的样式面板更新
+  function selectFloater(el) {
+    activeFloater = el;
+    activeTextEl = null;
+    document.getElementById('spShapeColorRow').style.display = 'flex';
+    document.getElementById('spShapeOpacityRow').style.display = 'flex';
+    
+    // 读取当前颜色
+    var currentColor = el.style.color || '#4a9eff';
+    if (currentColor.startsWith('rgb')) {
+        currentColor = rgbToHex(currentColor);
+    }
+    document.getElementById('spShapeColor').value = currentColor;
+    
+    // 读取当前透明度
+    var currentOpacity = el.style.opacity !== '' ? Math.round(parseFloat(el.style.opacity) * 100) : 100;
+    document.getElementById('spShapeOpacity').value = currentOpacity;
+    document.getElementById('spShapeOpacityVal').textContent = currentOpacity + '%';
+  }
+
   function rgbToHex(c){ if(!c) return '#f0f0f0'; var m = c.match(/\d+/g); if(!m) return '#f0f0f0'; return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join(''); }
 
   document.getElementById('spFontSize').addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('spFontSizeVal').textContent = e.target.value + 'px'; save(); });
@@ -1140,6 +1195,20 @@
   document.getElementById('spLink').addEventListener('change', function(e){ if(!activeTextEl) return; var v = e.target.value; if(v){ activeTextEl.setAttribute('data-link', v); activeTextEl.classList.add('linktext'); } else { activeTextEl.removeAttribute('data-link'); activeTextEl.classList.remove('linktext'); } save(); toast(v ? '已链接到 ' + v : '已取消链接'); });
   document.getElementById('spFxType').addEventListener('change', function(e) { if (!activeTextEl) return; var val = e.target.value; activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden'); if (val !== 'none') { activeTextEl.classList.add(val); activeTextEl.classList.add('fx-hidden'); } save(); toast(val === 'none' ? '已取消特效' : '已应用特效'); });
   document.getElementById('spFxOrder').addEventListener('change', function(e) { if (!activeTextEl) return; activeTextEl.dataset.fxOrder = e.target.value; save(); toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个'); });
+
+  // 监听图形颜色和透明度修改
+  document.getElementById('spShapeColor').addEventListener('input', function(e) {
+    if (!activeFloater) return;
+    activeFloater.style.color = e.target.value;
+    save();
+  });
+  document.getElementById('spShapeOpacity').addEventListener('input', function(e) {
+    if (!activeFloater) return;
+    var val = e.target.value / 100;
+    activeFloater.style.opacity = val;
+    document.getElementById('spShapeOpacityVal').textContent = e.target.value + '%';
+    save();
+  });
 
   function playPageEffects() {
     var currentPanel = document.querySelector('.panel.active'); if (!currentPanel) return;
@@ -1162,6 +1231,8 @@
     document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id === id); });
     document.querySelectorAll('.navlink').forEach(function(n){ if(n.getAttribute('data-panel')) n.classList.toggle('active', n.getAttribute('data-panel') === id); });
     refreshCollectionActive(); window.scrollTo(0, 0); setTimeout(playPageEffects, 150);
+    // 切换页面时，更新浮动元素可见性
+    updateFloatersVisibility();
   };
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
 
@@ -1209,20 +1280,30 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 终极方案：直接固定在屏幕正中心
+  // 获取元素在 floatLayer 内的视口绝对中心坐标
+  function getCenterPos(elWidth, elHeight) {
+      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
+      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
+      return { left: left, top: top };
+  }
+
   function createFloatingElement(className, innerHTML, isContentEditable) {
       var el = document.createElement('div');
       el.className = className;
       if (isContentEditable) el.contentEditable = 'true';
       el.innerHTML = innerHTML;
       
-      el.style.position = 'fixed';
-      el.style.left = '50%';
-      el.style.top = '50%';
-      el.style.transform = 'translate(-50%, -50%)';
+      var pos = getCenterPos(100, 100);
+      el.style.position = 'absolute';
+      el.style.left = pos.left + 'px';
+      el.style.top = pos.top + 'px';
       el.style.zIndex = '999999';
       el.style.display = 'block';
       el.style.pointerEvents = 'auto';
+      
+      // 记录它属于哪个页面
+      var activePanel = document.querySelector('.panel.active');
+      if (activePanel) el.dataset.panelId = activePanel.id;
       
       document.body.appendChild(el);
       return el;
@@ -1234,6 +1315,16 @@
       el.style.width = '80px';
       el.style.height = '80px';
       el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
+      
+      // 点击图形时选中它
+      el.addEventListener('click', function(e) {
+          if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) {
+              e.stopPropagation();
+              selectFloater(el);
+              stylePanel.classList.add('show');
+          }
+      });
+
       makeMovable(el); bindXDel(el); bindResize(el); 
       save(); toast('已添加图形'); 
     } catch(e) { alert('添加图形失败: ' + e.message); }
@@ -1275,7 +1366,7 @@
   document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); document.getElementById('framePicker').classList.remove('show'); }); });
 
   // ==================== 拖拽 / 缩放 / 删除 ====================
-  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; if(el.style.position === 'fixed'){ var rect = el.getBoundingClientRect(); el.style.position = 'absolute'; el.style.left = (rect.left + window.scrollX) + 'px'; el.style.top = (rect.top + window.scrollY) + 'px'; el.style.transform = 'none'; } var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
+  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
   function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
   function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
 
@@ -1313,6 +1404,8 @@
   
   // ==================== 初始化 ====================
   bindAll(); refreshCollectionMenu(); refreshLinkOptions(); setEdit(false);
+  // 初始化时，确保所有浮动元素根据当前页面隐藏/显示
+  setTimeout(updateFloatersVisibility, 100);
 
   // ==================== 开屏逻辑 ====================
   setTimeout(function() {
