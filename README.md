@@ -565,6 +565,65 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
+  /* ===== 音乐播放面板 ===== */
+  #musicPanel{
+    position:fixed;
+    bottom:calc(80px + var(--safe-bottom));
+    right:14px;
+    z-index:210;
+    background:var(--bar);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:14px;
+    box-shadow:0 12px 40px rgba(0,0,0,.4);
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    min-width:230px;
+    font-size:12px;
+  }
+  #musicPanel.show{display:flex;}
+  .mp-controls{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+  }
+  .mp-ctrl-btn{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
+    font-size:15px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    padding:0;
+    transition:all .15s;
+  }
+  .mp-ctrl-btn:hover{background:rgba(127,127,127,0.12);}
+  .mp-ctrl-btn:active{transform:scale(.92);}
+  .mp-ctrl-btn.play{
+    width:48px; height:48px;
+    background:var(--accent);
+    color:var(--accent-text);
+    border-color:var(--accent);
+    font-size:18px;
+  }
+  .mp-row{display:flex; align-items:center; gap:8px;}
+  .mp-row > span{font-size:14px; color:var(--sub);}
+  .mp-row input[type="range"]{flex:1; cursor:pointer; height:20px;}
+  .mp-add{
+    width:100%; padding:8px;
+    border-radius:10px;
+    border:1px dashed var(--border);
+    background:transparent;
+    color:var(--sub);
+    font-size:11px;
+    font-family:monospace;
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .mp-add:hover{border-color:var(--accent); color:var(--accent);}
 </style>
 </head>
 <body>
@@ -709,7 +768,7 @@
           <div class="fav"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23555'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EW%3C/text%3E%3C/svg%3E" alt="动态头像"></div>
           <div class="meta">
             <div class="n"><span class="etext" data-edit>肆</span></div>
-            <div class="h"><span class="etext" data-edit>@InfernalBeyond.com</span></div>
+            <div class="h"><span class="etext" data-edit>@may be you love me</span></div>
           </div>
           <div class="time"><span class="etext" data-edit>7小时前</span></div>
         </div>
@@ -801,6 +860,18 @@
 </div>
 
 <div id="musicBtn">♪</div>
+<div id="musicPanel">
+  <div class="mp-controls">
+    <button class="mp-ctrl-btn" id="mpPrev" title="上一首">⏮</button>
+    <button class="mp-ctrl-btn play" id="mpPlay" title="播放/暂停">▶</button>
+    <button class="mp-ctrl-btn" id="mpNext" title="下一首">⏭</button>
+  </div>
+  <div class="mp-row">
+    <span>🔊</span>
+    <input type="range" id="mpVolume" min="0" max="100" value="100">
+  </div>
+  <button class="mp-add" id="mpAdd">＋ 添加音乐</button>
+</div>
 
 <div id="shapePicker">
   <div class="pick-title">选择图形</div>
@@ -1726,79 +1797,167 @@
     });
   }
 
-  // ==================== 音乐 ====================
+   // ==================== 音乐播放器 ====================
   var music = document.getElementById('bgMusic');
   var musicBtn = document.getElementById('musicBtn');
-  var dialog = document.getElementById('musicDialog');
-  var musicInput = document.getElementById('musicInput');
+  var musicPanel = document.getElementById('musicPanel');
+  var mpPrev = document.getElementById('mpPrev');
+  var mpPlay = document.getElementById('mpPlay');
+  var mpNext = document.getElementById('mpNext');
+  var mpVolume = document.getElementById('mpVolume');
+  var mpAdd = document.getElementById('mpAdd');
+
+  var playlist = [];
+  var currentIndex = 0;
+  var currentVolume = 1;
+
+  // 读取已保存的播放列表
   try {
-    var savedMusic = localStorage.getItem(K_MUSIC);
-    if(savedMusic) music.src = savedMusic;
+    var savedList = localStorage.getItem(K_MUSIC);
+    if(savedList){
+      playlist = savedList.split('\n').filter(function(s){ return s.trim(); });
+    }
+    var savedIdx = parseInt(localStorage.getItem('myPage.musicIndex') || '0');
+    if(!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < playlist.length){
+      currentIndex = savedIdx;
+    }
+    var savedVol = localStorage.getItem('myPage.musicVolume');
+    if(savedVol !== null) currentVolume = parseFloat(savedVol);
   } catch(e){}
 
+  music.volume = Math.max(0, Math.min(1, currentVolume));
+  mpVolume.value = Math.round(currentVolume * 100);
+
+  function loadCurrent(){
+    if(playlist.length === 0){
+      music.removeAttribute('src');
+      return;
+    }
+    music.src = playlist[currentIndex];
+    music.load();
+  }
+
+  function saveMusic(){
+    try {
+      localStorage.setItem(K_MUSIC, playlist.join('\n'));
+      localStorage.setItem('myPage.musicIndex', currentIndex);
+    } catch(e){}
+  }
+
+  function playMusic(){
+    if(playlist.length === 0){ toast('请先添加音乐'); return; }
+    if(!music.src) loadCurrent();
+    music.play().then(function(){
+      musicBtn.classList.add('playing');
+      mpPlay.textContent = '⏸';
+    }).catch(function(){ toast('播放失败'); });
+  }
+  function pauseMusic(){
+    music.pause();
+    musicBtn.classList.remove('playing');
+    mpPlay.textContent = '▶';
+  }
+
+  function prevMusic(){
+    if(playlist.length === 0) return;
+    var wasPlaying = !music.paused;
+    currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+    loadCurrent();
+    saveMusic();
+    if(wasPlaying) setTimeout(playMusic, 100);
+  }
+  function nextMusic(){
+    if(playlist.length === 0) return;
+    var wasPlaying = !music.paused;
+    currentIndex = (currentIndex + 1) % playlist.length;
+    loadCurrent();
+    saveMusic();
+    if(wasPlaying) setTimeout(playMusic, 100);
+  }
+
+  // 点击 ♪ → 弹面板
+  musicBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    musicPanel.classList.toggle('show');
+  });
+
+  // 面板按钮
+  mpPlay.addEventListener('click', function(){
+    if(music.paused) playMusic();
+    else pauseMusic();
+  });
+  mpPrev.addEventListener('click', prevMusic);
+  mpNext.addEventListener('click', nextMusic);
+
+  // 音量
+  mpVolume.addEventListener('input', function(){
+    currentVolume = mpVolume.value / 100;
+    music.volume = currentVolume;
+    try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){}
+  });
+
+  // 添加音乐
+  mpAdd.addEventListener('click', function(){
+    var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', '');
+    if(url === null) return;
+    url = url.trim();
+    if(!url) return;
+    playlist.push(url);
+    currentIndex = playlist.length - 1;
+    loadCurrent();
+    saveMusic();
+    toast('已添加，点 ▶ 播放');
+    playMusic();
+  });
+
+  // 长按 ♪ → 编辑/删除当前音乐
   var pressTimer = null, longPressed = false;
   function startPress(){
     longPressed = false;
     clearTimeout(pressTimer);
     pressTimer = setTimeout(function(){
       longPressed = true;
-      try { musicInput.value = localStorage.getItem(K_MUSIC) || ''; } catch(e){ musicInput.value=''; }
-      dialog.classList.add('show');
-      setTimeout(function(){ musicInput.focus(); }, 200);
-    }, 600);
+      var cur = playlist[currentIndex] || '';
+      var url = prompt('修改当前音乐链接：\n（留空 = 删除这首）', cur);
+      if(url === null) return;
+      url = url.trim();
+      if(!url){
+        playlist.splice(currentIndex, 1);
+        if(currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1);
+        loadCurrent();
+      } else {
+        playlist[currentIndex] = url;
+        loadCurrent();
+      }
+      saveMusic();
+      toast('已更新');
+    }, 700);
   }
   function cancelPress(){ clearTimeout(pressTimer); }
-  function playPause(){
-    if(!music.src || music.src === location.href){ toast('请长按按钮设置音乐'); return; }
-    if(music.paused){
-      music.play().then(function(){ musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚'; })
-        .catch(function(){ toast('播放失败'); });
-    } else {
-      music.pause(); musicBtn.classList.remove('playing'); musicBtn.textContent = '♪';
-    }
-  }
+
   musicBtn.addEventListener('mousedown', function(e){ e.preventDefault(); startPress(); });
-  musicBtn.addEventListener('mouseup', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); playPause(); } });
+  musicBtn.addEventListener('mouseup', function(e){
+    cancelPress();
+    if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); }
+  });
   musicBtn.addEventListener('mouseleave', cancelPress);
-  musicBtn.addEventListener('touchstart', function(){ startPress(); }, {passive:true});
-  musicBtn.addEventListener('touchend', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); playPause(); } });
+  musicBtn.addEventListener('touchstart', startPress, {passive:true});
+  musicBtn.addEventListener('touchend', function(e){
+    cancelPress();
+    if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); }
+  });
   musicBtn.addEventListener('touchcancel', cancelPress);
   musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-  document.getElementById('musicCancel').addEventListener('click', function(){ dialog.classList.remove('show'); });
-  document.getElementById('musicOk').addEventListener('click', function(){
-    var url = musicInput.value.trim();
-    if(!url){ toast('请输入链接'); return; }
-    try { localStorage.setItem(K_MUSIC, url); } catch(e){}
-    music.src = url; music.load();
-    dialog.classList.remove('show');
-    music.play().then(function(){ musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚'; toast('音乐播放中'); })
-      .catch(function(){ toast('播放失败'); });
+
+  // 点空白处关闭面板
+  document.addEventListener('click', function(e){
+    if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){
+      musicPanel.classList.remove('show');
+    }
   });
-   // ==================== 首次点击播放音乐 ====================
-  var __firstPlayDone = false;
-  function __tryAutoPlay(){
-    if(__firstPlayDone) return;
-    if(!music.src || music.src === location.href) return;
-    __firstPlayDone = true;
 
-      alert('尝试播放：' + music.src);
-      music.play().then(function(){
-      musicBtn.classList.add('playing');
-      musicBtn.textContent = '❚❚';
-    }).catch(function(err){
-      // 播放被拒绝，重置标记以便下次再试
-      __firstPlayDone = false;
-    });
-
-    document.removeEventListener('touchend', __tryAutoPlay, true);
-    document.removeEventListener('mouseup', __tryAutoPlay, true);
-    document.removeEventListener('click', __tryAutoPlay, true);
-  }
-
-  document.addEventListener('touchend', __tryAutoPlay, true);
-  document.addEventListener('mouseup', __tryAutoPlay, true);
-  document.addEventListener('click', __tryAutoPlay, true);
-
+  // 初始化加载
+  loadCurrent();
   // ==================== 初始化 ====================
   bindAll();
   refreshCollectionMenu();
