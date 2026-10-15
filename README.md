@@ -7,7 +7,7 @@
 <style>
   :root{
     --border: rgba(255,255,255,0.12);
-    --bg: #FCDFDF;    /* 新加的粉色背景 */
+    --bg: #0d0d10;    /* 改回原本的深色，不要再放粉色了 */
     --text: #f0f0f0;
     --sub: #999;
     --accent: #4a9eff;
@@ -702,26 +702,27 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-/* ==================== 开屏动画样式 ==================== */
+/* ==================== 开屏动画样式（独立深灰背景 + 卡片居中） ==================== */
   #splash {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: var(--bg); /* 使用你在 :root 里改好的粉色 */
+    background: #1c1c1e; /* 独立深灰背景，不影响主页 */
     display: flex;
-    align-items: flex-end; /* 从底部开始 */
+    align-items: center; /* 关键：卡片垂直居中 */
     justify-content: center;
     transition: opacity 0.6s ease;
     pointer-events: auto;
     overflow: hidden;
   }
 
-  /* 退出状态：直接淡出整个层 */
+  /* 退出状态：淡出 */
   #splash.hide {
     opacity: 0;
     pointer-events: none;
   }
 
+  /* 玻璃质感主卡片 */
   .splash-card {
     width: 82%;
     max-width: 420px;
@@ -730,26 +731,28 @@
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--border);
-    border-radius: 28px 28px 0 0;
+    border-radius: 28px; /* 恢复四周圆角 */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 30px;
-    box-shadow: 0 -10px 60px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     text-align: center;
     gap: 20px;
-    position: relative;
-    bottom: -100%;
-    /* 平滑上滑效果 */
-    transition: bottom 1s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* 初始隐藏：位于屏幕下方 100% 处 */
+    transform: translateY(100%);
+    /* 平滑上滑至居中 */
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* 滑出后固定在底部 */
+  /* 滑出后回到正中心 */
   .splash-card.slide-in {
-    bottom: 0;
+    transform: translateY(0);
   }
 
+  /* 标题样式 */
   .splash-title {
     font-size: 48px;
     font-weight: 800;
@@ -757,6 +760,7 @@
     line-height: 1.2;
   }
 
+  /* 副标题样式 */
   .splash-desc {
     font-size: 14px;
     color: var(--sub);
@@ -765,6 +769,7 @@
     line-height: 1.6;
   }
 
+  /* 右下角胶囊按钮 */
   .splash-enter-btn {
     position: absolute;
     bottom: calc(40px + var(--safe-bottom));
@@ -782,7 +787,6 @@
     font-size: 13px;
     font-family: monospace;
     cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     opacity: 0; /* 初始隐藏 */
     transition: opacity 0.5s ease 0.8s; /* 等卡片滑出后再显示 */
