@@ -1024,8 +1024,7 @@
 (function(){
   'use strict';
 
-  // ==================== 1. 最高优先级：开屏兜底（独立于任何其他代码） ====================
-  // 这段代码放在最顶部，确保即使后面所有代码全崩溃，开屏也能在3秒内强制消失。
+  // ==================== 1. 最高优先级：开屏兜底与双击逻辑修复 ====================
   (function() {
       var splash = document.getElementById('splash');
       if (!splash) return;
@@ -1057,22 +1056,65 @@
           }, 100);
       }
 
-      // 1.3 绑定点击（全局点击和按钮点击）
+      // 1.3 延迟点击计时器，用于区分单击跳转与双击编辑
+      var clickTimer = null;
+
+      // 1.4 绑定点击逻辑
       splash.addEventListener('click', function(e) {
-          if (e.target.getAttribute('contenteditable') === 'true') return;
-          if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
-          forceEnter();
+          var target = e.target;
+          
+          // 如果点击的是正在编辑的文字，不处理
+          if (target.getAttribute('contenteditable') === 'true') return;
+
+          // 如果点击的是可编辑文字（双击进入编辑模式）
+          if (target.hasAttribute('data-splash-edit')) {
+              clearTimeout(clickTimer);
+              if (e.detail === 2) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  target.setAttribute('contenteditable', 'true');
+                  target.focus();
+                  // 全选文字方便覆盖
+                  var range = document.createRange(); range.selectNodeContents(target);
+                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+                  return;
+              } else {
+                  // 单击文字，允许延迟（或者不跳转），只要不触发全局跳转即可
+                  // 我们设定一个延迟，如果在 300ms 内再次点击则视为双击
+                  clickTimer = setTimeout(function() {
+                      // 单击文字不跳转，等待用户是否双击
+                  }, 300);
+                  return;
+              }
+          }
+
+          // 如果点击的是“进入主页”按钮
+          if (target.closest('#splashEnterBtn')) {
+              clearTimeout(clickTimer);
+              forceEnter();
+              return;
+          }
+
+          // 点击其他空白区域：延迟 300ms 跳转，如果 300ms 内触发了双击则取消跳转
+          clearTimeout(clickTimer);
+          clickTimer = setTimeout(forceEnter, 300);
       });
 
+      // 1.5 按钮单击直接进入（作为双重保险）
       if (splashBtn) {
           splashBtn.addEventListener('click', function(e) {
               e.stopPropagation();
+              clearTimeout(clickTimer);
               forceEnter();
           });
       }
 
-      // 1.4 终极兜底：3秒后自动进入
-      setTimeout(forceEnter, 3000);
+      // 1.6 终极兜底：3秒后自动进入（防止用户长时间不操作）
+      setTimeout(function() {
+          if (document.getElementById('splash')) {
+              forceEnter();
+          }
+      }, 3000);
   })();
 
   // ==================== 2. 全局变量定义 ====================
