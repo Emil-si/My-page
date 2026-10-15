@@ -2349,26 +2349,46 @@
   refreshLinkOptions(); 
   setEdit(false);
 
-  // ==================== 开屏逻辑（绝对点击即入版） ====================
+  // ==================== 开屏逻辑（完美点击即入版） ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
-    var splashCard = document.getElementById('splashCard');
-    var splashBtn = document.getElementById('splashEnterBtn');
-    
-    if (!splash || !splashCard) return;
+    if (!splash) return;
 
-    // 1. 延迟一下，触发卡片滑入动画
-    setTimeout(function() {
-      splashCard.classList.add('show');
-      if (splashBtn) splashBtn.classList.add('show');
-    }, 100);
+    var clickTimer = null; // 用于延迟单击执行
 
-    // 2. 双击文字编辑
+    // 1. 进入主页的核心函数
+    function forceEnter() {
+      // 如果开屏层已经被移除，直接返回
+      var sp = document.getElementById('splash');
+      if (!sp) return;
+
+      // 【关键】立刻移除开屏层，确保主页面交互瞬间恢复，不受任何音乐报错影响
+      sp.remove();
+
+      // 【关键】在移除开屏层之后，再去尝试播放音乐，并用 setTimeout 隔离错误
+      setTimeout(function() {
+        try {
+          if (typeof playMusic === 'function') { playMusic(); }
+          else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
+        } catch(err) {
+          console.log('音乐播放失败:', err);
+        }
+      }, 100);
+    }
+
+    // 2. 双击文字编辑逻辑
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
-        e.stopPropagation();
+        e.stopPropagation(); // 阻止事件冒泡，防止触发外层单击
+        clearTimeout(clickTimer); // 关键：取消单击的延迟执行，防止正在编辑时页面跳转
         el.setAttribute('contenteditable', 'true');
         el.focus();
+        // 全选文字方便覆盖
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
       });
       el.addEventListener('blur', function() { 
         el.removeAttribute('contenteditable'); 
@@ -2378,38 +2398,23 @@
       });
     });
 
-    // 3. 封装一个强制进入主页的函数
-    var entered = false;
-    function forceEnter() {
-      if (entered) return;
-      entered = true;
-      
-      // 播放音乐
-      try {
-        if (typeof playMusic === 'function') { playMusic(); }
-        else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-      } catch(err) {}
-
-      // 直接移除开屏层，不解释，不留余地
-      if (splash.parentNode) {
-        splash.parentNode.removeChild(splash);
-      }
-    }
-
-    // 4. 任何点击（包括点击卡片、按钮、空白处），统统强行进入主页
+    // 3. 给整个开屏层绑定单击事件（延迟执行）
     splash.addEventListener('click', function(e) {
-      // 编辑文字时不触发
+      // 如果点击的是正在编辑的文字，不触发进入
       if (e.target.getAttribute('contenteditable') === 'true') return;
-      // 如果是在双击文字，不触发
-      if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
       
-      forceEnter();
+      // 延迟 300ms 执行进入主页。如果 300ms 内触发了双击，clickTimer 会被清除
+      clickTimer = setTimeout(function() {
+        forceEnter();
+      }, 300);
     });
 
-    // 5. 按钮的单独点击事件（作为双重保险）
+    // 4. 按钮的单独绑定（防止某些浏览器按钮点击穿透被拦截）
+    var splashBtn = document.getElementById('splashEnterBtn');
     if (splashBtn) {
       splashBtn.addEventListener('click', function(e) {
         e.stopPropagation();
+        clearTimeout(clickTimer); // 清掉之前的单击延迟
         forceEnter();
       });
     }
