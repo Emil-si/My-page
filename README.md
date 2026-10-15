@@ -702,10 +702,129 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
+/* ==================== 开屏动画样式 ==================== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999; /* 最高层，盖住一切 */
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    pointer-events: auto;
+    overflow: hidden;
+  }
+  
+  /* 退出状态：淡出并稍微放大 */
+  #splash.hide {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+
+  /* 玻璃质感主卡片 */
+  .splash-card {
+    width: 82%;
+    max-width: 420px;
+    aspect-ratio: 4 / 5; /* 竖长方形，你可以改成 16/9 改成横的 */
+    background: var(--card);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    gap: 20px;
+  }
+
+  /* 标题样式 */
+  .splash-title {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.2;
+  }
+
+  /* 副标题样式 */
+  .splash-desc {
+    font-size: 14px;
+    color: var(--sub);
+    font-family: monospace;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+  }
+
+  /* 右下角胶囊按钮 */
+  .splash-enter-btn {
+    position: absolute;
+    bottom: calc(40px + var(--safe-bottom));
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--card);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 999px; /* 胶囊形 */
+    color: var(--text);
+    font-size: 13px;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  
+  .splash-enter-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--accent);
+  }
+  
+  .splash-enter-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* 按钮内的文字微调 */
+  .splash-btn-text {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* 核心交互逻辑：隐藏状态下被移除，显示状态下允许编辑 */
+  #splash.hide .splash-card,
+  #splash.hide .splash-enter-btn {
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
-
+<!-- ==================== 开屏动画 ==================== -->
+<div id="splash">
+  <!-- 主卡片：玻璃质感 -->
+  <div class="splash-card">
+    <!-- 这里可以自由编辑文字，含标题和副标题 -->
+    <div class="splash-title" data-splash-edit="title">肆</div>
+    <div class="splash-desc" data-splash-edit="desc">点击下方按钮进入我的主页</div>
+  </div>
+  
+  <!-- 右下角的胶囊按钮 -->
+  <button class="splash-enter-btn" id="splashEnterBtn">
+    <span class="splash-btn-text" data-splash-edit="btnText">进入主页</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"></path>
+      <path d="M12 5l7 7-7 7"></path>
+    </svg>
+  </button>
+</div>
 <div id="bgLayer"></div>
 
 <div id="toolbar">
@@ -2157,6 +2276,59 @@
   refreshCollectionMenu();
   refreshLinkOptions(); 
   setEdit(false);
+
+  // ==================== 开屏动画逻辑 ====================
+  var splash = document.getElementById('splash');
+  var splashEnterBtn = document.getElementById('splashEnterBtn');
+  
+  if (splash && splashEnterBtn) {
+    // 1. 点击胶囊按钮：跳转到第一页 + 淡出动画
+    splashEnterBtn.addEventListener('click', function() {
+      // 强制切换回第一页（panel-0）
+      if (typeof window.switchTab === 'function') {
+        window.switchTab('panel-0');
+      }
+      
+      // 开始淡出动画
+      splash.classList.add('hide');
+      
+      // 等待过渡结束后彻底移除
+      setTimeout(function() {
+        splash.remove();
+      }, 800);
+    });
+
+    // 2. 【额外彩蛋】在开屏卡片文字上双击，即可临时编辑（自带保存）
+    // 这样你就能直接在页面上修改文字，无需改代码
+    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
+      el.style.cursor = 'text';
+      el.style.outline = 'none';
+      
+      el.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        el.setAttribute('contenteditable', 'true');
+        el.focus();
+        // 选中全文字，方便直接覆盖
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      });
+
+      el.addEventListener('blur', function() {
+        el.removeAttribute('contenteditable');
+      });
+
+      // 回车取消编辑
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          el.blur();
+        }
+      });
+    });
+  }
 
 })();
 </script>
