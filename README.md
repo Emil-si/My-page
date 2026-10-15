@@ -225,19 +225,22 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  /* ===== 修复：工具栏水平排列，方便点击 ===== */
+  /* ===== 修复：按钮水平排列，只有编辑模式才显示 ===== */
   .bwrap { position: relative; padding-right: 0; padding-bottom: 42px; }
   .bwrap > .row-tools {
     position: absolute;
     bottom: 0;
     right: 0;
-    display: flex !important;
+    display: none; /* 关键修复：默认隐藏 */
     flex-direction: row;
     gap: 8px;
     opacity: 0.8;
     z-index: 20;
   }
-  body.editing .row-tools { display: flex !important; opacity: 1; }
+  body.editing .bwrap > .row-tools { 
+    display: flex !important; /* 仅在编辑模式下显示 */
+    opacity: 1; 
+  }
 
   .row-tools button {
     width: 32px; 
@@ -1198,12 +1201,11 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 修复：获取元素在 floatLayer 内的视口绝对中心坐标
+  // 获取元素在 floatLayer 内的视口绝对中心坐标
   function getCenterPos(elWidth, elHeight) {
       var layer = document.getElementById('floatLayer');
       if (!layer) return { left: 100, top: 100 };
       var layerRect = layer.getBoundingClientRect();
-      // 使用 innerHeight 和 layerRect.top 计算视口中心，完美处理滚动条情况
       var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
       var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
       if (left < 10) left = 10;
