@@ -225,19 +225,22 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  /* ===== 修复：工具栏水平排列，方便点击 ===== */
+  /* ===== 修复：按钮水平排列，只有编辑模式才显示 ===== */
   .bwrap { position: relative; padding-right: 0; padding-bottom: 42px; }
   .bwrap > .row-tools {
     position: absolute;
     bottom: 0;
     right: 0;
-    display: flex !important;
+    display: none; /* 关键修复：默认隐藏 */
     flex-direction: row;
     gap: 8px;
     opacity: 0.8;
     z-index: 20;
   }
-  body.editing .row-tools { display: flex !important; opacity: 1; }
+  body.editing .bwrap > .row-tools { 
+    display: flex !important; /* 仅在编辑模式下显示 */
+    opacity: 1; 
+  }
 
   .row-tools button {
     width: 32px; 
@@ -259,23 +262,24 @@
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
 
-  /* ===== 浮动图层修复 ===== */
+  /* ===== 浮动图层修复（提高层级，绝对不遮挡） ===== */
   #floatLayer {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     pointer-events: none;
-    z-index: 997;
+    z-index: 9999;
+    overflow: visible;
   }
 
   .shape{
-    position:absolute; z-index:998;
+    position:absolute; z-index:10000;
     display:none; cursor:move;
     pointer-events:auto; touch-action:none; user-select:none;
     filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));
   }
   .shape svg{width:100%; height:100%; display:block; pointer-events:none;}
   .frame{
-    position:absolute; z-index:998;
+    position:absolute; z-index:10000;
     overflow:hidden; background:#333;
     border:2px solid var(--border);
     display:none; cursor:move;
@@ -284,7 +288,7 @@
   }
   .frame img{width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;}
   .floater{
-    position:absolute; z-index:998; min-width:100px; min-height:40px;
+    position:absolute; z-index:10000; min-width:100px; min-height:40px;
     padding:12px; border-radius:12px; border:2px dashed var(--accent);
     background:var(--card);
     -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
@@ -322,7 +326,7 @@
     position:fixed;
     top:calc(110px + var(--safe-top));
     left:50%; transform:translateX(-50%);
-    z-index:300;
+    z-index:10001;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     backdrop-filter:blur(24px) saturate(180%);
@@ -374,7 +378,7 @@
   #stylePanel{
     position:fixed;
     right:14px; top:calc(110px + var(--safe-top));
-    z-index:400;
+    z-index:10000;
     width:260px;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
@@ -527,7 +531,7 @@
 
   #picker{
     position:fixed; left:0; right:0; bottom:0;
-    height:52vh; z-index:500;
+    height:52vh; z-index:10002;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     backdrop-filter:blur(24px) saturate(180%);
@@ -563,12 +567,12 @@
     background:var(--accent); color:var(--accent-text);
     padding:9px 18px; border-radius:18px;
     font-size:12px; opacity:0; pointer-events:none;
-    transition:all .3s; z-index:900;
+    transition:all .3s; z-index:10003;
   }
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
   #musicDialog{
-    position:fixed; inset:0; z-index:1000;
+    position:fixed; inset:0; z-index:10004;
     background:rgba(0,0,0,.5);
     -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
     display:none; align-items:center; justify-content:center; padding:20px;
@@ -612,7 +616,7 @@
 
   /* ==================== 开屏动画样式 ==================== */
   #splash {
-    position: fixed; inset: 0; z-index: 9999;
+    position: fixed; inset: 0; z-index: 99999;
     background: #1c1c1e;
     overflow: hidden;
   }
@@ -1027,7 +1031,8 @@
   function resolveTheme(){ var s = null; try { s = localStorage.getItem(K_THEME); } catch(e){} if(s === 'dark' || s === 'light') return s; try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){} return 'light'; }
   function applyTheme(t){ document.documentElement.classList.toggle('light', t === 'light'); document.getElementById('themeIcon').textContent = (t === 'dark') ? '☀' : '◐'; }
   applyTheme(resolveTheme());
-  document.getElementById('btnTheme').addEventListener('click', function(){ var nowDark = !document.documentElement.classList.contains('light'); var next = nowDark ? 'light' : 'dark'; applyTheme(next); try { localStorage.setItem(K_THEME, next); } catch(e){} toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天'); });
+  var btnTheme = document.getElementById('btnTheme');
+  if (btnTheme) btnTheme.addEventListener('click', function(){ var nowDark = !document.documentElement.classList.contains('light'); var next = nowDark ? 'light' : 'dark'; applyTheme(next); try { localStorage.setItem(K_THEME, next); } catch(e){} toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天'); });
 
   // ==================== Toast ====================
   var toastTimer;
@@ -1056,7 +1061,8 @@
     var btn = document.getElementById('btnEdit'); btn.classList.toggle('on', on); btn.querySelector('.ico').textContent = on ? '✓' : '✎'; btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
     if(!on) { document.getElementById('stylePanel').classList.remove('show'); } if(on) { bindAll(); toast('编辑已开启'); } else { save(); toast('已保存'); }
   }
-  document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
+  var btnEdit = document.getElementById('btnEdit');
+  if (btnEdit) btnEdit.addEventListener('click', function(){ setEdit(!editMode); });
 
   // ==================== 图片点击 ====================
   var __imgPressStart = 0, __imgPressX = 0, __imgPressY = 0, __imgPressTarget = null, __lastImgOpen = 0;
@@ -1080,8 +1086,10 @@
     picker.classList.add('show');
   }
   function closePicker(){ picker.classList.remove('show'); activeImg = null; bgMode = false; }
-  document.getElementById('pickerClose').addEventListener('click', closePicker);
-  document.getElementById('btnBg').addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openPicker(null, true); });
+  var pickerClose = document.getElementById('pickerClose');
+  if(pickerClose) pickerClose.addEventListener('click', closePicker);
+  var btnBg = document.getElementById('btnBg');
+  if(btnBg) btnBg.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openPicker(null, true); });
 
   // ==================== 增删行 ====================
   function makeTextRow(content){ var wrap = document.createElement('div'); wrap.className = 'bwrap'; wrap.style.marginTop = '8px'; wrap.innerHTML = '<div class="etext" data-edit>' + (content || '点击输入新内容...') + '</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div>'; return wrap; }
@@ -1108,7 +1116,8 @@
 
   // ==================== 样式面板 ====================
   var stylePanel = document.getElementById('stylePanel');
-  document.getElementById('btnStyle').addEventListener('click', function(e){ e.stopPropagation(); stylePanel.classList.toggle('show'); });
+  var btnStyle = document.getElementById('btnStyle');
+  if (btnStyle) btnStyle.addEventListener('click', function(e){ e.stopPropagation(); stylePanel.classList.toggle('show'); });
 
   function selectText(el){
     activeTextEl = el; var cs = getComputedStyle(el);
@@ -1166,7 +1175,8 @@
   document.addEventListener('click', function(e){ if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){ collectionMenu.classList.remove('show'); } var sp = document.getElementById('stylePanel'); var spBtn = document.getElementById('btnStyle'); if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){ sp.classList.remove('show'); } });
 
   // ==================== 新页面 ====================
-  document.getElementById('btnAddPanel').addEventListener('click', function(){
+  var btnAddPanel = document.getElementById('btnAddPanel');
+  if (btnAddPanel) btnAddPanel.addEventListener('click', function(){
     var name = prompt('新页面名称（会加入合集）:', '新页面'); if(!name) return; name = name.trim(); if(!name) return;
     var panels = document.querySelectorAll('#app .panel'); var used = {}; panels.forEach(function(p){ used[p.id] = true; }); var idx = 0; while(used['panel-' + idx]) idx++; var newId = 'panel-' + idx;
     var sec = document.createElement('section'); sec.className = 'panel'; sec.id = newId; sec.setAttribute('data-collection', 'true'); sec.dataset.name = name;
@@ -1178,10 +1188,12 @@
   window.goBack = function(){ var prev = navHistory.pop(); if(prev) window.switchTab(prev); else window.switchTab('panel-0'); };
 
   // ==================== 重置 ====================
-  document.getElementById('btnReset').addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
+  var btnReset = document.getElementById('btnReset');
+  if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
 
   // ==================== 导出 ====================
-  document.getElementById('btnExport').addEventListener('click', function(){
+  var btnExport = document.getElementById('btnExport');
+  if (btnExport) btnExport.addEventListener('click', function(){
     save(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
     var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '';
     try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; } catch(e){}
@@ -1193,84 +1205,100 @@
   });
 
   // ==================== 导入 ====================
-  document.getElementById('btnImport').addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
+  var btnImport = document.getElementById('btnImport');
+  if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
 
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 修复：获取元素在 floatLayer 内的视口绝对中心坐标
-  function getCenterPos(elWidth, elHeight) {
-      var layer = document.getElementById('floatLayer');
-      if (!layer) return { left: 100, top: 100 };
-      var layerRect = layer.getBoundingClientRect();
-      // 使用 innerHeight 和 layerRect.top 计算视口中心，完美处理滚动条情况
-      var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
-      var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
-      if (left < 10) left = 10;
-      if (top < 10) top = 10;
+  // 修复：获取元素在 floatLayer 内的视口绝对中心坐标，并强制滚动到可见区域
+  function getViewportCenterPos(elWidth, elHeight) {
+      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
+      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
       return { left: left, top: top };
   }
 
+  function forceVisible(el) {
+      // 暴力确保元素在屏幕中显示
+      el.style.setProperty('display', 'block', 'important');
+      el.style.setProperty('z-index', '10000', 'important');
+      setTimeout(function() {
+          var rect = el.getBoundingClientRect();
+          // 如果元素不在视口内，强制滚动到它所在的位置
+          if (rect.top < 0 || rect.bottom > window.innerHeight || rect.left < 0 || rect.right > window.innerWidth) {
+              var targetY = el.offsetTop + (el.offsetHeight / 2) - (window.innerHeight / 2);
+              window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }
+      }, 100);
+  }
+
   function makeShape(type){ 
-    var el = document.createElement('div'); el.className = 'shape'; 
-    var pos = getCenterPos(80, 80); 
-    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-    el.style.width = '80px'; el.style.height = '80px'; 
-    el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; 
-    el.style.pointerEvents = 'auto';
-    el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; 
-    floatLayer.appendChild(el); 
-    makeMovable(el); bindXDel(el); bindResize(el); 
-    setTimeout(function(){ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
-    save(); toast('已添加图形'); 
+    try {
+      var el = document.createElement('div'); el.className = 'shape'; 
+      var pos = getViewportCenterPos(80, 80); 
+      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+      el.style.width = '80px'; el.style.height = '80px'; 
+      el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; 
+      el.style.pointerEvents = 'auto';
+      el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; 
+      floatLayer.appendChild(el); 
+      makeMovable(el); bindXDel(el); bindResize(el); 
+      forceVisible(el);
+      save(); toast('已添加图形'); 
+    } catch(e) { alert('添加图形失败: ' + e.message); }
   }
   
   function makeFrame(shape){ 
-    var el = document.createElement('div'); el.className = 'frame'; 
-    var pos = getCenterPos(120, 120); 
-    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-    el.style.width = '120px'; el.style.height = '120px'; 
-    el.style.pointerEvents = 'auto';
-    if(shape === 'circle') el.style.borderRadius = '50%'; 
-    else if(shape === 'rounded') el.style.borderRadius = '16px'; 
-    
-    var img = document.createElement('img'); 
-    img.setAttribute('data-edit-img', ''); 
-    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; 
-    
-    var rz = document.createElement('div'); rz.className = 'rz';
-    var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
-    
-    el.appendChild(img); el.appendChild(rz); el.appendChild(xdel); 
-    
-    floatLayer.appendChild(el); 
-    makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
-    setTimeout(function(){ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
-    save(); toast('已添加图片框'); 
+    try {
+      var el = document.createElement('div'); el.className = 'frame'; 
+      var pos = getViewportCenterPos(120, 120); 
+      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+      el.style.width = '120px'; el.style.height = '120px'; 
+      el.style.pointerEvents = 'auto';
+      if(shape === 'circle') el.style.borderRadius = '50%'; 
+      else if(shape === 'rounded') el.style.borderRadius = '16px'; 
+      
+      var img = document.createElement('img'); 
+      img.setAttribute('data-edit-img', ''); 
+      img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; 
+      
+      var rz = document.createElement('div'); rz.className = 'rz';
+      var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+      
+      el.appendChild(img); el.appendChild(rz); el.appendChild(xdel); 
+      
+      floatLayer.appendChild(el); 
+      makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
+      forceVisible(el);
+      save(); toast('已添加图片框'); 
+    } catch(e) { alert('添加图片框失败: ' + e.message); }
   }
   
   function makeFloater(){ 
-    var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
-    var pos = getCenterPos(160, 40); 
-    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-    el.style.width = '160px'; el.style.pointerEvents = 'auto'; el.textContent = '自由文本'; 
-    
-    var rz = document.createElement('div'); rz.className = 'rz';
-    var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
-    el.appendChild(rz); el.appendChild(xdel); 
-    
-    floatLayer.appendChild(el); 
-    makeMovable(el); bindXDel(el); bindResize(el); 
-    setTimeout(function(){ 
-      el.focus(); 
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-    }, 100); 
-    save(); toast('已添加浮动文本'); 
+    try {
+      var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
+      var pos = getViewportCenterPos(160, 40); 
+      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+      el.style.width = '160px'; el.style.pointerEvents = 'auto'; el.textContent = '自由文本'; 
+      
+      var rz = document.createElement('div'); rz.className = 'rz';
+      var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+      el.appendChild(rz); el.appendChild(xdel); 
+      
+      floatLayer.appendChild(el); 
+      makeMovable(el); bindXDel(el); bindResize(el); 
+      forceVisible(el);
+      setTimeout(function(){ el.focus(); }, 150); 
+      save(); toast('已添加浮动文本'); 
+    } catch(e) { alert('添加浮动文本失败: ' + e.message); }
   }
 
-  document.getElementById('btnAddShape').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('framePicker').classList.remove('show'); document.getElementById('shapePicker').classList.toggle('show'); });
-  document.getElementById('btnAddFrame').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('shapePicker').classList.remove('show'); document.getElementById('framePicker').classList.toggle('show'); });
-  document.getElementById('btnAddFloat').addEventListener('click', makeFloater);
+  var btnAddShape = document.getElementById('btnAddShape');
+  if (btnAddShape) btnAddShape.addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('framePicker').classList.remove('show'); document.getElementById('shapePicker').classList.toggle('show'); });
+  var btnAddFrame = document.getElementById('btnAddFrame');
+  if (btnAddFrame) btnAddFrame.addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('shapePicker').classList.remove('show'); document.getElementById('framePicker').classList.toggle('show'); });
+  var btnAddFloat = document.getElementById('btnAddFloat');
+  if (btnAddFloat) btnAddFloat.addEventListener('click', makeFloater);
   document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); document.getElementById('shapePicker').classList.remove('show'); }); });
   document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); document.getElementById('framePicker').classList.remove('show'); }); });
 
