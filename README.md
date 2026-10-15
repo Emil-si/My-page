@@ -656,7 +656,10 @@
     overflow: hidden;
   }
 
-  .splash-card {
+.splash-card {
+    position: absolute; /* 强制绝对定位 */
+    top: 50%;
+    left: 50%;
     width: 82%;
     max-width: 420px;
     aspect-ratio: 4 / 5;
@@ -671,13 +674,14 @@
     text-align: center;
     gap: 20px;
     
-    /* 初始在屏幕下方，然后通过 JS 移动上来 */
-    transform: translateY(70vh);
+    /* 初始位置：从底部滑入，加上 -50% 的偏移量确保居中 */
+    transform: translate(-50%, calc(-50% + 70vh));
     transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* 滑出后回到正中心 */
   .splash-card.move-up {
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 
   .splash-title {
@@ -2375,10 +2379,16 @@
 
     // 3. 点击按钮进入主页
     splashBtn.onclick = function() {
-      // 播放音乐
-      if (typeof playMusic === 'function') { playMusic(); }
-      // 删掉开屏层
-      splash.remove();
+      // 【关键修复】先移除开屏层，确保主页交互立即恢复
+      var sp = document.getElementById('splash');
+      if (sp) sp.remove();
+      
+      // 再尝试播放音乐，即使失败也不影响进入主页
+      try {
+        if (typeof playMusic === 'function') { playMusic(); }
+      } catch(err) {
+        console.log('音乐播放出错:', err);
+      }
     };
 
     // 4. 点击开屏空白处也进入主页
@@ -2386,13 +2396,19 @@
       // 编辑文字时不触发
       if (e.target.getAttribute('contenteditable') === 'true') return;
       if (e.target.hasAttribute('data-splash-edit')) return;
-      if (typeof playMusic === 'function') { playMusic(); }
-      splash.remove();
+      
+      // 【关键修复】先移除开屏层
+      var sp = document.getElementById('splash');
+      if (sp) sp.remove();
+      
+      // 再尝试播放音乐
+      try {
+        if (typeof playMusic === 'function') { playMusic(); }
+      } catch(err) {
+        console.log('音乐播放出错:', err);
+      }
     };
 
-  }, 200);
-
-})();
 </script>
 </body>
 </html>
