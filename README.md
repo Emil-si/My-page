@@ -616,7 +616,7 @@
 
   /* ==================== 开屏动画样式 ==================== */
   #splash {
-    position: fixed; inset: 0; z-index: 99999;
+    position: fixed; inset:: 0; z-index: 99999;
     background: #1c1c1e;
     overflow: hidden;
   }
@@ -626,7 +626,7 @@
     top: 50%; left: 50%;
     width: 82%; max-width: 420px;
     aspect-ratio: 4 / 5;
-    background: rgba(25,25,30,0.85);
+    background rgba(25,25,30,0.85);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 28px;
     display: flex; flex-direction: column;
@@ -782,17 +782,17 @@
   </div>
   <div class="sp-row"><span>文字特效</span>
     <select id="spFxType">
-      <option value="none">无 特效</option>
-     个 <option出现 value="fx-sl</ide-up">上滑出现</option>
-      <optionoption value="fx-fade-in">淡入出现</option>
->
-      <option value="fx-scale-in">缩放出现     </option>
+      <option value="none">无特效</option>
+      <option value="fx-slide-up">上滑出现</option>
+      <option value="fx-fade-in">淡入出现</option>
+      <option value="fx-scale-in">缩放出现</option>
     </select>
   </div>
   <div class="sp-row"><span>出场顺序</span>
     <select id="spFxOrder">
       <option value="0">第 1 个出现</option>
-      <option value="1">第 2 <option value="2">第 3 个出现</option>
+      <option value="1">第 2 个出现</option>
+      <option value="2">第 3 个出现</option>
       <option value="3">第 4 个出现</option>
       <option value="4">第 5 个出现</option>
     </select>
@@ -1080,8 +1080,15 @@
 
   // ==================== 浮动元素可见性管理（核心） ====================
   function updateFloatersVisibility() {
-    var activePanelId = document.querySelector('.panel.active').id;
+    var activePanel = document.querySelector('.panel.active');
+    if (!activePanel) return;
+    var activePanelId = activePanel.id;
     document.querySelectorAll('.shape, .frame, .floater').forEach(function(el) {
+      // 兼容旧版本没有 panelId 的浮动元素，默认绑定到 panel-0
+      if (!el.dataset.panelId) {
+        el.dataset.panelId = 'panel-0';
+      }
+      
       if (el.dataset.panelId === activePanelId) {
         el.style.display = 'block';
         el.style.pointerEvents = 'auto';
@@ -1280,7 +1287,7 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 获取元素在 floatLayer 内的视口绝对中心坐标
+  // 获取元素在视口绝对中心坐标
   function getCenterPos(elWidth, elHeight) {
       var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
       var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
@@ -1402,49 +1409,70 @@
   document.addEventListener('click', function(e){ if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){ musicPanel.classList.remove('show'); } });
   loadCurrent();
   
-  // ==================== 初始化 ====================
-  bindAll(); refreshCollectionMenu(); refreshLinkOptions(); setEdit(false);
-  // 初始化时，确保所有浮动元素根据当前页面隐藏/显示
-  setTimeout(updateFloatersVisibility, 100);
+  // ==================== 初始化（防御性包裹，防止一处报错全盘崩溃） ====================
+  try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
+  try { refreshCollectionMenu(); } catch(e) {}
+  try { refreshLinkOptions(); } catch(e) {}
+  try { setEdit(false); } catch(e) {}
+  setTimeout(function(){
+      try { updateFloatersVisibility(); } catch(e) {}
+  }, 100);
 
-  // ==================== 开屏逻辑 ====================
+  // ==================== 开屏逻辑（绝对防卡死） ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
     var splashCard = document.getElementById('splashCard');
     var splashBtn = document.getElementById('splashEnterBtn');
     if (!splash) return;
 
+    // 1. 显示卡片
     setTimeout(function() {
-      if (splashCard) splashCard.classList.add('show');
-      if (splashBtn) splashBtn.classList.add('show');
+      try {
+        if (splashCard) splashCard.classList.add('show');
+        if (splashBtn) splashBtn.classList.add('show');
+      } catch(e) { console.log('显示开屏卡片失败:', e); }
     }, 100);
 
     var clickTimer = null;
 
+    // 2. 进入主页的强制函数（防卡死核心）
     function enterMainPage() {
       var sp = document.getElementById('splash');
-      if (!sp) return;
-      sp.remove();
+      if (!sp) return; // 已经移除过了
+      
+      // 强制移除开屏层，不依赖任何其他逻辑
+      try { sp.remove(); } catch(e) { if(sp.parentNode) sp.parentNode.removeChild(sp); }
+      
+      // 延迟尝试播放音乐（隔离错误）
       setTimeout(function() {
         try {
           if (typeof playMusic === 'function') { playMusic(); }
           else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-        } catch(err) {}
+        } catch(err) {
+          console.log('音乐播放失败:', err);
+        }
       }, 100);
     }
 
-    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
-      el.addEventListener('dblclick', function(e){
-        e.stopPropagation();
-        clearTimeout(clickTimer);
-        el.setAttribute('contenteditable', 'true');
-        el.focus();
-        var range = document.createRange(); range.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-      });
-      el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
-      el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-    });
+    // 3. 双击编辑逻辑
+    try {
+        var editEls = splash.querySelectorAll('[data-splash-edit]');
+        for (var i = 0; i < editEls.length; i++) {
+            (function(el){
+                el.addEventListener('dblclick', function(e){
+                  e.stopPropagation();
+                  clearTimeout(clickTimer);
+                  el.setAttribute('contenteditable', 'true');
+                  el.focus();
+                  var range = document.createRange(); range.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+                });
+                el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
+                el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+            })(editEls[i]);
+        }
+    } catch(e) { console.log('绑定开屏编辑失败:', e); }
 
+    // 4. 全局点击进入主页（带延迟，兼容双击）
     splash.addEventListener('click', function(e) {
       if (e.target.getAttribute('contenteditable') === 'true') return;
       if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
@@ -1452,6 +1480,7 @@
       clickTimer = setTimeout(enterMainPage, 250);
     });
 
+    // 5. 按钮单击直接进入
     if (splashBtn) {
       splashBtn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -1460,6 +1489,7 @@
       });
     }
 
+    // 6. 终极兜底：6秒后无论如何都进入主页
     setTimeout(function() {
       if (document.getElementById('splash')) {
         console.log('开屏超时兜底，自动进入主页');
@@ -1467,7 +1497,7 @@
       }
     }, 6000);
 
-  }, 100);
+  }, 200);
 
 })();
 </script>
