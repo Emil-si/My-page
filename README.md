@@ -1781,7 +1781,8 @@
     if(!music.src || music.src === location.href) return;
     __firstPlayDone = true;
 
-    music.play().then(function(){
+      alert('尝试播放：' + music.src);
+      music.play().then(function(){
       musicBtn.classList.add('playing');
       musicBtn.textContent = '❚❚';
     }).catch(function(err){
