@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -357,7 +356,6 @@
   }
   .exbtn:hover{background:rgba(127,127,127,0.08); color:var(--accent); border-color:var(--accent);}
 
-  /* ============ 样式面板 ============ */
   #stylePanel{
     position:fixed;
     right:14px; top:calc(110px + var(--safe-top));
@@ -639,13 +637,12 @@
     </select>
   </div>
 
-  <div class="sp-note">💡 编辑完想分享给朋友看：点工具栏「⬇ 导出」下载 HTML 文件，再上传到 GitHub 覆盖 index.html。</div>
+  <div class="sp-note">💡 想分享给朋友看：编辑完 → 点「⬇ 导出」下载 HTML → 上传到 GitHub → 分享新链接。</div>
 </div>
 
 <div id="app">
   <div id="floatLayer" style="position:absolute; inset:0; pointer-events:none; z-index:997;"></div>
 
-  <!-- ========== 面板 0 ========== -->
   <section class="panel active" id="panel-0">
     <div class="card">
       <div class="cover">
@@ -729,7 +726,6 @@
     </div>
   </section>
 
-  <!-- ========== 面板 1 ========== -->
   <section class="panel" id="panel-1">
     <div class="card">
       <div class="bwrap">
@@ -750,7 +746,6 @@
     </div>
   </section>
 
-  <!-- ========== 面板 2 ========== -->
   <section class="panel" id="panel-2">
     <div class="card">
       <div class="bwrap">
@@ -771,7 +766,6 @@
     </div>
   </section>
 
-  <!-- ========== 面板 3 ========== -->
   <section class="panel" id="panel-3">
     <div class="card">
       <div class="bwrap">
@@ -868,11 +862,11 @@
   } catch(e){}
   if(isReadonly) document.body.classList.add('readonly');
 
-  var K_THEME = 'myPage.theme.v4';
-  var K_BG    = 'myPage.bg.v4';
-  var K_CONTENT = 'myPage.content.v5';
-  var K_MUSIC = 'myPage.music.v4';
-  var K_ALPHA = 'myPage.alpha.v1';
+  var K_THEME = 'myPage.theme.v5';
+  var K_BG    = 'myPage.bg.v5';
+  var K_CONTENT = 'myPage.content.v6';
+  var K_MUSIC = 'myPage.music.v5';
+  var K_ALPHA = 'myPage.alpha.v2';
 
   var app = document.getElementById('app');
   var bgLayer = document.getElementById('bgLayer');
@@ -1355,27 +1349,21 @@
     toast('已重置');
   });
 
-  // ==================== 导出 ====================
+  // ==================== 导出（文件名自动带时间戳） ====================
   document.getElementById('btnExport').addEventListener('click', function(){
-    // 保存当前内容到 localStorage 一份，确保导出最新
     save();
 
-    // 克隆整个文档
     var clone = document.documentElement.cloneNode(true);
-
-    // 清理临时状态
     clone.querySelector('body').classList.remove('editing');
     clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
     clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('.img-picker, #picker').forEach(function(el){ el.classList.remove('show'); });
+    clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); });
     clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); });
     clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); });
     clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); });
     clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); });
     clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
 
-    // 把当前 localStorage 中的内容，直接写入导出的 HTML 里，作为"初始内容"
-    // 这样即使别人第一次打开（本地没有数据），也能看到你导出的版本
     var currentContent = serialize();
     var currentBg = '';
     var currentAlpha = '';
@@ -1388,7 +1376,6 @@
       currentMusic = localStorage.getItem(K_MUSIC) || '';
     } catch(e){}
 
-    // 在导出的 HTML 里，注入一段脚本：把当前内容写入 localStorage，然后立即恢复
     var injectScript = document.createElement('script');
     injectScript.textContent =
       '(function(){try{' +
@@ -1397,31 +1384,37 @@
       'var _a=' + JSON.stringify(currentAlpha) + ';' +
       'var _t=' + JSON.stringify(currentTheme) + ';' +
       'var _m=' + JSON.stringify(currentMusic) + ';' +
-      'localStorage.setItem("myPage.content.v5",_c);' +
-      'if(_bg)localStorage.setItem("myPage.bg.v4",_bg);' +
-      'if(_a)localStorage.setItem("myPage.alpha.v1",_a);' +
-      'if(_t)localStorage.setItem("myPage.theme.v4",_t);' +
-      'if(_m)localStorage.setItem("myPage.music.v4",_m);' +
+      'localStorage.setItem("myPage.content.v6",_c);' +
+      'if(_bg)localStorage.setItem("myPage.bg.v5",_bg);' +
+      'if(_a)localStorage.setItem("myPage.alpha.v2",_a);' +
+      'if(_t)localStorage.setItem("myPage.theme.v5",_t);' +
+      'if(_m)localStorage.setItem("myPage.music.v5",_m);' +
       '}catch(e){}})();';
 
-    // 插入到 head 最前面，让它最先执行
     clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild);
 
-    // 生成 HTML 字符串
     var html = '<!DOCTYPE html>\n' + clone.outerHTML;
 
-    // 下载
+    // 生成带时间戳的文件名
+    var d = new Date();
+    var pad = function(n){ return String(n).padStart(2, '0'); };
+    var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+                '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds());
+    var fileName = 'preview-' + stamp + '.html';
+
     var blob = new Blob([html], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'index.html';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
 
-    toast('已导出 index.html，请上传到 GitHub');
-    alert('已导出 index.html 文件\n\n下一步：\n1. 打开 GitHub 仓库\n2. 点开 index.html\n3. 点铅笔编辑 → 全选删除 → 粘贴新内容\n4. 或者直接替换文件\n\n这样才能让分享的链接同步你的修改');
+    toast('已导出 ' + fileName);
+    setTimeout(function(){
+      alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName);
+    }, 400);
   });
 
   // ==================== 导入 ====================
