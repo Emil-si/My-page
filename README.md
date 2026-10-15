@@ -2433,32 +2433,30 @@
     setTimeout(playPageEffects, 150);
   };
 
-  // ==================== 开屏动画逻辑 ====================
+  // ==================== 开屏动画逻辑（暴力稳定版） ====================
   var splash = document.getElementById('splash');
   var splashCard = document.querySelector('.splash-card');
   var splashBtn = document.getElementById('splashEnterBtn');
   
   if (splash && splashCard && splashBtn) {
-    // 1. 页面加载 200ms 后，卡片从底部滑入到屏幕正中心
+    // 1. 页面加载后卡片滑出
     setTimeout(function() {
       splashCard.classList.add('slide-in');
       splashBtn.classList.add('show');
     }, 200);
     
-    // 2. 双击开屏卡片文字 → 直接编辑
+    // 2. 双击开屏文字可编辑
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
         e.stopPropagation();
         el.setAttribute('contenteditable', 'true');
         el.focus();
-        // 全选文字方便覆盖
         var range = document.createRange();
         range.selectNodeContents(el);
         var sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
       });
-      // 回车或失焦保存
       el.addEventListener('blur', function(){ 
         el.removeAttribute('contenteditable'); 
       });
@@ -2470,11 +2468,35 @@
       });
     });
     
-    // 3. 点击右下角胶囊按钮：进入主页 + 播放背景音乐
+    // 3. 点击胶囊按钮：强制进入主页 + 播放音乐
     splashBtn.addEventListener('click', function(e) {
       e.stopPropagation();
+      e.preventDefault();
       
-      // 触发音乐播放（利用点击事件解除浏览器限制）
+      // 【第一步：先把开屏层直接移除，确保主页不会被遮挡】
+      if (splash.parentNode) {
+        splash.parentNode.removeChild(splash);
+      }
+      
+      // 【第二步：暴力切换页面。不管 switchTab 是否报错，都强行把 panel-0 设为 active】
+      try {
+        // 先尝试调用你原有的 switchTab
+        if (typeof window.switchTab === 'function') {
+          window.switchTab('panel-0');
+        }
+      } catch(err) {
+        console.log('switchTab 调用出错，正在执行兜底方案:', err);
+      }
+      
+      // 兜底方案：无论上面是否成功，直接操作 DOM 把第一页显示出来
+      document.querySelectorAll('.panel').forEach(function(p){
+        p.classList.toggle('active', p.id === 'panel-0');
+      });
+      document.querySelectorAll('.navlink[data-panel]').forEach(function(n){
+        n.classList.toggle('active', n.getAttribute('data-panel') === 'panel-0');
+      });
+      
+      // 【第三步：播放音乐】
       try {
         if (typeof playMusic === 'function') { playMusic(); }
         else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
@@ -2482,32 +2504,22 @@
         console.log('音乐播放未触发:', err);
       }
       
-      // 切换回第一页
-      if (typeof window.switchTab === 'function') {
-        window.switchTab('panel-0');
+      // 【第四步：触发主页文字特效】
+      try {
+        if (typeof playPageEffects === 'function') {
+          setTimeout(playPageEffects, 400);
+        }
+      } catch(err) {
+        console.log('文字特效未触发:', err);
       }
-      
-      // 触发主页文字特效
-      setTimeout(playPageEffects, 400);
-      
-      // 淡出并移除开屏层
-      splash.classList.add('hide');
-      setTimeout(function() {
-        splash.remove();
-      }, 600);
     });
     
-    // 4. 防止开屏卡片内部点击穿透影响其他元素
-    splashCard.addEventListener('click', function(e) {
-      // 如果是正在编辑文字，不要触发其他逻辑
-      if (e.target.getAttribute('contenteditable') === 'true') return;
-    });
-    
-    // 5. 启动主页文字特效（在后台准备，等开屏消失后可见）
-    setTimeout(playPageEffects, 1500);
-  } else {
-    // 如果开屏元素不存在，直接显示页面
-    console.error('开屏元素未找到，请检查 HTML 结构！');
+    // 4. 启动主页文字特效（在后台准备）
+    setTimeout(function(){
+      if (typeof playPageEffects === 'function') {
+        playPageEffects();
+      }
+    }, 1500);
   }
 
   // ==================== 初始化 ====================
