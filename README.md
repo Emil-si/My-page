@@ -565,60 +565,34 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-  /* ===== 音乐播放面板（胶囊型改造） ===== */
+/* ===== 音乐播放面板（胶囊风格整合版） ===== */
 #musicPanel {
   position: fixed;
   bottom: calc(80px + var(--safe-bottom));
   right: 14px;
   z-index: 210;
-  background: var(--bar); /* 使用你原有的背景色变量 */
+  background: var(--bar);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08); /* 细微外边框 */
   border-radius: 999px; /* 胶囊形状 */
-  padding: 6px 14px 6px 6px;
+  padding: 6px 14px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   display: none;
-  flex-direction: row; /* 横向排列 */
+  flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 #musicPanel.show {
   display: flex;
 }
 
-/* 左侧音符图标按钮 */
-.music-icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.2s ease;
-}
-
-.music-icon-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.music-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
 /* 中间控制按钮 */
 .mp-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .mp-ctrl-btn {
@@ -655,22 +629,22 @@
   transform: scale(1.05);
 }
 
-/* 竖向音量控制区 */
+/* 竖向音量控制区（原生垂直，解决触摸失效问题） */
 .mp-vol-container {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 38px;
   width: 20px;
-  overflow: hidden;
 }
 
 #mpVolume {
-  /* 旋转90度实现竖向效果，同时保持极简外观 */
-  transform: rotate(-90deg);
-  width: 38px;
-  height: 4px;
-  -webkit-appearance: none;
+  writing-mode: vertical-lr; /* 原生垂直书写模式 */
+  direction: rtl;             /* 向上滑动增加音量 */
+  -webkit-appearance: slider-vertical; /* Safari 兼容 */
+  appearance: slider-vertical;
+  width: 4px;
+  height: 38px;
   background: rgba(127, 127, 127, 0.3);
   border-radius: 2px;
   outline: none;
@@ -704,6 +678,15 @@
 }
 
 .mp-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 播放状态：仅旋转，保留玻璃质感黑底和自适应文字颜色 */
+#musicBtn.playing {
+  animation: spin 4s linear infinite;
+  /* 此处不覆盖 background 和 color，完全继承基础 #musicBtn 样式 */
+}
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -942,18 +925,17 @@
   </section>
 </div>
 
-<div id="musicBtn">♪</div>
+<!-- 悬浮按钮：改用 SVG 音符，配合旋转更好看 -->
+<div id="musicBtn">
+  <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+    <path d="M9 18V5l12-2v13"></path>
+    <circle cx="6" cy="18" r="3"></circle>
+    <circle cx="18" cy="16" r="3"></circle>
+  </svg>
+</div>
+
+<!-- 胶囊控制面板：删除了重复的音符按钮，更加紧凑 -->
 <div id="musicPanel">
-  <!-- 左侧：带边框的音乐图标 -->
-  <button class="music-icon-btn" id="mpInfoBtn" title="音乐信息">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18V5l12-2v13"></path>
-      <circle cx="6" cy="18" r="3"></circle>
-      <circle cx="18" cy="16" r="3"></circle>
-    </svg>
-  </button>
-  
-  <!-- 控制按钮区 -->
   <div class="mp-controls">
     <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
@@ -965,13 +947,12 @@
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
     </button>
   </div>
-
+  
   <!-- 竖向音量滑块 -->
   <div class="mp-vol-container">
     <input type="range" id="mpVolume" min="0" max="100" value="100">
   </div>
 
-  <!-- 添加音乐按钮 (替换为极简+号) -->
   <button class="mp-add" id="mpAdd" title="添加音乐">＋</button>
 </div>
 
@@ -1946,12 +1927,12 @@
     } catch(e){}
   }
 
-   function playMusic(){
+    function playMusic(){
     if(playlist.length === 0){ toast('请先添加音乐'); return; }
     if(!music.src) loadCurrent();
     music.play().then(function(){
       musicBtn.classList.add('playing');
-      // 替换为暂停 SVG 图标
+      // 切换为暂停 SVG 图标
       mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
     }).catch(function(){ toast('播放失败'); });
   }
@@ -1959,7 +1940,7 @@
   function pauseMusic(){
     music.pause();
     musicBtn.classList.remove('playing');
-    // 替换为播放 SVG 图标
+    // 切换为播放 SVG 图标
     mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>';
   }
 
