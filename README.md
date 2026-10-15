@@ -645,7 +645,7 @@
     background: rgba(74,158,255,0.08);
   }
 
-/* ==================== 开屏动画样式（绝对居中稳定版） ==================== */
+/* ==================== 开屏动画样式 ==================== */
   #splash {
     position: fixed;
     inset: 0;
@@ -655,7 +655,6 @@
   }
 
   .splash-card {
-    /* 绝对居中核心代码 */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -673,30 +672,20 @@
     text-align: center;
     gap: 20px;
     
-    /* 初始状态：往下偏移 100px，透明度 0 */
+    /* 初始隐藏，等待 JS 唤醒 */
     transform: translate(-50%, calc(-50% + 100px));
     opacity: 0;
-    /* 简单的过渡，不使用关键帧动画 */
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
   }
 
-  /* 当 JS 给卡片加上 show 类时，滑入并居中 */
+  /* 被 JS 加上 show 类后，滑出并居中 */
   .splash-card.show {
     transform: translate(-50%, -50%);
     opacity: 1;
   }
 
-  .splash-title {
-    font-size: 48px;
-    font-weight: 800;
-    color: #f0f0f0;
-  }
-
-  .splash-desc {
-    font-size: 14px;
-    color: #999;
-    font-family: monospace;
-  }
+  .splash-title { font-size: 48px; font-weight: 800; color: #f0f0f0; }
+  .splash-desc { font-size: 14px; color: #999; font-family: monospace; }
 
   .splash-enter-btn {
     position: absolute;
@@ -713,10 +702,7 @@
     opacity: 0;
     transition: opacity 0.5s ease 0.6s;
   }
-
-  .splash-enter-btn.show {
-    opacity: 1;
-  }
+  .splash-enter-btn.show { opacity: 1; }
 
   /* ==================== 文字特效基础样式 ==================== */
   [data-edit].fx-hidden {
@@ -2349,23 +2335,31 @@
   refreshLinkOptions(); 
   setEdit(false);
 
-  // ==================== 开屏逻辑（完美点击即入版） ====================
+  // ==================== 开屏逻辑（终极修复版） ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
+    var splashCard = document.getElementById('splashCard');
+    var splashBtn = document.getElementById('splashEnterBtn');
+    
     if (!splash) return;
 
-    var clickTimer = null; // 用于延迟单击执行
+    // 【关键修复】添加这行，触发卡片和按钮的滑出动画，解决"卡片失踪"问题
+    setTimeout(function() {
+      if (splashCard) splashCard.classList.add('show');
+      if (splashBtn) splashBtn.classList.add('show');
+    }, 100);
 
-    // 1. 进入主页的核心函数
+    var clickTimer = null; // 用于区分单击和双击
+
+    // 1. 强制进入主页的逻辑（先移除开屏层，再播音乐，绝不卡死）
     function forceEnter() {
-      // 如果开屏层已经被移除，直接返回
       var sp = document.getElementById('splash');
       if (!sp) return;
-
-      // 【关键】立刻移除开屏层，确保主页面交互瞬间恢复，不受任何音乐报错影响
+      
+      // 立刻移除开屏层，让主页功能瞬间恢复
       sp.remove();
-
-      // 【关键】在移除开屏层之后，再去尝试播放音乐，并用 setTimeout 隔离错误
+      
+      // 音乐播放隔离在 try/catch 和延迟中，即使报错也绝不阻止进入主页
       setTimeout(function() {
         try {
           if (typeof playMusic === 'function') { playMusic(); }
@@ -2376,14 +2370,14 @@
       }, 100);
     }
 
-    // 2. 双击文字编辑逻辑
+    // 2. 双击文字进入编辑状态
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
-        e.stopPropagation(); // 阻止事件冒泡，防止触发外层单击
-        clearTimeout(clickTimer); // 关键：取消单击的延迟执行，防止正在编辑时页面跳转
+        e.stopPropagation(); 
+        clearTimeout(clickTimer); // 关键：清除单击延迟，防止进入主页
         el.setAttribute('contenteditable', 'true');
         el.focus();
-        // 全选文字方便覆盖
+        // 全选文字
         var range = document.createRange();
         range.selectNodeContents(el);
         var sel = window.getSelection();
@@ -2398,23 +2392,22 @@
       });
     });
 
-    // 3. 给整个开屏层绑定单击事件（延迟执行）
+    // 3. 全局单击监听（延迟执行，避免和双击冲突）
     splash.addEventListener('click', function(e) {
-      // 如果点击的是正在编辑的文字，不触发进入
       if (e.target.getAttribute('contenteditable') === 'true') return;
+      // 如果在双击文字，不触发跳转
+      if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
       
-      // 延迟 300ms 执行进入主页。如果 300ms 内触发了双击，clickTimer 会被清除
       clickTimer = setTimeout(function() {
         forceEnter();
-      }, 300);
+      }, 300); // 300ms 内如果没有第二下点击，就进入主页
     });
 
-    // 4. 按钮的单独绑定（防止某些浏览器按钮点击穿透被拦截）
-    var splashBtn = document.getElementById('splashEnterBtn');
+    // 4. 按钮单独监听（防止被卡片遮挡）
     if (splashBtn) {
       splashBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        clearTimeout(clickTimer); // 清掉之前的单击延迟
+        clearTimeout(clickTimer); // 清除单击延迟，立即进入
         forceEnter();
       });
     }
