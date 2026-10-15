@@ -2443,25 +2443,35 @@
       splashCard.classList.add('reveal-center');
     });
     
-    // 3. 点击右下角胶囊按钮，进入主页（切换到第一页，并淡出开屏）
-    if (splashBtn) {
-      splashBtn.addEventListener('click', function(e) {
-        e.stopPropagation(); // 防止触发卡片的点击
-        
-        // 强制切换回第一页（panel-0）
-        if (typeof window.switchTab === 'function') {
-          window.switchTab('panel-0');
-        }
-        
-        // 开始淡出动画
-        splash.classList.add('hide');
-        
-        // 等待过渡结束后彻底移除
-        setTimeout(function() {
-          splash.remove();
-        }, 600);
-      });
-    }
+    // 3. 点击右下角胶囊按钮：进入主页 + 播放背景音乐
+    splashBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // 【关键修改】触发音乐播放，利用这个点击事件解除浏览器的自动播放限制
+      if (typeof playMusic === 'function') {
+        // 调用你原有的 playMusic 函数
+        playMusic();
+      } else if (typeof music !== 'undefined' && music.src) {
+        // 兼容备份：如果 playMusic 作用域不可用，直接让 audio 标签播放
+        music.play().catch(function(err){
+          console.log('音乐播放被浏览器拦截:', err);
+        });
+      }
+      
+      // 切换到第一页
+      if (typeof window.switchTab === 'function') {
+        window.switchTab('panel-0');
+      }
+      
+      // 触发主页文字特效
+      setTimeout(playPageEffects, 400);
+      
+      // 淡出开屏
+      splash.classList.add('hide');
+      setTimeout(function() {
+        splash.remove();
+      }, 600);
+    });
     
     // 4. 页面加载时，如果当前面板是 panel-0，播放特效
     setTimeout(playPageEffects, 1600);
