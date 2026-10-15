@@ -1086,14 +1086,32 @@
   // ==================== 图片库 ====================
   var picker = document.getElementById('picker');
   var pickerGrid = document.getElementById('pickerGrid');
-  function openPicker(img, isBg){
+    function openPicker(img, isBg){
     activeImg = img || null;
     bgMode = !!isBg;
     pickerGrid.innerHTML = '';
+
+    // 观察器：只有当图片进入可视区域时才加载
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          var el = entry.target;
+          if(el.dataset.src){
+            el.src = el.dataset.src;
+            el.removeAttribute('data-src');
+          }
+          observer.unobserve(el);
+        }
+      });
+    }, { root: pickerGrid, rootMargin: '150px' });
+
     IMAGES.forEach(function(name){
       var url = IMG_BASE + name;
       var el = document.createElement('img');
-      el.src = url; el.alt = name; el.loading = 'lazy';
+      // 关键：不立即设置 src，只存到 data-src
+      el.dataset.src = url;
+      el.alt = name;
+      el.style.background = 'rgba(127,127,127,0.15)';
       el.addEventListener('click', function(e){
         e.preventDefault(); e.stopPropagation();
         if(bgMode){
@@ -1106,6 +1124,7 @@
         closePicker();
       });
       pickerGrid.appendChild(el);
+      observer.observe(el);
     });
     picker.classList.add('show');
   }
