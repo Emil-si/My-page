@@ -2349,12 +2349,6 @@
   
   // 保存当前激活文字的原始引用
   var currentFxTarget = null;
-  
-  // 重写 selectText 的一部分，让它支持特效读取
-  var _originalSelectText = window.selectText;
-  window.selectText = function(el) {
-    if (_originalSelectText) _originalSelectText(el);
-    currentFxTarget = el;
     
     // 读取当前元素的特效
     var fxType = 'none';
@@ -2433,7 +2427,7 @@
     setTimeout(playPageEffects, 150);
   };
 
-  // ==================== 开屏动画逻辑（暴力稳定版） ====================
+  // ==================== 开屏动画逻辑（终极纯净版） ====================
   var splash = document.getElementById('splash');
   var splashCard = document.querySelector('.splash-card');
   var splashBtn = document.getElementById('splashEnterBtn');
@@ -2468,50 +2462,35 @@
       });
     });
     
-    // 3. 点击胶囊按钮：强制进入主页 + 播放音乐
+    // 3. 点击胶囊按钮：只做三件事——移开屏、播音乐、触发特效
     splashBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       e.preventDefault();
       
-      // 【第一步：先把开屏层直接移除，确保主页不会被遮挡】
-      if (splash.parentNode) {
-        splash.parentNode.removeChild(splash);
-      }
+      // 【关键修复】彻底移除此开屏层，恢复页面正常交互
+      splash.remove();
       
-      // 【第二步：暴力切换页面。不管 switchTab 是否报错，都强行把 panel-0 设为 active】
-      try {
-        // 先尝试调用你原有的 switchTab
-        if (typeof window.switchTab === 'function') {
-          window.switchTab('panel-0');
-        }
-      } catch(err) {
-        console.log('switchTab 调用出错，正在执行兜底方案:', err);
-      }
-      
-      // 兜底方案：无论上面是否成功，直接操作 DOM 把第一页显示出来
-      document.querySelectorAll('.panel').forEach(function(p){
-        p.classList.toggle('active', p.id === 'panel-0');
-      });
-      document.querySelectorAll('.navlink[data-panel]').forEach(function(n){
-        n.classList.toggle('active', n.getAttribute('data-panel') === 'panel-0');
-      });
-      
-      // 【第三步：播放音乐】
+      // 播放音乐（利用点击手势解除浏览器限制）
       try {
         if (typeof playMusic === 'function') { playMusic(); }
         else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
       } catch(err) {
-        console.log('音乐播放未触发:', err);
+        console.log('音乐未播放:', err);
       }
       
-      // 【第四步：触发主页文字特效】
+      // 触发主页文字特效
       try {
         if (typeof playPageEffects === 'function') {
           setTimeout(playPageEffects, 400);
         }
       } catch(err) {
-        console.log('文字特效未触发:', err);
+        console.log('特效未触发:', err);
       }
+      
+      // 提示用户已进入主页
+      try {
+        if (typeof toast === 'function') { toast('欢迎进入主页'); }
+      } catch(err) {}
     });
     
     // 4. 启动主页文字特效（在后台准备）
@@ -2587,12 +2566,6 @@
       window.__fxTimers.push(timer);
     });
   }
-  
-  var _originalSwitchTab = window.switchTab;
-  window.switchTab = function(id) {
-    if (_originalSwitchTab) _originalSwitchTab(id);
-    setTimeout(playPageEffects, 150);
-  };
 
   // ==================== 开屏动画逻辑 ====================
   var splash = document.getElementById('splash');
