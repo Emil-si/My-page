@@ -235,8 +235,6 @@
     gap:2px;
     z-index:20;
   }
-  body.editing .bwrap:hover > .row-tools,
-  body.editing .bwrap:focus-within > .row-tools{display:flex;}
   .row-tools button{
     width:26px; height:26px; border-radius:6px;
     border:1px solid var(--border);
@@ -284,10 +282,7 @@
     display:none; align-items:center; justify-content:center;
     padding:0; z-index:5;
   }
-  body.editing .shape:hover .xdel,
-  body.editing .frame:hover .xdel,
-  body.editing .floater:hover .xdel{display:flex;}
-
+  
   .rz{
     position:absolute; bottom:0; right:0;
     width:28px; height:28px;
@@ -408,28 +403,91 @@
     border-radius:8px; margin-top:4px;
   }
 
- /* ===== 右下角悬浮球 ===== */
-#musicBtn {
-  position: fixed; 
-  bottom: calc(20px + var(--safe-bottom)); 
-  right: 14px;
-  width: 48px; height: 48px; 
-  border-radius: 50%;
-  background: var(--card); /* 保留玻璃质感黑底 */
-  border: 1px solid var(--border);
-  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-  box-shadow: 0 6px 24px rgba(0,0,0,.35);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--text); 
-  font-size: 22px;
-  cursor: pointer; z-index: 220;
-  touch-action: none; user-select: none;
-}
+  /* ===== 音乐播放面板（胶囊风格，与悬浮球水平并排） ===== */
+  #musicPanel {
+    position: fixed;
+    bottom: calc(20px + var(--safe-bottom)); /* 与悬浮球底部对齐 */
+    right: calc(14px + 48px + 12px); /* 偏移至悬浮球左侧 */
+    z-index: 210;
+    background: var(--bar);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  #musicPanel.show { display: flex; }
 
-/* 播放时仅旋转，保留玻璃质感，不变成实心蓝色 */
-#musicBtn.playing {
-  animation: spin 4s linear infinite;
-}
+  .mp-controls { display: flex; align-items: center; gap: 2px; }
+
+  .mp-ctrl-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: none; background: transparent;
+    color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; transition: all 0.15s ease;
+  }
+  .mp-ctrl-btn svg { width: 16px; height: 16px; }
+  .mp-ctrl-btn:hover { background: rgba(127, 127, 127, 0.2); }
+
+  .mp-ctrl-btn.play {
+    background: var(--accent); color: var(--accent-text); margin: 0 2px;
+  }
+  .mp-ctrl-btn.play:hover { transform: scale(1.05); }
+
+  .mp-vol-container {
+    display: flex; align-items: center; justify-content: center;
+    height: 38px; width: 20px;
+  }
+  #mpVolume {
+    writing-mode: vertical-lr; direction: rtl;
+    -webkit-appearance: slider-vertical; appearance: slider-vertical;
+    width: 4px; height: 38px;
+    background: rgba(127, 127, 127, 0.3);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  #mpVolume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--text); cursor: pointer;
+  }
+
+  .mp-add {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--sub); font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0; transition: all 0.15s;
+  }
+  .mp-add:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* 右下角悬浮球（玻璃质感） */
+  #musicBtn {
+    position: fixed; 
+    bottom: calc(20px + var(--safe-bottom)); 
+    right: 14px;
+    width: 48px; height: 48px; 
+    border-radius: 50%;
+    background: var(--card); /* 保持玻璃质感黑底 */
+    border: 1px solid var(--border);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text); 
+    font-size: 22px;
+    cursor: pointer; z-index: 220;
+    touch-action: none; user-select: none;
+  }
+
+  /* 播放时仅旋转，保留玻璃质感 */
+  #musicBtn.playing {
+    animation: spin 4s linear infinite;
+  }
 
   body.editing [data-edit]{
     outline:1px dashed transparent; outline-offset:4px;
@@ -517,16 +575,86 @@
   }
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
+  /* ===== 修复移动端和PC端悬停问题：编辑模式下强制显示工具 ===== */
+  body.editing .row-tools {
+    display: flex !important;
+    opacity: 0.6;
+  }
+  body.editing .row-tools:hover {
+    opacity: 1;
+  }
+  body.editing .shape .xdel,
+  body.editing .frame .xdel,
+  body.editing .floater .xdel {
+    display: flex !important;
+    opacity: 0.7;
+  }
+  body.editing .shape .xdel:hover,
+  body.editing .frame .xdel:hover,
+  body.editing .floater .xdel:hover {
+    opacity: 1;
+  }
+
+  /* ===== 卡片操作按钮（删除卡片） ===== */
+  .card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: none;
+    gap: 4px;
+    z-index: 100;
+  }
+  body.editing .card-actions {
+    display: flex !important;
+  }
+  .card-actions button {
+    background: #e5484d;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: monospace;
+  }
+  .card-actions button:hover {
+    transform: scale(1.05);
+  }
+
+  /* ===== 添加新卡片按钮（底部） ===== */
+  .add-card-btn {
+    display: none;
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0 14px 0;
+    border: 1px dashed var(--border);
+    background: rgba(127,127,127,0.05);
+    color: var(--sub);
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  body.editing .add-card-btn {
+    display: block !important;
+  }
+  .add-card-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(74,158,255,0.08);
+  }
+
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu,
-    #shapePicker, #framePicker, #stylePanel{
+    #shapePicker, #framePicker, #stylePanel, #musicPanel{
       background-color:rgba(20,20,25,0.96) !important;
       background-image:none !important;
     }
     html.light #toolbar, html.light #topnav, html.light .card,
     html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn,
     html.light #collectionMenu, html.light #shapePicker, html.light #framePicker,
-    html.light #stylePanel{
+    html.light #stylePanel, html.light #musicPanel{
       background-color:rgba(255,255,255,0.97) !important;
       background-image:none !important;
     }
@@ -550,7 +678,7 @@
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
 
-        #stylePanel{
+    #stylePanel{
       top:auto !important;
       bottom:0 !important;
       left:0 !important;
@@ -575,131 +703,6 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-/* ===== 音乐播放面板（胶囊风格整合版） ===== */
-#musicPanel {
-  position: fixed;
-  bottom: calc(80px + var(--safe-bottom));
-  right: 14px;
-  z-index: 210;
-  background: var(--bar);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08); /* 细微外边框 */
-  border-radius: 999px; /* 胶囊形状 */
-  padding: 6px 14px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  display: none;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-#musicPanel.show {
-  display: flex;
-}
-
-/* 中间控制按钮 */
-.mp-controls {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.mp-ctrl-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: all 0.15s ease;
-}
-
-.mp-ctrl-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.mp-ctrl-btn:hover {
-  background: rgba(127, 127, 127, 0.2);
-}
-
-.mp-ctrl-btn.play {
-  background: var(--accent);
-  color: var(--accent-text);
-  margin: 0 2px;
-}
-
-.mp-ctrl-btn.play:hover {
-  transform: scale(1.05);
-}
-
-/* 竖向音量控制区（原生垂直，解决触摸失效问题） */
-.mp-vol-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 38px;
-  width: 20px;
-}
-
-#mpVolume {
-  writing-mode: vertical-lr; /* 原生垂直书写模式 */
-  direction: rtl;             /* 向上滑动增加音量 */
-  -webkit-appearance: slider-vertical; /* Safari 兼容 */
-  appearance: slider-vertical;
-  width: 4px;
-  height: 38px;
-  background: rgba(127, 127, 127, 0.3);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-
-#mpVolume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--text);
-  cursor: pointer;
-}
-
-/* 添加音乐按钮 */
-.mp-add {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--sub);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.15s;
-}
-
-.mp-add:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* 播放状态：仅旋转，保留玻璃质感黑底和自适应文字颜色 */
-#musicBtn.playing {
-  animation: spin 4s linear infinite;
-  /* 此处不覆盖 background 和 color，完全继承基础 #musicBtn 样式 */
-}
-  border-color: var(--accent);
-  color: var(--accent);
-}
 </style>
 </head>
 <body>
@@ -786,6 +789,11 @@
 
   <section class="panel active" id="panel-0">
     <div class="card">
+      <!-- 新增：删除卡片按钮（编辑模式下显示） -->
+      <div class="card-actions">
+        <button onclick="deleteCard(this)">× 删除卡片</button>
+      </div>
+      
       <div class="cover">
         <img data-edit-img id="coverImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='7' fill='%23555' text-anchor='middle' font-family='monospace'%3E点击更换封面%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
@@ -806,6 +814,7 @@
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
 
@@ -818,6 +827,7 @@
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
 
@@ -826,6 +836,7 @@
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
 
@@ -839,6 +850,9 @@
     </div>
 
     <div class="card">
+      <div class="card-actions">
+        <button onclick="deleteCard(this)">× 删除卡片</button>
+      </div>
       <div class="bwrap">
         <div class="feed">
           <div class="fav"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23555'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EW%3C/text%3E%3C/svg%3E" alt="动态头像"></div>
@@ -852,6 +866,7 @@
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
     </div>
@@ -861,6 +876,9 @@
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-0')">— 末尾加分隔线</button>
     </div>
 
+    <!-- 新增：底部添加卡片按钮 -->
+    <button class="add-card-btn" onclick="addCard(this, 'panel-0')">＋ 添加新卡片</button>
+
     <div class="pagenav">
       <div class="spacer30"></div>
       <button class="navbtn" onclick="switchTab('panel-1')">→</button>
@@ -869,11 +887,15 @@
 
   <section class="panel" id="panel-1">
     <div class="card">
+      <div class="card-actions">
+        <button onclick="deleteCard(this)">× 删除卡片</button>
+      </div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是个人信息区域，可以在编辑模式下自由修改文字和图片。</div>
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
     </div>
@@ -881,6 +903,7 @@
       <button class="exbtn" onclick="addTextEnd(this, 'panel-1')">＋ 末尾加文字</button>
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-1')">— 末尾加分隔线</button>
     </div>
+    <button class="add-card-btn" onclick="addCard(this, 'panel-1')">＋ 添加新卡片</button>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-0')">←</button>
       <button class="navbtn" onclick="switchTab('panel-2')">→</button>
@@ -889,11 +912,15 @@
 
   <section class="panel" id="panel-2">
     <div class="card">
+      <div class="card-actions">
+        <button onclick="deleteCard(this)">× 删除卡片</button>
+      </div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
     </div>
@@ -901,6 +928,7 @@
       <button class="exbtn" onclick="addTextEnd(this, 'panel-2')">＋ 末尾加文字</button>
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-2')">— 末尾加分隔线</button>
     </div>
+    <button class="add-card-btn" onclick="addCard(this, 'panel-2')">＋ 添加新卡片</button>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-1')">←</button>
       <button class="navbtn" onclick="switchTab('panel-3')">→</button>
@@ -909,11 +937,15 @@
 
   <section class="panel" id="panel-3">
     <div class="card">
+      <div class="card-actions">
+        <button onclick="deleteCard(this)">× 删除卡片</button>
+      </div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
       <div class="bwrap" style="margin-top:8px;">
@@ -921,6 +953,7 @@
         <div class="row-tools">
           <button title="加文字" onclick="addTextAfter(this)">＋</button>
           <button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>
+          <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
     </div>
@@ -928,6 +961,7 @@
       <button class="exbtn" onclick="addTextEnd(this, 'panel-3')">＋ 末尾加文字</button>
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-3')">— 末尾加分隔线</button>
     </div>
+    <button class="add-card-btn" onclick="addCard(this, 'panel-3')">＋ 添加新卡片</button>
     <div class="pagenav">
       <button class="navbtn" onclick="switchTab('panel-2')">←</button>
       <div class="spacer30"></div>
@@ -935,10 +969,10 @@
   </section>
 </div>
 
-<!-- 右下角悬浮球：改回 ♪ 符号 -->
+<!-- 右下角悬浮球：改回 ♪ 符号，保持玻璃质感 -->
 <div id="musicBtn">♪</div>
 
-<!-- 胶囊控制面板：保持原有的按钮结构 -->
+<!-- 胶囊控制面板：与悬浮球水平对齐，排在其左侧 -->
 <div id="musicPanel">
   <div class="mp-controls">
     <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
@@ -952,7 +986,6 @@
     </button>
   </div>
   
-  <!-- 竖向音量滑块 -->
   <div class="mp-vol-container">
     <input type="range" id="mpVolume" min="0" max="100" value="100">
   </div>
@@ -1144,7 +1177,6 @@
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
   // ==================== 图片点击 ====================
-  // 用一个全局监听器统一处理所有图片点击
   var __imgPressStart = 0;
   var __imgPressX = 0;
   var __imgPressY = 0;
@@ -1153,14 +1185,11 @@
 
   function __isEditableImg(el){
     if(!el) return false;
-    // 普通图片：带 data-edit-img
     if(el.tagName === 'IMG' && el.hasAttribute('data-edit-img')) return true;
-    // 图片框里的图片
     if(el.tagName === 'IMG' && el.closest && el.closest('.frame')) return true;
     return false;
   }
 
-  // 手指/鼠标按下
   document.addEventListener('touchstart', function(e){
     if(!editMode || isReadonly) return;
     var t = e.target;
@@ -1185,7 +1214,6 @@
     __imgPressY = e.clientY;
   }, true);
 
-  // 手指/鼠标移动
   document.addEventListener('touchmove', function(e){
     if(!__imgPressTarget) return;
     var p = e.touches[0];
@@ -1201,16 +1229,15 @@
     }
   }, true);
 
-  // 手指/鼠标松开 —— 关键在这里
   function __finishImgPress(upX, upY){
     if(!__imgPressTarget) return;
     var target = __imgPressTarget;
     __imgPressTarget = null;
 
     if(!editMode || isReadonly) return;
-    if(Date.now() - __imgPressStart > 900) return;   // 长按不触发
+    if(Date.now() - __imgPressStart > 900) return;
     var now = Date.now();
-    if(now - __lastImgOpen < 500) return;            // 防抖
+    if(now - __lastImgOpen < 500) return;
     __lastImgOpen = now;
 
     openPicker(target, false);
@@ -1225,13 +1252,12 @@
     __finishImgPress(e.clientX, e.clientY);
   }, true);
 
-  // 兼容 click（防止有些浏览器不触发 touchend）
   document.addEventListener('click', function(e){
     if(!editMode || isReadonly) return;
     var t = e.target;
     var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
     if(!__isEditableImg(img)) return;
-    if(__imgPressTarget) return;   // 刚才 touchend 已经处理了
+    if(__imgPressTarget) return;
     var now = Date.now();
     if(now - __lastImgOpen < 500) return;
     __lastImgOpen = now;
@@ -1239,8 +1265,8 @@
     openPicker(img, false);
   }, true);
 
-  // 保留原 bindImg 的空壳，以免其他地方调用报错
-  function bindImg(img){ /* 空 */ }
+  function bindImg(img){ /* 空壳 */ }
+
   // ==================== 图片库 ====================
   var picker = document.getElementById('picker');
   var pickerGrid = document.getElementById('pickerGrid');
@@ -1249,7 +1275,6 @@
     bgMode = !!isBg;
     pickerGrid.innerHTML = '';
 
-    // 观察器：只有当图片进入可视区域时才加载
     var observer = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if(entry.isIntersecting){
@@ -1266,7 +1291,6 @@
     IMAGES.forEach(function(name){
       var url = IMG_BASE + name;
       var el = document.createElement('img');
-      // 关键：不立即设置 src，只存到 data-src
       el.dataset.src = url;
       el.alt = name;
       el.style.background = 'rgba(127,127,127,0.15)';
@@ -1365,6 +1389,47 @@
     var card = panel.querySelector('.card');
     card.appendChild(makeDividerRow());
     save(); toast('已添加分隔线');
+  };
+
+  // ==================== 卡片增删功能 ====================
+  window.deleteCard = function(btn){
+    var card = btn.closest('.card');
+    if(!card) return;
+    if(confirm('确定删除这张卡片及其所有内容吗？')){
+      card.remove();
+      save();
+      toast('卡片已删除');
+    }
+  };
+
+  window.addCard = function(btn, panelId){
+    var panel = document.getElementById(panelId);
+    if(!panel) return;
+    
+    var newCard = document.createElement('div');
+    newCard.className = 'card';
+    newCard.innerHTML = 
+      '<div class="card-actions">' +
+        '<button onclick="deleteCard(this)">× 删除卡片</button>' +
+      '</div>' +
+      '<div class="bwrap">' +
+        '<div class="etext" data-edit>新卡片内容...点击编辑</div>' +
+        '<div class="row-tools">' +
+          '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
+          '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
+          '<button class="del" onclick="deleteRow(this)">×</button>' +
+        '</div>' +
+      '</div>';
+      
+    panel.insertBefore(newCard, btn);
+    
+    if(editMode){
+      newCard.querySelectorAll('[data-edit]').forEach(function(el){ 
+        el.setAttribute('contenteditable', 'true'); 
+      });
+    }
+    save(); 
+    toast('已添加新卡片');
   };
 
   // ==================== 样式面板 ====================
@@ -1560,6 +1625,9 @@
     sec.setAttribute('data-collection', 'true');
     sec.dataset.name = name;
     sec.innerHTML = '<div class="card">' +
+      '<div class="card-actions">' +
+        '<button onclick="deleteCard(this)">× 删除卡片</button>' +
+      '</div>' +
       '<div class="bwrap">' +
         '<div class="etext" data-edit>新页面内容...</div>' +
         '<div class="row-tools">' +
@@ -1573,6 +1641,7 @@
         '<button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button>' +
         '<button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button>' +
       '</div>' +
+      '<button class="add-card-btn" onclick="addCard(this, \'' + newId + '\')">＋ 添加新卡片</button>' +
       '<div class="pagenav">' +
         '<button class="navbtn" onclick="window.goBack()">←</button>' +
         '<div class="spacer30"></div>' +
@@ -1649,7 +1718,6 @@
 
     var html = '<!DOCTYPE html>\n' + clone.outerHTML;
 
-    // 生成带时间戳的文件名
     var d = new Date();
     var pad = function(n){ return String(n).padStart(2, '0'); };
     var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
@@ -1719,8 +1787,9 @@
   function makeShape(type){
     var el = document.createElement('div');
     el.className = 'shape';
-    el.style.left = '40px';
-    el.style.top = (window.scrollY + 200) + 'px';
+    // 修复：出现在当前屏幕正中心
+    el.style.left = (window.innerWidth / 2 - 40) + 'px';
+    el.style.top = (window.scrollY + window.innerHeight / 2 - 40) + 'px';
     el.style.width = '80px';
     el.style.height = '80px';
     el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
@@ -1733,8 +1802,9 @@
   function makeFrame(shape){
     var el = document.createElement('div');
     el.className = 'frame';
-    el.style.left = '40px';
-    el.style.top = (window.scrollY + 300) + 'px';
+    // 修复：出现在当前屏幕正中心
+    el.style.left = (window.innerWidth / 2 - 60) + 'px';
+    el.style.top = (window.scrollY + window.innerHeight / 2 - 60) + 'px';
     el.style.width = '120px';
     el.style.height = '120px';
     if(shape === 'circle') el.style.borderRadius = '50%';
@@ -1755,8 +1825,9 @@
     var el = document.createElement('div');
     el.className = 'floater';
     el.contentEditable = 'true';
-    el.style.left = '40px';
-    el.style.top = (window.scrollY + 150) + 'px';
+    // 修复：出现在当前屏幕正中心
+    el.style.left = (window.innerWidth / 2 - 80) + 'px';
+    el.style.top = (window.scrollY + window.innerHeight / 2 - 40) + 'px';
     el.style.width = '160px';
     el.textContent = '自由文本';
     el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
@@ -1871,8 +1942,21 @@
     });
   }
 
+  // ==================== 初始化卡片工具 ====================
+  function initCardTools(){
+    document.querySelectorAll('#app .card').forEach(function(card){
+      if(!card.querySelector('.card-actions')){
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+        actions.innerHTML = '<button onclick="deleteCard(this)">× 删除卡片</button>';
+        card.insertBefore(actions, card.firstChild);
+      }
+    });
+  }
+
   // ==================== 绑定所有 ====================
   function bindAll(){
+    initCardTools();
     document.querySelectorAll('img[data-edit-img]').forEach(bindImg);
     document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){
       if(!el.dataset.moveBound){
@@ -1884,7 +1968,7 @@
     });
   }
 
-   // ==================== 音乐播放器 ====================
+  // ==================== 音乐播放器 ====================
   var music = document.getElementById('bgMusic');
   var musicBtn = document.getElementById('musicBtn');
   var musicPanel = document.getElementById('musicPanel');
@@ -1898,7 +1982,6 @@
   var currentIndex = 0;
   var currentVolume = 1;
 
-  // 读取已保存的播放列表
   try {
     var savedList = localStorage.getItem(K_MUSIC);
     if(savedList){
@@ -1931,7 +2014,7 @@
     } catch(e){}
   }
 
-      function playMusic(){
+  function playMusic(){
     if(playlist.length === 0){ toast('请先添加音乐'); return; }
     if(!music.src) loadCurrent();
     music.play().then(function(){
@@ -1963,13 +2046,11 @@
     if(wasPlaying) setTimeout(playMusic, 100);
   }
 
-  // 点击 ♪ → 弹面板
   musicBtn.addEventListener('click', function(e){
     e.stopPropagation();
     musicPanel.classList.toggle('show');
   });
 
-  // 面板按钮
   mpPlay.addEventListener('click', function(){
     if(music.paused) playMusic();
     else pauseMusic();
@@ -1977,14 +2058,12 @@
   mpPrev.addEventListener('click', prevMusic);
   mpNext.addEventListener('click', nextMusic);
 
-  // 音量
   mpVolume.addEventListener('input', function(){
     currentVolume = mpVolume.value / 100;
     music.volume = currentVolume;
     try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){}
   });
 
-  // 添加音乐
   mpAdd.addEventListener('click', function(){
     var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', '');
     if(url === null) return;
@@ -2037,15 +2116,14 @@
   musicBtn.addEventListener('touchcancel', cancelPress);
   musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 
-  // 点空白处关闭面板
   document.addEventListener('click', function(e){
     if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){
       musicPanel.classList.remove('show');
     }
   });
 
-  // 初始化加载
   loadCurrent();
+  
   // ==================== 初始化 ====================
   bindAll();
   refreshCollectionMenu();
