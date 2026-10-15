@@ -259,6 +259,14 @@
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
 
+  /* ===== 浮动图层修复 ===== */
+  #floatLayer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 997;
+  }
+
   .shape{
     position:absolute; z-index:998;
     display:none; cursor:move;
@@ -602,7 +610,7 @@
   body.editing .add-card-btn { display: block !important; }
   .add-card-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(74,158,255,0.08); }
 
-  /* ==================== 开屏动画样式（绝对居中） ==================== */
+  /* ==================== 开屏动画样式 ==================== */
   #splash {
     position: fixed; inset: 0; z-index: 9999;
     background: #1c1c1e;
@@ -789,7 +797,7 @@
 </div>
 
 <div id="app">
-  <div id="floatLayer" style="position:absolute; inset:0; pointer-events:none; z-index:997;"></div>
+  <div id="floatLayer"></div>
 
   <section class="panel active" id="panel-0">
     <div class="card">
@@ -1193,8 +1201,9 @@
   // 修复：获取元素在 floatLayer 内的视口绝对中心坐标
   function getCenterPos(elWidth, elHeight) {
       var layer = document.getElementById('floatLayer');
+      if (!layer) return { left: 100, top: 100 };
       var layerRect = layer.getBoundingClientRect();
-      // 用 innerHeight 和 layerRect.top 计算视口中心，完美处理滚动条情况
+      // 使用 innerHeight 和 layerRect.top 计算视口中心，完美处理滚动条情况
       var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
       var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
       if (left < 10) left = 10;
@@ -1202,13 +1211,26 @@
       return { left: left, top: top };
   }
 
-  function makeShape(type){ var el = document.createElement('div'); el.className = 'shape'; var pos = getCenterPos(80, 80); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); }
+  function makeShape(type){ 
+    var el = document.createElement('div'); el.className = 'shape'; 
+    var pos = getCenterPos(80, 80); 
+    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+    el.style.width = '80px'; el.style.height = '80px'; 
+    el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; 
+    el.style.pointerEvents = 'auto';
+    el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; 
+    floatLayer.appendChild(el); 
+    makeMovable(el); bindXDel(el); bindResize(el); 
+    setTimeout(function(){ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+    save(); toast('已添加图形'); 
+  }
   
   function makeFrame(shape){ 
     var el = document.createElement('div'); el.className = 'frame'; 
     var pos = getCenterPos(120, 120); 
     el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
     el.style.width = '120px'; el.style.height = '120px'; 
+    el.style.pointerEvents = 'auto';
     if(shape === 'circle') el.style.borderRadius = '50%'; 
     else if(shape === 'rounded') el.style.borderRadius = '16px'; 
     
@@ -1216,7 +1238,6 @@
     img.setAttribute('data-edit-img', ''); 
     img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; 
     
-    // 修复：不要用 innerHTML +=，避免破坏 img 引用
     var rz = document.createElement('div'); rz.className = 'rz';
     var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
     
@@ -1224,6 +1245,7 @@
     
     floatLayer.appendChild(el); 
     makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
+    setTimeout(function(){ el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     save(); toast('已添加图片框'); 
   }
   
@@ -1231,16 +1253,18 @@
     var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
     var pos = getCenterPos(160, 40); 
     el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-    el.style.width = '160px'; el.textContent = '自由文本'; 
+    el.style.width = '160px'; el.style.pointerEvents = 'auto'; el.textContent = '自由文本'; 
     
-    // 修复：不要用 innerHTML +=
     var rz = document.createElement('div'); rz.className = 'rz';
     var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
     el.appendChild(rz); el.appendChild(xdel); 
     
     floatLayer.appendChild(el); 
     makeMovable(el); bindXDel(el); bindResize(el); 
-    setTimeout(function(){ el.focus(); }, 50); 
+    setTimeout(function(){ 
+      el.focus(); 
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+    }, 100); 
     save(); toast('已添加浮动文本'); 
   }
 
