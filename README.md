@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -616,7 +617,7 @@
 
   /* ==================== 开屏动画样式 ==================== */
   #splash {
-    position: fixed; inset:: 0; z-index: 99999;
+    position: fixed; inset: 0; z-index: 99999;
     background: #1c1c1e;
     overflow: hidden;
   }
@@ -626,7 +627,7 @@
     top: 50%; left: 50%;
     width: 82%; max-width: 420px;
     aspect-ratio: 4 / 5;
-    background rgba(25,25,30,0.85);
+    background: rgba(25,25,30,0.85);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 28px;
     display: flex; flex-direction: column;
@@ -1023,83 +1024,139 @@
 (function(){
   'use strict';
 
+  // ==================== 1. 最高优先级：开屏兜底（独立于任何其他代码） ====================
+  // 这段代码放在最顶部，确保即使后面所有代码全崩溃，开屏也能在3秒内强制消失。
+  (function() {
+      var splash = document.getElementById('splash');
+      if (!splash) return;
+      
+      var splashCard = document.getElementById('splashCard');
+      var splashBtn = document.getElementById('splashEnterBtn');
+      
+      // 1.1 显示卡片
+      setTimeout(function() {
+          try {
+              if (splashCard) splashCard.classList.add('show');
+              if (splashBtn) splashBtn.classList.add('show');
+          } catch(e) {}
+      }, 100);
+
+      // 1.2 强制进入主页函数
+      function forceEnter() {
+          try {
+              if (splash.parentNode) splash.parentNode.removeChild(splash);
+          } catch(e) {
+              try { splash.remove(); } catch(err) {}
+          }
+          // 尝试播放音乐（隔离错误）
+          setTimeout(function() {
+              try {
+                  if (typeof playMusic === 'function') { playMusic(); }
+                  else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
+              } catch(err) {}
+          }, 100);
+      }
+
+      // 1.3 绑定点击（全局点击和按钮点击）
+      splash.addEventListener('click', function(e) {
+          if (e.target.getAttribute('contenteditable') === 'true') return;
+          if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
+          forceEnter();
+      });
+
+      if (splashBtn) {
+          splashBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              forceEnter();
+          });
+      }
+
+      // 1.4 终极兜底：3秒后自动进入
+      setTimeout(forceEnter, 3000);
+  })();
+
+  // ==================== 2. 全局变量定义 ====================
   var IMG_BASE = 'https://cdn.jsdelivr.net/gh/emil-si/My-page@main/';
   var IMAGES = ['IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg','IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg','IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg','IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg','IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png','IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png','IMG_9014.png','IMG_9016.png'];
 
   var isReadonly = false;
   try { var qp = new URLSearchParams(location.search); isReadonly = qp.has('view') || qp.has('readonly'); } catch(e){}
-  if(isReadonly) document.body.classList.add('readonly');
+  if(isReadonly && document.body) document.body.classList.add('readonly');
 
   var K_THEME = 'myPage.theme.v5', K_BG = 'myPage.bg.v5', K_CONTENT = 'myPage.content.v6', K_MUSIC = 'myPage.music.v5', K_ALPHA = 'myPage.alpha.v2';
-  var app = document.getElementById('app'), bgLayer = document.getElementById('bgLayer'), toastEl = document.getElementById('toast');
-  var editMode = false, activeImg = null, bgMode = false, activeTextEl = null, DEFAULT_HTML = app.innerHTML;
+  
+  var app = document.getElementById('app');
+  var bgLayer = document.getElementById('bgLayer');
+  var toastEl = document.getElementById('toast');
+  
+  var editMode = false, activeImg = null, bgMode = false, activeTextEl = null, activeFloater = null;
+  var DEFAULT_HTML = app ? app.innerHTML : '';
 
-  // 修复：新增选中浮动元素的全局变量，用于控制颜色和透明度
-  var activeFloater = null;
-
-  // ==================== 主题 ====================
+  // ==================== 3. 核心工具函数 ====================
   function resolveTheme(){ var s = null; try { s = localStorage.getItem(K_THEME); } catch(e){} if(s === 'dark' || s === 'light') return s; try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){} return 'light'; }
-  function applyTheme(t){ document.documentElement.classList.toggle('light', t === 'light'); document.getElementById('themeIcon').textContent = (t === 'dark') ? '☀' : '◐'; }
-  applyTheme(resolveTheme());
-  var btnTheme = document.getElementById('btnTheme');
-  if (btnTheme) btnTheme.addEventListener('click', function(){ var nowDark = !document.documentElement.classList.contains('light'); var next = nowDark ? 'light' : 'dark'; applyTheme(next); try { localStorage.setItem(K_THEME, next); } catch(e){} toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天'); });
+  function applyTheme(t){ document.documentElement.classList.toggle('light', t === 'light'); var icon = document.getElementById('themeIcon'); if(icon) icon.textContent = (t === 'dark') ? '☀' : '◐'; }
+  try { applyTheme(resolveTheme()); } catch(e) {}
+  
+  function toast(msg){ if(!toastEl) return; toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400); }
+  
+  function applyAlpha(v){ var a = Math.max(0, Math.min(1, v / 100)); document.documentElement.style.setProperty('--card-alpha', a); var el = document.getElementById('spCardAlphaVal'); if(el) el.textContent = Math.round(v) + '%'; try { localStorage.setItem(K_ALPHA, v); } catch(e){} }
+  try { var savedAlpha = localStorage.getItem(K_ALPHA); if(savedAlpha !== null){ applyAlpha(savedAlpha); var el = document.getElementById('spCardAlpha'); if(el) el.value = savedAlpha; } } catch(e){}
 
-  // ==================== Toast ====================
-  var toastTimer;
-  function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400); }
-
-  // ==================== 卡片透明度 ====================
-  function applyAlpha(v){ var a = Math.max(0, Math.min(1, v / 100)); document.documentElement.style.setProperty('--card-alpha', a); document.getElementById('spCardAlphaVal').textContent = Math.round(v) + '%'; try { localStorage.setItem(K_ALPHA, v); } catch(e){} }
-  try { var savedAlpha = localStorage.getItem(K_ALPHA); if(savedAlpha !== null){ applyAlpha(savedAlpha); document.getElementById('spCardAlpha').value = savedAlpha; } } catch(e){}
-  document.getElementById('spCardAlpha').addEventListener('input', function(e){ applyAlpha(e.target.value); });
-
-  // ==================== 背景 ====================
-  function setBg(url){ if(url) bgLayer.style.backgroundImage = 'url(' + url + ')'; else bgLayer.style.backgroundImage = 'none'; }
+  function setBg(url){ if(bgLayer) { if(url) bgLayer.style.backgroundImage = 'url(' + url + ')'; else bgLayer.style.backgroundImage = 'none'; } }
   try { var savedBg = localStorage.getItem(K_BG); if(savedBg) setBg(savedBg); } catch(e){}
 
-  // ==================== 内容恢复 ====================
-  try { var savedContent = localStorage.getItem(K_CONTENT); if(savedContent) app.innerHTML = savedContent; } catch(e){}
-  function serialize(){ var clone = app.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); return clone.innerHTML; }
-  var saveTimer;
-  function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ try { localStorage.setItem(K_CONTENT, serialize()); } catch(e){ alert('保存失败：浏览器存储空间已满\n\n解决方法：\n1. 点「重置」清空\n2. 使用 GitHub 图片库（不占空间）'); } }, 300); }
-  app.addEventListener('input', function(){ if(editMode) save(); });
+  // ==================== 4. 内容恢复（安全注入） ====================
+  try {
+      var savedContent = localStorage.getItem(K_CONTENT);
+      if(savedContent && app) {
+          // 安全解析：只提取 #app 内部的内容，且清除掉任何可能混入的 #splash
+          var tempDiv = document.createElement('div');
+          tempDiv.innerHTML = savedContent;
+          var oldSplash = tempDiv.querySelector('#splash');
+          if(oldSplash) oldSplash.remove();
+          var savedApp = tempDiv.querySelector('#app');
+          if(savedApp) {
+              app.innerHTML = savedApp.innerHTML;
+          } else {
+              app.innerHTML = savedContent;
+          }
+      }
+  } catch(e) { console.log('内容恢复失败:', e); }
 
-  // ==================== 编辑模式 ====================
+  function serialize(){ if(!app) return ''; var clone = app.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); return clone.innerHTML; }
+  var saveTimer;
+  function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ if(!app) return; try { localStorage.setItem(K_CONTENT, serialize()); } catch(e){ alert('保存失败：浏览器存储空间已满'); } }, 300); }
+  if (app) app.addEventListener('input', function(){ if(editMode) save(); });
+
+  // ==================== 5. 编辑模式 ====================
   function setEdit(on){
     if(isReadonly) return; editMode = on; document.body.classList.toggle('editing', on);
     document.querySelectorAll('[data-edit]').forEach(function(el){ if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); } else el.removeAttribute('contenteditable'); });
-    var btn = document.getElementById('btnEdit'); btn.classList.toggle('on', on); btn.querySelector('.ico').textContent = on ? '✓' : '✎'; btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
-    if(!on) { document.getElementById('stylePanel').classList.remove('show'); }
-    if(on) { bindAll(); toast('编辑已开启'); }
+    var btn = document.getElementById('btnEdit'); if(btn) { btn.classList.toggle('on', on); var ico = btn.querySelector('.ico'); if(ico) ico.textContent = on ? '✓' : '✎'; var lbl = btn.querySelector('.lbl'); if(lbl) lbl.textContent = on ? '完成' : '编辑'; }
+    if(!on) { var sp = document.getElementById('stylePanel'); if(sp) sp.classList.remove('show'); }
+    if(on) { try { bindAll(); } catch(e){} toast('编辑已开启'); }
     else { save(); toast('已保存'); }
-    // 切换编辑模式时，更新浮动元素可见性（只有当前页面的可见）
     updateFloatersVisibility();
   }
   var btnEdit = document.getElementById('btnEdit');
   if (btnEdit) btnEdit.addEventListener('click', function(){ setEdit(!editMode); });
 
-  // ==================== 浮动元素可见性管理（核心） ====================
+  // ==================== 6. 浮动元素页面隔离 ====================
   function updateFloatersVisibility() {
     var activePanel = document.querySelector('.panel.active');
     if (!activePanel) return;
     var activePanelId = activePanel.id;
     document.querySelectorAll('.shape, .frame, .floater').forEach(function(el) {
-      // 兼容旧版本没有 panelId 的浮动元素，默认绑定到 panel-0
-      if (!el.dataset.panelId) {
-        el.dataset.panelId = 'panel-0';
-      }
-      
+      if (!el.dataset.panelId) el.dataset.panelId = 'panel-0';
       if (el.dataset.panelId === activePanelId) {
-        el.style.display = 'block';
-        el.style.pointerEvents = 'auto';
+        el.style.display = 'block'; el.style.pointerEvents = 'auto';
       } else {
-        el.style.display = 'none';
-        el.style.pointerEvents = 'none';
+        el.style.display = 'none'; el.style.pointerEvents = 'none';
       }
     });
   }
 
-  // ==================== 图片点击 ====================
+  // ==================== 7. 图片点击与替换 ====================
   var __imgPressStart = 0, __imgPressX = 0, __imgPressY = 0, __imgPressTarget = null, __lastImgOpen = 0;
   function __isEditableImg(el){ if(!el) return false; if(el.tagName === 'IMG' && el.hasAttribute('data-edit-img')) return true; if(el.tagName === 'IMG' && el.closest && el.closest('.frame')) return true; return false; }
   document.addEventListener('touchstart', function(e){ if(!editMode || isReadonly) return; var t = e.target; var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null); if(!__isEditableImg(img)) return; __imgPressTarget = img; __imgPressStart = Date.now(); var p = e.touches[0]; __imgPressX = p.clientX; __imgPressY = p.clientY; }, true);
@@ -1112,111 +1169,144 @@
   document.addEventListener('click', function(e){ if(!editMode || isReadonly) return; var t = e.target; var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null); if(!__isEditableImg(img)) return; if(__imgPressTarget) return; var now = Date.now(); if(now - __lastImgOpen < 500) return; __lastImgOpen = now; e.preventDefault(); openPicker(img, false); }, true);
   function bindImg(img){ /* 空壳 */ }
 
-  // ==================== 图片库 ====================
   var picker = document.getElementById('picker'), pickerGrid = document.getElementById('pickerGrid');
   function openPicker(img, isBg){
+    if (!picker || !pickerGrid) return;
     activeImg = img || null; bgMode = !!isBg; pickerGrid.innerHTML = '';
     var observer = new IntersectionObserver(function(entries){ entries.forEach(function(entry){ if(entry.isIntersecting){ var el = entry.target; if(el.dataset.src){ el.src = el.dataset.src; el.removeAttribute('data-src'); } observer.unobserve(el); } }); }, { root: pickerGrid, rootMargin: '150px' });
     IMAGES.forEach(function(name){ var url = IMG_BASE + name; var el = document.createElement('img'); el.dataset.src = url; el.alt = name; el.style.background = 'rgba(127,127,127,0.15)'; el.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if(bgMode){ setBg(url); try { localStorage.setItem(K_BG, url); } catch(e){} toast('背景已更新'); } else if(activeImg){ activeImg.src = url; save(); toast('图片已更新'); } closePicker(); }); pickerGrid.appendChild(el); observer.observe(el); });
     picker.classList.add('show');
   }
-  function closePicker(){ picker.classList.remove('show'); activeImg = null; bgMode = false; }
-  var pickerClose = document.getElementById('pickerClose');
-  if(pickerClose) pickerClose.addEventListener('click', closePicker);
-  var btnBg = document.getElementById('btnBg');
-  if(btnBg) btnBg.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openPicker(null, true); });
+  function closePicker(){ if(picker) picker.classList.remove('show'); activeImg = null; bgMode = false; }
+  var pickerClose = document.getElementById('pickerClose'); if(pickerClose) pickerClose.addEventListener('click', closePicker);
+  var btnBg = document.getElementById('btnBg'); if(btnBg) btnBg.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openPicker(null, true); });
 
-  // ==================== 增删行 ====================
+  // ==================== 8. 增删行与卡片 ====================
   function makeTextRow(content){ var wrap = document.createElement('div'); wrap.className = 'bwrap'; wrap.style.marginTop = '8px'; wrap.innerHTML = '<div class="etext" data-edit>' + (content || '点击输入新内容...') + '</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div>'; return wrap; }
   function makeDividerRow(){ var wrap = document.createElement('div'); wrap.className = 'bwrap'; wrap.style.marginTop = '6px'; wrap.innerHTML = '<div class="divider"><div class="line"></div></div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div>'; return wrap; }
-  window.addTextAfter = function(btn){ var wrap = btn.closest('.bwrap'); var newRow = makeTextRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); selectText(tb); } save(); toast('已添加文字'); };
-  window.addDividerAfter = function(btn){ var wrap = btn.closest('.bwrap'); var newRow = makeDividerRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); save(); toast('已添加分隔线'); };
-  window.deleteRow = function(btn){ var wrap = btn.closest('.bwrap'); if(confirm('删除这一行？')){ wrap.remove(); save(); toast('已删除'); } };
-  window.addTextEnd = function(btn, panelId){ var panel = document.getElementById(panelId); var card = panel.querySelector('.card'); var newRow = makeTextRow(); card.appendChild(newRow); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); } save(); toast('已添加文字'); };
-  window.addDividerEnd = function(btn, panelId){ var panel = document.getElementById(panelId); var card = panel.querySelector('.card'); card.appendChild(makeDividerRow()); save(); toast('已添加分隔线'); };
+  window.addTextAfter = function(btn){ var wrap = btn.closest('.bwrap'); if(!wrap) return; var newRow = makeTextRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); selectText(tb); } save(); toast('已添加文字'); };
+  window.addDividerAfter = function(btn){ var wrap = btn.closest('.bwrap'); if(!wrap) return; var newRow = makeDividerRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); save(); toast('已添加分隔线'); };
+  window.deleteRow = function(btn){ var wrap = btn.closest('.bwrap'); if(wrap && confirm('删除这一行？')){ wrap.remove(); save(); toast('已删除'); } };
+  window.addTextEnd = function(btn, panelId){ var panel = document.getElementById(panelId); if(!panel) return; var card = panel.querySelector('.card'); if(!card) return; var newRow = makeTextRow(); card.appendChild(newRow); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); } save(); toast('已添加文字'); };
+  window.addDividerEnd = function(btn, panelId){ var panel = document.getElementById(panelId); if(!panel) return; var card = panel.querySelector('.card'); if(!card) return; card.appendChild(makeDividerRow()); save(); toast('已添加分隔线'); };
 
-  // ==================== 卡片增删功能 ====================
-  window.deleteCard = function(btn){ var card = btn.closest('.card'); if(!card) return; if(confirm('确定删除这张卡片及其所有内容吗？')){ card.remove(); save(); toast('卡片已删除'); } };
+  window.deleteCard = function(btn){ var card = btn.closest('.card'); if(card && confirm('确定删除这张卡片吗？')){ card.remove(); save(); toast('卡片已删除'); } };
   window.addCard = function(btn, panelId){
     var panel = document.getElementById(panelId); if(!panel) return;
     var newCard = document.createElement('div'); newCard.className = 'card';
-    newCard.innerHTML = '<div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新卡片内容...点击编辑</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div>';
-    panel.insertBefore(newCard, btn);
-    if(editMode){ newCard.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); }); }
+    newCard.innerHTML = '<div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新卡片内容...</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div>';
+    panel.insertBefore(newCard, btn); if(editMode) newCard.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
     save(); toast('已添加新卡片');
   };
 
-  // ==================== 动态刷新链接下拉 ====================
-  function refreshLinkOptions(){ var sel = document.getElementById('spLink'); if(!sel) return; var currentVal = sel.value; sel.innerHTML = '<option value="">无</option>'; document.querySelectorAll('#app .panel').forEach(function(p){ var opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.dataset.name || (p.querySelector('.navlink') ? p.querySelector('.navlink').textContent : p.id); sel.appendChild(opt); }); if(currentVal) sel.value = currentVal; }
+  function refreshLinkOptions(){ var sel = document.getElementById('spLink'); if(!sel) return; var currentVal = sel.value; sel.innerHTML = '<option value="">无</option>'; document.querySelectorAll('#app .panel').forEach(function(p){ var opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.dataset.name || p.id; sel.appendChild(opt); }); if(currentVal) sel.value = currentVal; }
 
-  // ==================== 样式面板 ====================
+  // ==================== 9. 样式面板与浮动元素编辑 ====================
   var stylePanel = document.getElementById('stylePanel');
-  var btnStyle = document.getElementById('btnStyle');
-  if (btnStyle) btnStyle.addEventListener('click', function(e){ e.stopPropagation(); stylePanel.classList.toggle('show'); });
+  var btnStyle = document.getElementById('btnStyle'); if(btnStyle) btnStyle.addEventListener('click', function(e){ e.stopPropagation(); if(stylePanel) stylePanel.classList.toggle('show'); });
 
   function selectText(el){
-    activeTextEl = el; activeFloater = null; // 选中文字时，取消图形选中
-    document.getElementById('spShapeColorRow').style.display = 'none';
-    document.getElementById('spShapeOpacityRow').style.display = 'none';
-    
+    activeTextEl = el; activeFloater = null;
+    var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'none';
+    var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'none';
     var cs = getComputedStyle(el);
-    document.getElementById('spFontSize').value = parseInt(cs.fontSize) || 14; document.getElementById('spFontSizeVal').textContent = (parseInt(cs.fontSize) || 14) + 'px';
-    document.getElementById('spTextColor').value = rgbToHex(cs.color);
-    var ff = cs.fontFamily.split(',')[0].replace(/['"]/g,''); var sel = document.getElementById('spFontFamily'); var found = false;
-    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.indexOf(ff) !== -1){ sel.value = sel.options[i].value; found = true; break; } }
-    if(!found) sel.value = 'default';
-    document.getElementById('spLink').value = el.getAttribute('data-link') || '';
-    var fxType = 'none'; if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up'; else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in'; else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
-    document.getElementById('spFxType').value = fxType; document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
+    var elSize = document.getElementById('spFontSize'); if(elSize){ elSize.value = parseInt(cs.fontSize) || 14; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = (parseInt(cs.fontSize) || 14) + 'px'; }
+    var elColor = document.getElementById('spTextColor'); if(elColor) elColor.value = rgbToHex(cs.color);
   }
-
-  // 选中图形时的样式面板更新
   function selectFloater(el) {
-    activeFloater = el;
-    activeTextEl = null;
-    document.getElementById('spShapeColorRow').style.display = 'flex';
-    document.getElementById('spShapeOpacityRow').style.display = 'flex';
-    
-    // 读取当前颜色
-    var currentColor = el.style.color || '#4a9eff';
-    if (currentColor.startsWith('rgb')) {
-        currentColor = rgbToHex(currentColor);
-    }
-    document.getElementById('spShapeColor').value = currentColor;
-    
-    // 读取当前透明度
+    activeFloater = el; activeTextEl = null;
+    var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'flex';
+    var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'flex';
+    var currentColor = el.style.color || '#4a9eff'; if (currentColor.startsWith('rgb')) currentColor = rgbToHex(currentColor);
+    var elColor = document.getElementById('spShapeColor'); if(elColor) elColor.value = currentColor;
     var currentOpacity = el.style.opacity !== '' ? Math.round(parseFloat(el.style.opacity) * 100) : 100;
-    document.getElementById('spShapeOpacity').value = currentOpacity;
-    document.getElementById('spShapeOpacityVal').textContent = currentOpacity + '%';
+    var elOp = document.getElementById('spShapeOpacity'); if(elOp) elOp.value = currentOpacity;
+    var elOpVal = document.getElementById('spShapeOpacityVal'); if(elOpVal) elOpVal.textContent = currentOpacity + '%';
   }
-
   function rgbToHex(c){ if(!c) return '#f0f0f0'; var m = c.match(/\d+/g); if(!m) return '#f0f0f0'; return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join(''); }
 
-  document.getElementById('spFontSize').addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('spFontSizeVal').textContent = e.target.value + 'px'; save(); });
-  document.getElementById('spTextColor').addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.color = e.target.value; save(); });
-  document.getElementById('spFontFamily').addEventListener('change', function(e){ if(!activeTextEl) return; activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value; save(); });
-  document.querySelectorAll('#stylePanel .sp-btn[data-align]').forEach(function(b){ b.addEventListener('click', function(){ if(!activeTextEl) return; activeTextEl.style.textAlign = this.getAttribute('data-align'); activeTextEl.style.display = 'block'; save(); }); });
-  document.getElementById('spBold').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.fontWeight === 'bold'; activeTextEl.style.fontWeight = on ? 'normal' : 'bold'; this.classList.toggle('on', !on); save(); });
-  document.getElementById('spItalic').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.fontStyle === 'italic'; activeTextEl.style.fontStyle = on ? 'normal' : 'italic'; this.classList.toggle('on', !on); save(); });
-  document.getElementById('spUnderline').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.textDecoration === 'underline'; activeTextEl.style.textDecoration = on ? 'none' : 'underline'; this.classList.toggle('on', !on); save(); });
-  document.getElementById('spLink').addEventListener('change', function(e){ if(!activeTextEl) return; var v = e.target.value; if(v){ activeTextEl.setAttribute('data-link', v); activeTextEl.classList.add('linktext'); } else { activeTextEl.removeAttribute('data-link'); activeTextEl.classList.remove('linktext'); } save(); toast(v ? '已链接到 ' + v : '已取消链接'); });
-  document.getElementById('spFxType').addEventListener('change', function(e) { if (!activeTextEl) return; var val = e.target.value; activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden'); if (val !== 'none') { activeTextEl.classList.add(val); activeTextEl.classList.add('fx-hidden'); } save(); toast(val === 'none' ? '已取消特效' : '已应用特效'); });
-  document.getElementById('spFxOrder').addEventListener('change', function(e) { if (!activeTextEl) return; activeTextEl.dataset.fxOrder = e.target.value; save(); toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个'); });
+  var spFontSize = document.getElementById('spFontSize'); if(spFontSize) spFontSize.addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.fontSize = e.target.value + 'px'; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = e.target.value + 'px'; save(); });
+  var spTextColor = document.getElementById('spTextColor'); if(spTextColor) spTextColor.addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.color = e.target.value; save(); });
+  var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
+  var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
 
-  // 监听图形颜色和透明度修改
-  document.getElementById('spShapeColor').addEventListener('input', function(e) {
-    if (!activeFloater) return;
-    activeFloater.style.color = e.target.value;
-    save();
-  });
-  document.getElementById('spShapeOpacity').addEventListener('input', function(e) {
-    if (!activeFloater) return;
-    var val = e.target.value / 100;
-    activeFloater.style.opacity = val;
-    document.getElementById('spShapeOpacityVal').textContent = e.target.value + '%';
-    save();
-  });
+  document.addEventListener('focusin', function(e){ if(!editMode || isReadonly) return; var el = e.target.closest('[contenteditable="true"]'); if(el){ selectText(el); if(stylePanel) stylePanel.classList.add('show'); } });
 
+  // ==================== 10. 图形创建与拖拽 ====================
+  function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
+  function getCenterPos(elWidth, elHeight) { var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX; var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY; return { left: left, top: top }; }
+  function createFloatingElement(className, innerHTML, isContentEditable) {
+      var el = document.createElement('div'); el.className = className; if (isContentEditable) el.contentEditable = 'true'; el.innerHTML = innerHTML;
+      var pos = getCenterPos(100, 100); el.style.position = 'absolute'; el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.zIndex = '999999'; el.style.display = 'block'; el.style.pointerEvents = 'auto';
+      var activePanel = document.querySelector('.panel.active'); if (activePanel) el.dataset.panelId = activePanel.id;
+      document.body.appendChild(el); return el;
+  }
+  function makeShape(type){ try { var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.addEventListener('click', function(e) { if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) { e.stopPropagation(); selectFloater(el); if(stylePanel) stylePanel.classList.add('show'); } }); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); } catch(e) { alert('添加图形失败: ' + e.message); } }
+  function makeFrame(shape){ try { var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">'; var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = el.querySelector('img'); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); } catch(e) { alert('添加图片框失败: ' + e.message); } }
+  function makeFloater(){ try { var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true); el.style.width = '160px'; makeMovable(el); bindXDel(el); bindResize(el); setTimeout(function(){ el.focus(); }, 150); save(); toast('已添加浮动文本'); } catch(e) { alert('添加浮动文本失败: ' + e.message); } }
+
+  var btnAddShape = document.getElementById('btnAddShape'); if (btnAddShape) btnAddShape.addEventListener('click', function(e){ e.stopPropagation(); var fp = document.getElementById('framePicker'); if(fp) fp.classList.remove('show'); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.toggle('show'); });
+  var btnAddFrame = document.getElementById('btnAddFrame'); if (btnAddFrame) btnAddFrame.addEventListener('click', function(e){ e.stopPropagation(); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.remove('show'); var fp = document.getElementById('framePicker'); if(fp) fp.classList.toggle('show'); });
+  var btnAddFloat = document.getElementById('btnAddFloat'); if (btnAddFloat) btnAddFloat.addEventListener('click', makeFloater);
+  document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.remove('show'); }); });
+  document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); var fp = document.getElementById('framePicker'); if(fp) fp.classList.remove('show'); }); });
+
+  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
+  function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
+  function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
+
+  function initCardTools(){ document.querySelectorAll('#app .card').forEach(function(card){ if(!card.querySelector('.card-actions')){ var actions = document.createElement('div'); actions.className = 'card-actions'; actions.innerHTML = '<button onclick="deleteCard(this)">× 删除卡片</button>'; card.insertBefore(actions, card.firstChild); } }); }
+  function bindAll(){ try { initCardTools(); } catch(e){} document.querySelectorAll('img[data-edit-img]').forEach(bindImg); document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){ if(!el.dataset.moveBound){ el.dataset.moveBound = '1'; makeMovable(el); bindXDel(el); bindResize(el); var img = el.querySelector('img'); if(img) bindImg(img); } }); }
+
+  // ==================== 11. 音乐播放器 ====================
+  var music = document.getElementById('bgMusic'), musicBtn = document.getElementById('musicBtn'), musicPanel = document.getElementById('musicPanel'), mpPrev = document.getElementById('mpPrev'), mpPlay = document.getElementById('mpPlay'), mpNext = document.getElementById('mpNext'), mpVolume = document.getElementById('mpVolume'), mpAdd = document.getElementById('mpAdd');
+  var playlist = [], currentIndex = 0, currentVolume = 1;
+  try { var savedList = localStorage.getItem(K_MUSIC); if(savedList){ playlist = savedList.split('\n').filter(function(s){ return s.trim(); }); } var savedIdx = parseInt(localStorage.getItem('myPage.musicIndex') || '0'); if(!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < playlist.length){ currentIndex = savedIdx; } var savedVol = localStorage.getItem('myPage.musicVolume'); if(savedVol !== null) currentVolume = parseFloat(savedVol); } catch(e){}
+  if(music) music.volume = Math.max(0, Math.min(1, currentVolume)); if(mpVolume) mpVolume.value = Math.round(currentVolume * 100);
+  function loadCurrent(){ if(!music) return; if(playlist.length === 0){ music.removeAttribute('src'); return; } music.src = playlist[currentIndex]; music.load(); }
+  function saveMusic(){ try { localStorage.setItem(K_MUSIC, playlist.join('\n')); localStorage.setItem('myPage.musicIndex', currentIndex); } catch(e){} }
+  function playMusic(){ if(!music) return; if(playlist.length === 0){ toast('请先添加音乐'); return; } if(!music.src) loadCurrent(); music.play().then(function(){ if(musicBtn) musicBtn.classList.add('playing'); if(mpPlay) mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>'; }).catch(function(){ toast('播放失败'); }); }
+  function pauseMusic(){ if(!music) return; music.pause(); if(musicBtn) musicBtn.classList.remove('playing'); if(mpPlay) mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>'; }
+  function prevMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
+  function nextMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex + 1) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
+  if(musicBtn) musicBtn.addEventListener('click', function(e){ e.stopPropagation(); if(musicPanel) musicPanel.classList.toggle('show'); });
+  if(mpPlay) mpPlay.addEventListener('click', function(){ if(music && music.paused) playMusic(); else pauseMusic(); });
+  if(mpPrev) mpPrev.addEventListener('click', prevMusic); if(mpNext) mpNext.addEventListener('click', nextMusic);
+  if(mpVolume) mpVolume.addEventListener('input', function(){ currentVolume = mpVolume.value / 100; if(music) music.volume = currentVolume; try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){} });
+  if(mpAdd) mpAdd.addEventListener('click', function(){ var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', ''); if(url === null) return; url = url.trim(); if(!url) return; playlist.push(url); currentIndex = playlist.length - 1; loadCurrent(); saveMusic(); toast('已添加，点 ▶ 播放'); playMusic(); });
+  var pressTimer = null, longPressed = false;
+  function startPress(){ longPressed = false; clearTimeout(pressTimer); pressTimer = setTimeout(function(){ longPressed = true; var cur = playlist[currentIndex] || ''; var url = prompt('修改当前音乐链接：\n（留空 = 删除这首）', cur); if(url === null) return; url = url.trim(); if(!url){ playlist.splice(currentIndex, 1); if(currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1); loadCurrent(); } else { playlist[currentIndex] = url; loadCurrent(); } saveMusic(); toast('已更新'); }, 700); }
+  function cancelPress(){ clearTimeout(pressTimer); }
+  if(musicBtn){ musicBtn.addEventListener('mousedown', function(e){ e.preventDefault(); startPress(); }); musicBtn.addEventListener('mouseup', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); if(musicPanel) musicPanel.classList.toggle('show'); } }); musicBtn.addEventListener('mouseleave', cancelPress); musicBtn.addEventListener('touchstart', startPress, {passive:true}); musicBtn.addEventListener('touchend', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); if(musicPanel) musicPanel.classList.toggle('show'); } }); musicBtn.addEventListener('touchcancel', cancelPress); musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); }); }
+  document.addEventListener('click', function(e){ if(musicPanel && musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){ musicPanel.classList.remove('show'); } });
+  loadCurrent();
+
+  // ==================== 12. 页面切换与集合 ====================
+  var navHistory = [];
+  window.switchTab = function(id){
+    var cur = document.querySelector('.panel.active'); if(cur && cur.id !== id){ navHistory.push(cur.id); if(navHistory.length > 30) navHistory.shift(); }
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id === id); });
+    document.querySelectorAll('.navlink').forEach(function(n){ if(n.getAttribute('data-panel')) n.classList.toggle('active', n.getAttribute('data-panel') === id); });
+    refreshCollectionActive(); window.scrollTo(0, 0); setTimeout(playPageEffects, 150);
+    updateFloatersVisibility();
+  };
+  document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
+
+  var navCollection = document.getElementById('navCollection'), collectionMenu = document.getElementById('collectionMenu'), collectionList = document.getElementById('collectionList');
+  function refreshCollectionMenu(){ if(!collectionList) return; collectionList.innerHTML = ''; var items = document.querySelectorAll('#app .panel[data-collection="true"]'); if(items.length === 0){ collectionList.innerHTML = '<div class="cempty">暂无页面</div>'; return; } items.forEach(function(p){ var d = document.createElement('div'); d.className = 'citem'; d.setAttribute('data-panel', p.id); d.textContent = p.dataset.name || p.id; d.addEventListener('click', function(){ window.switchTab(p.id); if(collectionMenu) collectionMenu.classList.remove('show'); }); collectionList.appendChild(d); }); refreshCollectionActive(); }
+  function refreshCollectionActive(){ var cur = document.querySelector('.panel.active'); if(!cur || !navCollection) return; var isC = cur.getAttribute('data-collection') === 'true'; navCollection.classList.toggle('active', isC); if(collectionList) collectionList.querySelectorAll('.citem').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-panel') === cur.id); }); }
+  if(navCollection) navCollection.addEventListener('click', function(e){ e.stopPropagation(); if(collectionMenu.classList.contains('show')) collectionMenu.classList.remove('show'); else { refreshCollectionMenu(); collectionMenu.classList.add('show'); } });
+  document.addEventListener('click', function(e){ if(collectionMenu && collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){ collectionMenu.classList.remove('show'); } var sp = document.getElementById('stylePanel'); var spBtn = document.getElementById('btnStyle'); if(sp && sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){ sp.classList.remove('show'); } });
+
+  var btnAddPanel = document.getElementById('btnAddPanel'); if (btnAddPanel) btnAddPanel.addEventListener('click', function(){ var name = prompt('新页面名称（会加入合集）:', '新页面'); if(!name) return; name = name.trim(); if(!name) return; var panels = document.querySelectorAll('#app .panel'); var used = {}; panels.forEach(function(p){ used[p.id] = true; }); var idx = 0; while(used['panel-' + idx]) idx++; var newId = 'panel-' + idx; var sec = document.createElement('section'); sec.className = 'panel'; sec.id = newId; sec.setAttribute('data-collection', 'true'); sec.dataset.name = name; sec.innerHTML = '<div class="card"><div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新页面内容...</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div></div><div class="extras"><button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button><button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button></div><button class="add-card-btn" onclick="addCard(this, \'' + newId + '\')">＋ 添加新卡片</button><div class="pagenav"><button class="navbtn" onclick="window.goBack()">←</button><div class="spacer30"></div></div>'; app.appendChild(sec); if(editMode){ sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); }); } refreshCollectionMenu(); refreshLinkOptions(); save(); toast('已添加：' + name); });
+  window.goBack = function(){ var prev = navHistory.pop(); if(prev) window.switchTab(prev); else window.switchTab('panel-0'); };
+
+  // ==================== 13. 重置、导出、导入 ====================
+  var btnReset = document.getElementById('btnReset'); if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; if(app) app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
+  var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
+  var btnImport = document.getElementById('btnImport'); if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); if(app) app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
+
+  // ==================== 14. 文字特效初始化 ====================
   function playPageEffects() {
     var currentPanel = document.querySelector('.panel.active'); if (!currentPanel) return;
     var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
@@ -1226,278 +1316,12 @@
     sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
-  document.addEventListener('focusin', function(e){ if(!editMode || isReadonly) return; var el = e.target.closest('[contenteditable="true"]'); if(el){ selectText(el); stylePanel.classList.add('show'); } });
-
-  // ==================== 链接跳转 ====================
-  document.addEventListener('click', function(e){ if(editMode) return; var el = e.target.closest('[data-link]'); if(el && el.getAttribute('data-link')){ var t = el.getAttribute('data-link'); if(document.getElementById(t)){ e.preventDefault(); window.switchTab(t); } } });
-
-  // ==================== 页面切换 ====================
-  var navHistory = [];
-  window.switchTab = function(id){
-    var cur = document.querySelector('.panel.active'); if(cur && cur.id !== id){ navHistory.push(cur.id); if(navHistory.length > 30) navHistory.shift(); }
-    document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id === id); });
-    document.querySelectorAll('.navlink').forEach(function(n){ if(n.getAttribute('data-panel')) n.classList.toggle('active', n.getAttribute('data-panel') === id); });
-    refreshCollectionActive(); window.scrollTo(0, 0); setTimeout(playPageEffects, 150);
-    // 切换页面时，更新浮动元素可见性
-    updateFloatersVisibility();
-  };
-  document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
-
-  // ==================== 合集菜单 ====================
-  var navCollection = document.getElementById('navCollection'), collectionMenu = document.getElementById('collectionMenu'), collectionList = document.getElementById('collectionList');
-  function refreshCollectionMenu(){ collectionList.innerHTML = ''; var items = document.querySelectorAll('#app .panel[data-collection="true"]'); if(items.length === 0){ collectionList.innerHTML = '<div class="cempty">暂无页面</div>'; return; } items.forEach(function(p){ var d = document.createElement('div'); d.className = 'citem'; d.setAttribute('data-panel', p.id); d.textContent = p.dataset.name || p.id; d.addEventListener('click', function(){ window.switchTab(p.id); collectionMenu.classList.remove('show'); }); collectionList.appendChild(d); }); refreshCollectionActive(); }
-  function refreshCollectionActive(){ var cur = document.querySelector('.panel.active'); if(!cur) return; var isC = cur.getAttribute('data-collection') === 'true'; navCollection.classList.toggle('active', isC); collectionList.querySelectorAll('.citem').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-panel') === cur.id); }); }
-  navCollection.addEventListener('click', function(e){ e.stopPropagation(); if(collectionMenu.classList.contains('show')) collectionMenu.classList.remove('show'); else { refreshCollectionMenu(); collectionMenu.classList.add('show'); } });
-  document.addEventListener('click', function(e){ if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){ collectionMenu.classList.remove('show'); } var sp = document.getElementById('stylePanel'); var spBtn = document.getElementById('btnStyle'); if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){ sp.classList.remove('show'); } });
-
-  // ==================== 新页面 ====================
-  var btnAddPanel = document.getElementById('btnAddPanel');
-  if (btnAddPanel) btnAddPanel.addEventListener('click', function(){
-    var name = prompt('新页面名称（会加入合集）:', '新页面'); if(!name) return; name = name.trim(); if(!name) return;
-    var panels = document.querySelectorAll('#app .panel'); var used = {}; panels.forEach(function(p){ used[p.id] = true; }); var idx = 0; while(used['panel-' + idx]) idx++; var newId = 'panel-' + idx;
-    var sec = document.createElement('section'); sec.className = 'panel'; sec.id = newId; sec.setAttribute('data-collection', 'true'); sec.dataset.name = name;
-    sec.innerHTML = '<div class="card"><div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新页面内容...</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div></div><div class="extras"><button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button><button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button></div><button class="add-card-btn" onclick="addCard(this, \'' + newId + '\')">＋ 添加新卡片</button><div class="pagenav"><button class="navbtn" onclick="window.goBack()">←</button><div class="spacer30"></div></div>';
-    app.appendChild(sec); if(editMode){ sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); }); }
-    refreshCollectionMenu(); refreshLinkOptions(); save(); toast('已添加：' + name);
-  });
-
-  window.goBack = function(){ var prev = navHistory.pop(); if(prev) window.switchTab(prev); else window.switchTab('panel-0'); };
-
-  // ==================== 重置 ====================
-  var btnReset = document.getElementById('btnReset');
-  if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
-
-  // ==================== 导出 ====================
-  var btnExport = document.getElementById('btnExport');
-  if (btnExport) btnExport.addEventListener('click', function(){
-    save(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
-    var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '';
-    try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; } catch(e){}
-    var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);}catch(e){}})();';
-    clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild);
-    var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html';
-    var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
-    toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400);
-  });
-
-  // ==================== 导入 ====================
-  var btnImport = document.getElementById('btnImport');
-  if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
-
-  // ==================== 图形 ====================
-  function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
-  
-  // 获取元素在视口绝对中心坐标
-  function getCenterPos(elWidth, elHeight) {
-      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
-      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
-      return { left: left, top: top };
-  }
-
-  function createFloatingElement(className, innerHTML, isContentEditable) {
-      var el = document.createElement('div');
-      el.className = className;
-      if (isContentEditable) el.contentEditable = 'true';
-      el.innerHTML = innerHTML;
-      
-      var pos = getCenterPos(100, 100);
-      el.style.position = 'absolute';
-      el.style.left = pos.left + 'px';
-      el.style.top = pos.top + 'px';
-      el.style.zIndex = '999999';
-      el.style.display = 'block';
-      el.style.pointerEvents = 'auto';
-      
-      // 记录它属于哪个页面
-      var activePanel = document.querySelector('.panel.active');
-      if (activePanel) el.dataset.panelId = activePanel.id;
-      
-      document.body.appendChild(el);
-      return el;
-  }
-
-  function makeShape(type){ 
-    try {
-      var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false);
-      el.style.width = '80px';
-      el.style.height = '80px';
-      el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
-      
-      // 点击图形时选中它
-      el.addEventListener('click', function(e) {
-          if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) {
-              e.stopPropagation();
-              selectFloater(el);
-              stylePanel.classList.add('show');
-          }
-      });
-
-      makeMovable(el); bindXDel(el); bindResize(el); 
-      save(); toast('已添加图形'); 
-    } catch(e) { alert('添加图形失败: ' + e.message); }
-  }
-  
-  function makeFrame(shape){ 
-    try {
-      var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">';
-      var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false);
-      el.style.width = '120px';
-      el.style.height = '120px';
-      if(shape === 'circle') el.style.borderRadius = '50%'; 
-      else if(shape === 'rounded') el.style.borderRadius = '16px'; 
-      
-      var img = el.querySelector('img');
-      makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
-      save(); toast('已添加图片框'); 
-    } catch(e) { alert('添加图片框失败: ' + e.message); }
-  }
-  
-  function makeFloater(){ 
-    try {
-      var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true);
-      el.style.width = '160px';
-      
-      makeMovable(el); bindXDel(el); bindResize(el); 
-      setTimeout(function(){ el.focus(); }, 150); 
-      save(); toast('已添加浮动文本'); 
-    } catch(e) { alert('添加浮动文本失败: ' + e.message); }
-  }
-
-  var btnAddShape = document.getElementById('btnAddShape');
-  if (btnAddShape) btnAddShape.addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('framePicker').classList.remove('show'); document.getElementById('shapePicker').classList.toggle('show'); });
-  var btnAddFrame = document.getElementById('btnAddFrame');
-  if (btnAddFrame) btnAddFrame.addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('shapePicker').classList.remove('show'); document.getElementById('framePicker').classList.toggle('show'); });
-  var btnAddFloat = document.getElementById('btnAddFloat');
-  if (btnAddFloat) btnAddFloat.addEventListener('click', makeFloater);
-  document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); document.getElementById('shapePicker').classList.remove('show'); }); });
-  document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); document.getElementById('framePicker').classList.remove('show'); }); });
-
-  // ==================== 拖拽 / 缩放 / 删除 ====================
-  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
-  function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
-  function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
-
-  function initCardTools(){ document.querySelectorAll('#app .card').forEach(function(card){ if(!card.querySelector('.card-actions')){ var actions = document.createElement('div'); actions.className = 'card-actions'; actions.innerHTML = '<button onclick="deleteCard(this)">× 删除卡片</button>'; card.insertBefore(actions, card.firstChild); } }); }
-  function bindAll(){ initCardTools(); document.querySelectorAll('img[data-edit-img]').forEach(bindImg); document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){ if(!el.dataset.moveBound){ el.dataset.moveBound = '1'; makeMovable(el); bindXDel(el); bindResize(el); var img = el.querySelector('img'); if(img) bindImg(img); } }); }
-
-  // ==================== 音乐播放器 ====================
-  var music = document.getElementById('bgMusic'), musicBtn = document.getElementById('musicBtn'), musicPanel = document.getElementById('musicPanel'), mpPrev = document.getElementById('mpPrev'), mpPlay = document.getElementById('mpPlay'), mpNext = document.getElementById('mpNext'), mpVolume = document.getElementById('mpVolume'), mpAdd = document.getElementById('mpAdd');
-  var playlist = [], currentIndex = 0, currentVolume = 1;
-  try { var savedList = localStorage.getItem(K_MUSIC); if(savedList){ playlist = savedList.split('\n').filter(function(s){ return s.trim(); }); } var savedIdx = parseInt(localStorage.getItem('myPage.musicIndex') || '0'); if(!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < playlist.length){ currentIndex = savedIdx; } var savedVol = localStorage.getItem('myPage.musicVolume'); if(savedVol !== null) currentVolume = parseFloat(savedVol); } catch(e){}
-  music.volume = Math.max(0, Math.min(1, currentVolume)); mpVolume.value = Math.round(currentVolume * 100);
-  function loadCurrent(){ if(playlist.length === 0){ music.removeAttribute('src'); return; } music.src = playlist[currentIndex]; music.load(); }
-  function saveMusic(){ try { localStorage.setItem(K_MUSIC, playlist.join('\n')); localStorage.setItem('myPage.musicIndex', currentIndex); } catch(e){} }
-  function playMusic(){ if(playlist.length === 0){ toast('请先添加音乐'); return; } if(!music.src) loadCurrent(); music.play().then(function(){ musicBtn.classList.add('playing'); mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>'; }).catch(function(){ toast('播放失败'); }); }
-  function pauseMusic(){ music.pause(); musicBtn.classList.remove('playing'); mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>'; }
-  function prevMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
-  function nextMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex + 1) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
-  musicBtn.addEventListener('click', function(e){ e.stopPropagation(); musicPanel.classList.toggle('show'); });
-  mpPlay.addEventListener('click', function(){ if(music.paused) playMusic(); else pauseMusic(); });
-  mpPrev.addEventListener('click', prevMusic); mpNext.addEventListener('click', nextMusic);
-  mpVolume.addEventListener('input', function(){ currentVolume = mpVolume.value / 100; music.volume = currentVolume; try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){} });
-  mpAdd.addEventListener('click', function(){ var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', ''); if(url === null) return; url = url.trim(); if(!url) return; playlist.push(url); currentIndex = playlist.length - 1; loadCurrent(); saveMusic(); toast('已添加，点 ▶ 播放'); playMusic(); });
-  var pressTimer = null, longPressed = false;
-  function startPress(){ longPressed = false; clearTimeout(pressTimer); pressTimer = setTimeout(function(){ longPressed = true; var cur = playlist[currentIndex] || ''; var url = prompt('修改当前音乐链接：\n（留空 = 删除这首）', cur); if(url === null) return; url = url.trim(); if(!url){ playlist.splice(currentIndex, 1); if(currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1); loadCurrent(); } else { playlist[currentIndex] = url; loadCurrent(); } saveMusic(); toast('已更新'); }, 700); }
-  function cancelPress(){ clearTimeout(pressTimer); }
-  musicBtn.addEventListener('mousedown', function(e){ e.preventDefault(); startPress(); });
-  musicBtn.addEventListener('mouseup', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); } });
-  musicBtn.addEventListener('mouseleave', cancelPress);
-  musicBtn.addEventListener('touchstart', startPress, {passive:true});
-  musicBtn.addEventListener('touchend', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); } });
-  musicBtn.addEventListener('touchcancel', cancelPress);
-  musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-  document.addEventListener('click', function(e){ if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){ musicPanel.classList.remove('show'); } });
-  loadCurrent();
-  
-  // ==================== 初始化（防御性包裹，防止一处报错全盘崩溃） ====================
+  // ==================== 15. 初始化（防御性包裹，防止一处报错全盘崩溃） ====================
   try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
   try { refreshCollectionMenu(); } catch(e) {}
   try { refreshLinkOptions(); } catch(e) {}
   try { setEdit(false); } catch(e) {}
-  setTimeout(function(){
-      try { updateFloatersVisibility(); } catch(e) {}
-  }, 100);
-
-  // ==================== 开屏逻辑（绝对防卡死） ====================
-  setTimeout(function() {
-    var splash = document.getElementById('splash');
-    var splashCard = document.getElementById('splashCard');
-    var splashBtn = document.getElementById('splashEnterBtn');
-    if (!splash) return;
-
-    // 1. 显示卡片
-    setTimeout(function() {
-      try {
-        if (splashCard) splashCard.classList.add('show');
-        if (splashBtn) splashBtn.classList.add('show');
-      } catch(e) { console.log('显示开屏卡片失败:', e); }
-    }, 100);
-
-    var clickTimer = null;
-
-    // 2. 进入主页的强制函数（防卡死核心）
-    function enterMainPage() {
-      var sp = document.getElementById('splash');
-      if (!sp) return; // 已经移除过了
-      
-      // 强制移除开屏层，不依赖任何其他逻辑
-      try { sp.remove(); } catch(e) { if(sp.parentNode) sp.parentNode.removeChild(sp); }
-      
-      // 延迟尝试播放音乐（隔离错误）
-      setTimeout(function() {
-        try {
-          if (typeof playMusic === 'function') { playMusic(); }
-          else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-        } catch(err) {
-          console.log('音乐播放失败:', err);
-        }
-      }, 100);
-    }
-
-    // 3. 双击编辑逻辑
-    try {
-        var editEls = splash.querySelectorAll('[data-splash-edit]');
-        for (var i = 0; i < editEls.length; i++) {
-            (function(el){
-                el.addEventListener('dblclick', function(e){
-                  e.stopPropagation();
-                  clearTimeout(clickTimer);
-                  el.setAttribute('contenteditable', 'true');
-                  el.focus();
-                  var range = document.createRange(); range.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-                });
-                el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
-                el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-            })(editEls[i]);
-        }
-    } catch(e) { console.log('绑定开屏编辑失败:', e); }
-
-    // 4. 全局点击进入主页（带延迟，兼容双击）
-    splash.addEventListener('click', function(e) {
-      if (e.target.getAttribute('contenteditable') === 'true') return;
-      if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
-      clearTimeout(clickTimer);
-      clickTimer = setTimeout(enterMainPage, 250);
-    });
-
-    // 5. 按钮单击直接进入
-    if (splashBtn) {
-      splashBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        clearTimeout(clickTimer);
-        enterMainPage();
-      });
-    }
-
-    // 6. 终极兜底：6秒后无论如何都进入主页
-    setTimeout(function() {
-      if (document.getElementById('splash')) {
-        console.log('开屏超时兜底，自动进入主页');
-        enterMainPage();
-      }
-    }, 6000);
-
-  }, 200);
+  setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
 
 })();
 </script>
