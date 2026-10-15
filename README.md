@@ -702,27 +702,26 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-/* ==================== 开屏动画样式（粉色背景 + 上滑） ==================== */
+/* ==================== 开屏动画样式 ==================== */
   #splash {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: var(--bg);
+    background: var(--bg); /* 使用你在 :root 里改好的粉色 */
     display: flex;
-    align-items: flex-end; /* 初始从底部开始 */
+    align-items: flex-end; /* 从底部开始 */
     justify-content: center;
     transition: opacity 0.6s ease;
     pointer-events: auto;
     overflow: hidden;
-    padding-bottom: 0;
   }
 
+  /* 退出状态：直接淡出整个层 */
   #splash.hide {
     opacity: 0;
     pointer-events: none;
   }
 
-  /* 玻璃质感主卡片 */
   .splash-card {
     width: 82%;
     max-width: 420px;
@@ -731,7 +730,7 @@
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--border);
-    border-radius: 28px 28px 0 0; /* 底部直角，贴合屏幕 */
+    border-radius: 28px 28px 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -741,16 +740,16 @@
     text-align: center;
     gap: 20px;
     position: relative;
-    bottom: -100%; /* 初始隐藏在屏幕下方 */
-    transition: bottom 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* 平滑上滑效果 */
+    bottom: -100%;
+    /* 平滑上滑效果 */
+    transition: bottom 1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* 卡片被点击后，直接上滑至屏幕中央 */
-  .splash-card.reveal-center {
+  /* 滑出后固定在底部 */
+  .splash-card.slide-in {
     bottom: 0;
   }
 
-  /* 文字样式 */
   .splash-title {
     font-size: 48px;
     font-weight: 800;
@@ -766,7 +765,6 @@
     line-height: 1.6;
   }
 
-  /* 右下角胶囊按钮 */
   .splash-enter-btn {
     position: absolute;
     bottom: calc(40px + var(--safe-bottom));
@@ -784,10 +782,10 @@
     font-size: 13px;
     font-family: monospace;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    opacity: 0; /* 初始隐藏，等卡片滑出后再显示 */
-    transition: opacity 0.5s ease 0.6s; /* 延迟显示 */
+    opacity: 0; /* 初始隐藏 */
+    transition: opacity 0.5s ease 0.8s; /* 等卡片滑出后再显示 */
   }
 
   .splash-enter-btn.show {
@@ -798,7 +796,7 @@
     transform: scale(1.05);
     border-color: var(--accent);
   }
-  
+
   .splash-enter-btn:active {
     transform: scale(0.95);
   }
@@ -808,21 +806,16 @@
     letter-spacing: 0.05em;
   }
 
-  /* ==================== 文字特效 ==================== */
-  /* 基础隐藏状态 */
+  /* ==================== 文字特效基础样式 ==================== */
   [data-edit].fx-hidden {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: opacity 0.8s ease, transform 0.8s ease;
   }
-  
-  /* 出现状态 */
   [data-edit].fx-visible {
     opacity: 1;
     transform: translateY(0);
   }
-
-  /* 不同的特效类型 */
   [data-edit].fx-slide-up {
     opacity: 0;
     transform: translateY(30px);
@@ -832,66 +825,40 @@
     opacity: 1;
     transform: translateY(0);
   }
-
   [data-edit].fx-fade-in {
     opacity: 0;
-    transform: none;
     transition: opacity 1s ease;
   }
   [data-edit].fx-fade-in.fx-visible {
     opacity: 1;
-    transform: none;
   }
-
   [data-edit].fx-scale-in {
     opacity: 0;
     transform: scale(0.9);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.8s ease, transform 0.8s ease;
   }
   [data-edit].fx-scale-in.fx-visible {
     opacity: 1;
     transform: scale(1);
-  }
-
-  /* 在样式面板中显示特效果序的微调 */
-  .sp-fx-row {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .sp-fx-row select {
-    flex: 1;
-    padding: 5px 8px;
-    border-radius: 8px;
-    background: rgba(127,127,127,0.08);
-    color: var(--text);
-    border: 1px solid var(--border);
-    font-size: 11px;
-    outline: none;
   }
 </style>
 </head>
 <body>
 <!-- ==================== 开屏动画 ==================== -->
 <div id="splash">
-  <!-- 主卡片：玻璃质感 -->
   <div class="splash-card">
-    <!-- 这里可以自由编辑文字，含标题和副标题 -->
-    <div class="splash-title" data-splash-edit="title">肆</div>
-    <div class="splash-desc" data-splash-edit="desc">点击下方按钮进入我的主页</div>
+    <div class="splash-title">肆</div>
+    <div class="splash-desc">点击下方按钮进入我的主页</div>
   </div>
   
-  <!-- 右下角的胶囊按钮 -->
   <button class="splash-enter-btn" id="splashEnterBtn">
-    <span class="splash-btn-text" data-splash-edit="btnText">进入主页</span>
+    <span class="splash-btn-text">进入主页</span>
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M5 12h14"></path>
       <path d="M12 5l7 7-7 7"></path>
     </svg>
   </button>
 </div>
-<div id="bgLayer"></div>
 
 <div id="toolbar">
   <button class="btn" id="btnEdit"><span class="ico">✎</span><span class="lbl">编辑</span></button>
@@ -2502,8 +2469,114 @@
   refreshLinkOptions(); 
   setEdit(false);
 
-})();
+  // ==================== 文字特效控制 ====================
+  var currentFxTarget = null;
+  
+  // 重写 selectText 的一部分，让它支持特效读取
+  var _originalSelectText = window.selectText;
+  window.selectText = function(el) {
+    if (_originalSelectText) _originalSelectText(el);
+    currentFxTarget = el;
+    
+    var fxType = 'none';
+    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
+    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
+    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
+    
+    document.getElementById('spFxType').value = fxType;
+    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
+  };
+  
+  document.getElementById('spFxType').addEventListener('change', function(e) {
+    if (!currentFxTarget) return;
+    var val = e.target.value;
+    currentFxTarget.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+    if (val !== 'none') {
+      currentFxTarget.classList.add(val);
+      currentFxTarget.classList.add('fx-hidden');
+    }
+    save();
+    toast(val === 'none' ? '已取消特效' : '已应用特效');
+  });
 
+  document.getElementById('spFxOrder').addEventListener('change', function(e) {
+    if (!currentFxTarget) return;
+    currentFxTarget.dataset.fxOrder = e.target.value;
+    save();
+    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
+  });
+
+  function playPageEffects() {
+    var currentPanel = document.querySelector('.panel.active');
+    if (!currentPanel) return;
+    var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
+    var sorted = Array.from(elements).sort(function(a, b) {
+      return parseInt(a.dataset.fxOrder || '0') - parseInt(b.dataset.fxOrder || '0');
+    });
+    
+    if (window.__fxTimers) {
+      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
+    }
+    window.__fxTimers = [];
+    
+    sorted.forEach(function(el, index) {
+      var delay = index * 400;
+      var timer = setTimeout(function() {
+        el.classList.remove('fx-hidden');
+        el.classList.add('fx-visible');
+      }, 300 + delay);
+      window.__fxTimers.push(timer);
+    });
+  }
+  
+  var _originalSwitchTab = window.switchTab;
+  window.switchTab = function(id) {
+    if (_originalSwitchTab) _originalSwitchTab(id);
+    setTimeout(playPageEffects, 150);
+  };
+
+  // ==================== 开屏动画逻辑 ====================
+  var splash = document.getElementById('splash');
+  var splashCard = document.querySelector('.splash-card');
+  var splashBtn = document.getElementById('splashEnterBtn');
+  
+  if (splash && splashCard && splashBtn) {
+    // 1. 页面加载 200ms 后，卡片从底部缓慢滑出到居中
+    setTimeout(function() {
+      splashCard.classList.add('slide-in');
+      splashBtn.classList.add('show');
+    }, 200);
+    
+    // 2. 点击卡片自身：如果还没滑出，加速滑出
+    splashCard.addEventListener('click', function() {
+      splashCard.classList.add('slide-in');
+      splashBtn.classList.add('show');
+    });
+    
+    // 3. 点击右下角胶囊按钮：进入主页
+    splashBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // 切换到第一页
+      if (typeof window.switchTab === 'function') {
+        window.switchTab('panel-0');
+      }
+      
+      // 触发特效
+      setTimeout(playPageEffects, 400);
+      
+      // 淡出开屏
+      splash.classList.add('hide');
+      setTimeout(function() {
+        splash.remove();
+      }, 600);
+    });
+    
+    // 4. 启动特效
+    setTimeout(playPageEffects, 1500);
+  }
+
+})();
 </script>
 </body>
 </html>
