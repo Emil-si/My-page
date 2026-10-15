@@ -1774,6 +1774,29 @@
     music.play().then(function(){ musicBtn.classList.add('playing'); musicBtn.textContent = '❚❚'; toast('音乐播放中'); })
       .catch(function(){ toast('播放失败'); });
   });
+   // ==================== 首次点击播放音乐 ====================
+  var __firstPlayDone = false;
+  function __tryAutoPlay(){
+    if(__firstPlayDone) return;
+    if(!music.src || music.src === location.href) return;
+    __firstPlayDone = true;
+
+    music.play().then(function(){
+      musicBtn.classList.add('playing');
+      musicBtn.textContent = '❚❚';
+    }).catch(function(err){
+      // 播放被拒绝，重置标记以便下次再试
+      __firstPlayDone = false;
+    });
+
+    document.removeEventListener('touchend', __tryAutoPlay, true);
+    document.removeEventListener('mouseup', __tryAutoPlay, true);
+    document.removeEventListener('click', __tryAutoPlay, true);
+  }
+
+  document.addEventListener('touchend', __tryAutoPlay, true);
+  document.addEventListener('mouseup', __tryAutoPlay, true);
+  document.addEventListener('click', __tryAutoPlay, true);
 
   // ==================== 初始化 ====================
   bindAll();
