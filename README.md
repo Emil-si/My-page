@@ -127,7 +127,7 @@
   .citem.active{background:var(--accent); color:var(--accent-text);}
   .cempty{padding:8px 12px; font-size:11px; color:var(--sub); text-align:center;}
 
-  #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10; min-height: 100vh;}
+  #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10;}
   .panel{display:none;}
   .panel.active{display:block;}
 
@@ -262,12 +262,12 @@
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
 
-  /* ===== 浮动图层修复：高度撑满，尺寸兜底 ===== */
+  /* ===== 浮动图层修复：完全脱离 #app，直接挂载在 body 下 ===== */
   #floatLayer {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    width: 100%;
-    min-height: 100vh; /* 关键：强制撑满整个屏幕高度 */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    min-height: 100vh; /* 强制撑满整屏 */
     pointer-events: none;
     z-index: 9999;
     overflow: visible;
@@ -660,7 +660,7 @@
   /* ==================== 文字特效基础样式 ==================== */
   [data-edit].fx-hidden { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
   [data-edit].fx-visible { opacity: 1; transform: translateY(0); }
-  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity Menu0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
   [data-edit].fx-slide-up.fx-visible { opacity: 1; transform: translateY(0); }
   [data-edit].fx-fade-in { opacity: 0; transition: opacity 1s ease; }
   [data-edit].fx-fade-in.fx-visible { opacity: 1; }
@@ -668,7 +668,7 @@
   [data-edit].fx-scale-in.fx-visible { opacity: 1; transform: scale(1); }
 
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
+    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collection, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
     html.light #toolbar, html.light #topnav, html.light .card, html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn, html.light #collectionMenu, html.light #shapePicker, html.light #framePicker, html.light #stylePanel, html.light #musicPanel { background-color:rgba(255,255,255,0.97) !important; background-image:none !important; }
   }
 
@@ -803,8 +803,6 @@
 </div>
 
 <div id="app">
-  <div id="floatLayer"></div>
-
   <section class="panel active" id="panel-0">
     <div class="card">
       <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
@@ -964,6 +962,9 @@
     </div>
   </section>
 </div>
+
+<!-- 将浮动层移出 #app，直接放在 body 下 -->
+<div id="floatLayer"></div>
 
 <div id="musicBtn">♪</div>
 
@@ -1213,25 +1214,20 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 修复：获取元素相对于 floatLayer 的视口绝对中心坐标
+  // 修复：直接在 body 坐标系下计算视口中心
   function getCenterPos(elWidth, elHeight) {
-      var layer = document.getElementById('floatLayer');
-      if (!layer) return { left: 100, top: 100 };
-      var layerRect = layer.getBoundingClientRect();
-      // 视口中心相对于 floatLayer 的坐标
-      var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
-      var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
-      if (left < 10) left = 10;
-      if (top < 10) top = 10;
+      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
+      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
       return { left: left, top: top };
   }
 
-  // 强制显示并滚动到视野
   function forceVisible(el) {
       el.style.setProperty('display', 'block', 'important');
       el.style.setProperty('z-index', '10000', 'important');
       setTimeout(function() {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          var rect = el.getBoundingClientRect();
+          var scrollTop = window.scrollY + rect.top - (window.innerHeight / 2) + (el.offsetHeight / 2);
+          window.scrollTo({ top: scrollTop, behavior: 'smooth' });
       }, 100);
   }
 
