@@ -7,7 +7,7 @@
 <style>
   :root{
     --border: rgba(255,255,255,0.12);
-    --bg: #0d0d10;
+    --bg: #FCDFDF;    /* 新加的粉色背景 */
     --text: #f0f0f0;
     --sub: #999;
     --accent: #4a9eff;
@@ -702,25 +702,23 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-/* ==================== 开屏动画样式 ==================== */
+/* ==================== 开屏动画样式（粉色背景 + 上滑） ==================== */
   #splash {
     position: fixed;
     inset: 0;
-    z-index: 9999; /* 最高层，盖住一切 */
+    z-index: 9999;
     background: var(--bg);
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* 初始从底部开始 */
     justify-content: center;
-    flex-direction: column;
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: opacity 0.6s ease;
     pointer-events: auto;
     overflow: hidden;
+    padding-bottom: 0;
   }
-  
-  /* 退出状态：淡出并稍微放大 */
+
   #splash.hide {
     opacity: 0;
-    transform: scale(1.05);
     pointer-events: none;
   }
 
@@ -728,32 +726,38 @@
   .splash-card {
     width: 82%;
     max-width: 420px;
-    aspect-ratio: 4 / 5; /* 竖长方形，你可以改成 16/9 改成横的 */
+    aspect-ratio: 4 / 5;
     background: var(--card);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--border);
-    border-radius: 28px;
+    border-radius: 28px 28px 0 0; /* 底部直角，贴合屏幕 */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 30px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    box-shadow: 0 -10px 60px rgba(0,0,0,0.1);
     text-align: center;
     gap: 20px;
+    position: relative;
+    bottom: -100%; /* 初始隐藏在屏幕下方 */
+    transition: bottom 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* 平滑上滑效果 */
   }
 
-  /* 标题样式 */
+  /* 卡片被点击后，直接上滑至屏幕中央 */
+  .splash-card.reveal-center {
+    bottom: 0;
+  }
+
+  /* 文字样式 */
   .splash-title {
     font-size: 48px;
     font-weight: 800;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.2;
   }
 
-  /* 副标题样式 */
   .splash-desc {
     font-size: 14px;
     color: var(--sub);
@@ -775,15 +779,21 @@
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--border);
-    border-radius: 999px; /* 胶囊形 */
+    border-radius: 999px;
     color: var(--text);
     font-size: 13px;
     font-family: monospace;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0; /* 初始隐藏，等卡片滑出后再显示 */
+    transition: opacity 0.5s ease 0.6s; /* 延迟显示 */
   }
-  
+
+  .splash-enter-btn.show {
+    opacity: 1;
+  }
+
   .splash-enter-btn:hover {
     transform: scale(1.05);
     border-color: var(--accent);
@@ -793,16 +803,72 @@
     transform: scale(0.95);
   }
 
-  /* 按钮内的文字微调 */
   .splash-btn-text {
     font-weight: 600;
     letter-spacing: 0.05em;
   }
 
-  /* 核心交互逻辑：隐藏状态下被移除，显示状态下允许编辑 */
-  #splash.hide .splash-card,
-  #splash.hide .splash-enter-btn {
-    pointer-events: none;
+  /* ==================== 文字特效 ==================== */
+  /* 基础隐藏状态 */
+  [data-edit].fx-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  
+  /* 出现状态 */
+  [data-edit].fx-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 不同的特效类型 */
+  [data-edit].fx-slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-edit].fx-slide-up.fx-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-edit].fx-fade-in {
+    opacity: 0;
+    transform: none;
+    transition: opacity 1s ease;
+  }
+  [data-edit].fx-fade-in.fx-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-edit].fx-scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-edit].fx-scale-in.fx-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* 在样式面板中显示特效果序的微调 */
+  .sp-fx-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .sp-fx-row select {
+    flex: 1;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(127,127,127,0.08);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    outline: none;
   }
 </style>
 </head>
@@ -894,7 +960,24 @@
       <option value="">无</option>
     </select>
   </div>
-
+<div class="sp-row"><span>文字特效</span>
+    <select id="spFxType">
+      <option value="none">无特效</option>
+      <option value="fx-slide-up">上滑出现</option>
+      <option value="fx-fade-in">淡入出现</option>
+      <option value="fx-scale-in">缩放出现</option>
+    </select>
+  </div>
+  <div class="sp-row"><span>出场顺序</span>
+    <select id="spFxOrder">
+      <option value="0">第 1 个出现</option>
+      <option value="1">第 2 个出现</option>
+      <option value="2">第 3 个出现</option>
+      <option value="3">第 4 个出现</option>
+      <option value="4">第 5 个出现</option>
+    </select>
+  </div>
+  
   <div class="sp-note">💡 想分享给朋友看：编辑完 → 点「⬇ 导出」下载 HTML → 上传到 GitHub → 分享新链接。</div>
 </div>
 
@@ -2271,32 +2354,155 @@
 
   loadCurrent();
   
+  // ==================== 文字特效控制 ====================
+  // 1. 在样式面板中点击文字时，自动读取它已有的特性和顺序
+  // 2. 修改下拉框，实时应用特效和顺序
+  
+  // 保存当前激活文字的原始引用
+  var currentFxTarget = null;
+  
+  // 重写 selectText 的一部分，让它支持特效读取
+  var _originalSelectText = window.selectText;
+  window.selectText = function(el) {
+    if (_originalSelectText) _originalSelectText(el);
+    currentFxTarget = el;
+    
+    // 读取当前元素的特效
+    var fxType = 'none';
+    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
+    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
+    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
+    
+    document.getElementById('spFxType').value = fxType;
+    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
+  };
+  
+  // 监听特效类型改变
+  document.getElementById('spFxType').addEventListener('change', function(e) {
+    if (!currentFxTarget) return;
+    var val = e.target.value;
+    
+    // 清空所有特效类
+    currentFxTarget.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible');
+    
+    // 应用新特效
+    if (val !== 'none') {
+      currentFxTarget.classList.add(val);
+      // 设置为隐藏状态，等待播放
+      currentFxTarget.classList.add('fx-hidden');
+    }
+    
+    save();
+    toast(val === 'none' ? '已取消特效' : '已应用特效');
+  });
+
+  // 监听出场顺序改变
+  document.getElementById('spFxOrder').addEventListener('change', function(e) {
+    if (!currentFxTarget) return;
+    currentFxTarget.dataset.fxOrder = e.target.value;
+    save();
+    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
+  });
+
+  // 3. 页面加载时，触发当前激活面板中所有带特效的文字
+  function playPageEffects() {
+    // 获取当前激活面板下所有带特效的元素
+    var currentPanel = document.querySelector('.panel.active');
+    if (!currentPanel) return;
+    
+    var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
+    
+    // 按 data-fx-order 排序
+    var sorted = Array.from(elements).sort(function(a, b) {
+      var orderA = parseInt(a.dataset.fxOrder || '0');
+      var orderB = parseInt(b.dataset.fxOrder || '0');
+      return orderA - orderB;
+    });
+    
+    // 清除之前的计时器
+    if (window.__fxTimers) {
+      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
+    }
+    window.__fxTimers = [];
+    
+    // 按顺序触发
+    sorted.forEach(function(el, index) {
+      var delay = index * 400; // 每个元素间隔 400ms 出现
+      var timer = setTimeout(function() {
+        // 先移除隐藏状态
+        el.classList.remove('fx-hidden');
+        el.classList.add('fx-visible');
+      }, 300 + delay); // 延迟 300ms 开始，避免刚加载就出现
+      window.__fxTimers.push(timer);
+    });
+  }
+  
+  // 切页时重新播放特效
+  var _originalSwitchTab = window.switchTab;
+  window.switchTab = function(id) {
+    if (_originalSwitchTab) _originalSwitchTab(id);
+    setTimeout(playPageEffects, 150);
+  };
+
+  // ==================== 开屏动画逻辑 ====================
+  var splash = document.getElementById('splash');
+  var splashCard = document.querySelector('.splash-card');
+  var splashBtn = document.querySelector('.splash-enter-btn');
+  
+  if (splash && splashCard) {
+    // 1. 页面加载后，卡片自动从底部滑出
+    setTimeout(function() {
+      splashCard.classList.add('reveal-center');
+      if (splashBtn) splashBtn.classList.add('show');
+    }, 300);
+    
+    // 2. 点击卡片任意位置，直接快速上滑至屏幕中央
+    splashCard.addEventListener('click', function() {
+      if (!splashCard.classList.contains('reveal-center')) return; // 如果已经在中央则不处理
+      // 点击时，直接触发“进入主页”逻辑
+      // 但用户要求是“点击卡片直接到屏幕中间”，而不是进入主页，
+      // 所以我们让卡片在点击时直接执行“进入主页”前置操作：快速滑出
+      // 这里我们通过修改过渡时间来加快，或者直接触发进入主页
+      // 为了符合“点击可让卡片直接到达屏幕中间”，我们修改 CSS 让它在1.2s内从底部到中央
+      // 实际上我们用 JS 控制即可
+      // 我们的逻辑是：用户点击卡片，执行进入主页操作吗？不，用户要的是点击卡片滑到中间
+      // 卡片默认就是滑到中间，所以用户点击卡片应该是为了“跳过动画”快速居中
+      // 如果我们只是想让它快速居中，可以临时改变过渡时间
+      splashCard.style.transition = 'bottom 0.4s ease';
+      splashCard.classList.add('reveal-center');
+    });
+    
+    // 3. 点击右下角胶囊按钮，进入主页（切换到第一页，并淡出开屏）
+    if (splashBtn) {
+      splashBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // 防止触发卡片的点击
+        
+        // 强制切换回第一页（panel-0）
+        if (typeof window.switchTab === 'function') {
+          window.switchTab('panel-0');
+        }
+        
+        // 开始淡出动画
+        splash.classList.add('hide');
+        
+        // 等待过渡结束后彻底移除
+        setTimeout(function() {
+          splash.remove();
+        }, 600);
+      });
+    }
+    
+    // 4. 页面加载时，如果当前面板是 panel-0，播放特效
+    setTimeout(playPageEffects, 1600);
+  }
+
   // ==================== 初始化 ====================
   bindAll();
   refreshCollectionMenu();
   refreshLinkOptions(); 
   setEdit(false);
 
-  // ==================== 开屏动画逻辑 ====================
-  var splash = document.getElementById('splash');
-  var splashEnterBtn = document.getElementById('splashEnterBtn');
-  
-  if (splash && splashEnterBtn) {
-    // 1. 点击胶囊按钮：跳转到第一页 + 淡出动画
-    splashEnterBtn.addEventListener('click', function() {
-      // 强制切换回第一页（panel-0）
-      if (typeof window.switchTab === 'function') {
-        window.switchTab('panel-0');
-      }
-      
-      // 开始淡出动画
-      splash.classList.add('hide');
-      
-      // 等待过渡结束后彻底移除
-      setTimeout(function() {
-        splash.remove();
-      }, 800);
-    });
+})();
 
     // 2. 【额外彩蛋】在开屏卡片文字上双击，即可临时编辑（自带保存）
     // 这样你就能直接在页面上修改文字，无需改代码
