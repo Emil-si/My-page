@@ -408,18 +408,28 @@
     border-radius:8px; margin-top:4px;
   }
 
-  #musicBtn{
-    position:fixed; bottom:calc(20px + var(--safe-bottom)); right:14px;
-    width:48px; height:48px; border-radius:50%;
-    background:var(--card); border:1px solid var(--border);
-    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
-    box-shadow:0 6px 24px rgba(0,0,0,.35);
-    display:flex; align-items:center; justify-content:center;
-    color:var(--text); font-size:20px; cursor:pointer; z-index:200;
-    touch-action:none; user-select:none;
-  }
-  #musicBtn.playing{animation:spin 4s linear infinite; background:var(--accent); color:var(--accent-text);}
-  @keyframes spin{100%{transform:rotate(360deg);}}
+ /* ===== 右下角悬浮球 ===== */
+#musicBtn {
+  position: fixed; 
+  bottom: calc(20px + var(--safe-bottom)); 
+  right: 14px;
+  width: 48px; height: 48px; 
+  border-radius: 50%;
+  background: var(--card); /* 保留玻璃质感黑底 */
+  border: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text); 
+  font-size: 22px;
+  cursor: pointer; z-index: 220;
+  touch-action: none; user-select: none;
+}
+
+/* 播放时仅旋转，保留玻璃质感，不变成实心蓝色 */
+#musicBtn.playing {
+  animation: spin 4s linear infinite;
+}
 
   body.editing [data-edit]{
     outline:1px dashed transparent; outline-offset:4px;
@@ -925,16 +935,10 @@
   </section>
 </div>
 
-<!-- 悬浮按钮：改用 SVG 音符，配合旋转更好看 -->
-<div id="musicBtn">
-  <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-    <path d="M9 18V5l12-2v13"></path>
-    <circle cx="6" cy="18" r="3"></circle>
-    <circle cx="18" cy="16" r="3"></circle>
-  </svg>
-</div>
+<!-- 右下角悬浮球：改回 ♪ 符号 -->
+<div id="musicBtn">♪</div>
 
-<!-- 胶囊控制面板：删除了重复的音符按钮，更加紧凑 -->
+<!-- 胶囊控制面板：保持原有的按钮结构 -->
 <div id="musicPanel">
   <div class="mp-controls">
     <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
@@ -1927,12 +1931,11 @@
     } catch(e){}
   }
 
-    function playMusic(){
+      function playMusic(){
     if(playlist.length === 0){ toast('请先添加音乐'); return; }
     if(!music.src) loadCurrent();
     music.play().then(function(){
       musicBtn.classList.add('playing');
-      // 切换为暂停 SVG 图标
       mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
     }).catch(function(){ toast('播放失败'); });
   }
@@ -1940,7 +1943,6 @@
   function pauseMusic(){
     music.pause();
     musicBtn.classList.remove('playing');
-    // 切换为播放 SVG 图标
     mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>';
   }
 
