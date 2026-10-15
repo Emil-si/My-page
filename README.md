@@ -7,7 +7,7 @@
 <style>
   :root{
     --border: rgba(255,255,255,0.12);
-    --bg: #0d0d10;    /* 改回原本的深色，不要再放粉色了 */
+    --bg: #0d0d10;
     --text: #f0f0f0;
     --sub: #999;
     --accent: #4a9eff;
@@ -403,7 +403,7 @@
     border-radius:8px; margin-top:4px;
   }
 
-  /* ===== 音乐播放面板（胶囊风格，与悬浮球水平并排） ===== */
+  /* ===== 音乐播放面板 ===== */
   #musicPanel {
     position: fixed;
     bottom: calc(20px + var(--safe-bottom));
@@ -466,7 +466,7 @@
   }
   .mp-add:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* 右下角悬浮球（玻璃质感） */
+  /* 右下角悬浮球 */
   #musicBtn {
     position: fixed; 
     bottom: calc(20px + var(--safe-bottom)); 
@@ -476,10 +476,11 @@
     background: var(--card);
     border: 1px solid var(--border);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    box-shadow: 0 6px 24px rgba(0,0,0,.35);
-    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 24px rgba(0,0,0;
+,.35);
+    display: flex; align-items: center; justify-content:    center;
     color: var(--text); 
-    font-size: 22px;
+    font-size: justify 22px;
     cursor: pointer; z-index: 220;
     touch-action: none; user-select: none;
   }
@@ -644,6 +645,109 @@
     background: rgba(74,158,255,0.08);
   }
 
+  /* ==================== 开屏动画样式 ==================== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #1c1c1e;
+    display: flex;
+    align-items: center-content: center;
+    overflow: hidden;
+  }
+
+  .splash-card {
+    width: 82%;
+    max-width: 420px;
+    aspect-ratio: 4 / 5;
+    background: rgba(25,25,30,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+    gap: 20px;
+    
+    /* 初始在屏幕下方，然后通过 JS 移动上来 */
+    transform: translateY(70vh);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .splash-card.move-up {
+    transform: translateY(0);
+  }
+
+  .splash-title {
+    font-size: 48px;
+    font-weight: 800;
+    color: #f0f0f0;
+  }
+
+  .splash-desc {
+    font-size: 14px;
+    color: #999;
+    font-family: monospace;
+  }
+
+  .splash-enter-btn {
+    position: absolute;
+    bottom: 40px;
+    right: 24px;
+    padding: 12px 20px;
+    background: rgba(25,25,30,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    color: #f0f0f0;
+    font-size: 13px;
+    font-family: monospace;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.8s;
+  }
+
+  .splash-enter-btn.show {
+    opacity: 1;
+  }
+
+  /* ==================== 文字特效基础样式 ==================== */
+  [data-edit].fx-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  [data-edit].fx-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  [data-edit].fx-slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-edit].fx-slide-up.fx-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  [data-edit].fx-fade-in {
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  [data-edit].fx-fade-in.fx-visible {
+    opacity: 1;
+  }
+  [data-edit].fx-scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  [data-edit].fx-scale-in.fx-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu,
     #shapePicker, #framePicker, #stylePanel, #musicPanel{
@@ -702,197 +806,23 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-/* ==================== 开屏动画样式（独立深灰背景 + 卡片居中） ==================== */
-  #splash {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #1c1c1e; /* 独立深灰背景，不影响主页 */
-    display: flex;
-    align-items: center; /* 关键：卡片垂直居中 */
-    justify-content: center;
-    transition: opacity 0.6s ease;
-    pointer-events: auto;
-    overflow: hidden;
-  }
-
-  /* 退出状态：淡出 */
-  #splash.hide {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* 玻璃质感主卡片 */
-  .splash-card {
-    width: 82%;
-    max-width: 420px;
-    aspect-ratio: 4 / 5;
-    background: var(--card);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid var(--border);
-    border-radius: 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    text-align: center;
-    gap: 20px;
-    
-    /* 默认隐藏，等待动画播放 */
-    opacity: 0;
-    animation: splashSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-play-state: paused; /* 初始不播放，等 JS 确认再播放 */
-  }
-
-  /* 当 JS 给卡片加上 slide-in 时，触发动画 */
-  .splash-card.slide-in {
-    animation-play-state: running;
-  }
-
-  /* 关键帧动画：从屏幕下方滑入到正中间 */
-  @keyframes splashSlideUp {
-    0% {
-      opacity: 0;
-      transform: translateY(50vh) scale(0.95);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* 标题样式 */
-  .splash-title {
-    font-size: 48px;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1.2;
-  }
-
-  /* 副标题样式 */
-  .splash-desc {
-    font-size: 14px;
-    color: var(--sub);
-    font-family: monospace;
-    letter-spacing: 0.1em;
-    line-height: 1.6;
-  }
-
-  /* 右下角胶囊按钮 */
-  .splash-enter-btn {
-    position: absolute;
-    bottom: calc(40px + var(--safe-bottom));
-    right: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: var(--card);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: monospace;
-    cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    opacity: 0; /* 初始隐藏 */
-    transition: opacity 0.5s ease 0.8s; /* 等卡片滑出后再显示 */
-  }
-
-  .splash-enter-btn.show {
-    opacity: 1;
-  }
-
-  .splash-enter-btn:hover {
-    transform: scale(1.05);
-    border-color: var(--accent);
-  }
-
-  .splash-enter-btn:active {
-    transform: scale(0.95);
-  }
-
-  .splash-btn-text {
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  /* ==================== 文字特效基础样式 ==================== */
-  [data-edit].fx-hidden {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  [data-edit].fx-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-edit].fx-slide-up {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  [data-edit].fx-slide-up.fx-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-edit].fx-fade-in {
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-  [data-edit].fx-fade-in.fx-visible {
-    opacity: 1;
-  }
-  [data-edit].fx-scale-in {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  [data-edit].fx-scale-in.fx-visible {
-    opacity: 1;
-    transform: scale(1);
-  }
-/* 开屏编辑提示 */
-  .splash-tip {
-    position: absolute;
-    bottom: 20px;
-    font-size: 10px;
-    color: var(--sub);
-    font-family: monospace;
-    opacity: 0.6;
-  }
-  
-  /* 正在被编辑的卡片文字，给个高亮框提示 */
-  [data-splash-edit][contenteditable="true"] {
-    outline: 2px dashed var(--accent);
-    outline-offset: 4px;
-    border-radius: 4px;
-    cursor: text;
-  }
 </style>
 </head>
 <body>
+
 <!-- ==================== 开屏动画 ==================== -->
 <div id="splash">
-  <div class="splash-card">
+  <div class="splash-card" id="splashCard">
     <div class="splash-title" data-splash-edit="title">肆</div>
     <div class="splash-desc" data-splash-edit="desc">双击此文字可修改</div>
-    <div class="splash-tip">💡 双击文字直接编辑，回车保存</div>
   </div>
   
   <button class="splash-enter-btn" id="splashEnterBtn">
     <span class="splash-btn-text">进入主页</span>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14"></path>
-      <path d="M12 5l7 7-7 7"></path>
-    </svg>
   </button>
 </div>
+
+<div id="bgLayer"></div>
 
 <div id="toolbar">
   <button class="btn" id="btnEdit"><span class="ico">✎</span><span class="lbl">编辑</span></button>
@@ -961,7 +891,7 @@
       <option value="">无</option>
     </select>
   </div>
-<div class="sp-row"><span>文字特效</span>
+  <div class="sp-row"><span>文字特效</span>
     <select id="spFxType">
       <option value="none">无特效</option>
       <option value="fx-slide-up">上滑出现</option>
@@ -978,7 +908,7 @@
       <option value="4">第 5 个出现</option>
     </select>
   </div>
-  
+
   <div class="sp-note">💡 想分享给朋友看：编辑完 → 点「⬇ 导出」下载 HTML → 上传到 GitHub → 分享新链接。</div>
 </div>
 
@@ -1665,6 +1595,14 @@
     }
     if(!found) sel.value = 'default';
     document.getElementById('spLink').value = el.getAttribute('data-link') || '';
+    
+    // 读取当前元素的特效
+    var fxType = 'none';
+    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
+    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
+    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
+    document.getElementById('spFxType').value = fxType;
+    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
   }
 
   function rgbToHex(c){
@@ -1733,6 +1671,49 @@
     toast(v ? '已链接到 ' + v : '已取消链接');
   });
 
+  // 文字特效控制
+  document.getElementById('spFxType').addEventListener('change', function(e) {
+    if (!activeTextEl) return;
+    var val = e.target.value;
+    activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+    if (val !== 'none') {
+      activeTextEl.classList.add(val);
+      activeTextEl.classList.add('fx-hidden');
+    }
+    save();
+    toast(val === 'none' ? '已取消特效' : '已应用特效');
+  });
+
+  document.getElementById('spFxOrder').addEventListener('change', function(e) {
+    if (!activeTextEl) return;
+    activeTextEl.dataset.fxOrder = e.target.value;
+    save();
+    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
+  });
+
+  function playPageEffects() {
+    var currentPanel = document.querySelector('.panel.active');
+    if (!currentPanel) return;
+    var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
+    var sorted = Array.from(elements).sort(function(a, b) {
+      return parseInt(a.dataset.fxOrder || '0') - parseInt(b.dataset.fxOrder || '0');
+    });
+    
+    if (window.__fxTimers) {
+      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
+    }
+    window.__fxTimers = [];
+    
+    sorted.forEach(function(el, index) {
+      var delay = index * 400;
+      var timer = setTimeout(function() {
+        el.classList.remove('fx-hidden');
+        el.classList.add('fx-visible');
+      }, 300 + delay);
+      window.__fxTimers.push(timer);
+    });
+  }
+
   document.addEventListener('focusin', function(e){
     if(!editMode || isReadonly) return;
     var el = e.target.closest('[contenteditable="true"]');
@@ -1769,6 +1750,8 @@
     });
     refreshCollectionActive();
     window.scrollTo(0, 0);
+    // 切换页面后播放文字特效
+    setTimeout(playPageEffects, 150);
   };
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){
     n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); });
@@ -2000,7 +1983,6 @@
     return s[type] || s.circle;
   }
 
-  // 获取当前屏幕中心相对于 #floatLayer 的坐标（修复滚动后不可见问题）
   function getCenterPos(elWidth, elHeight) {
       var layer = document.getElementById('floatLayer');
       var layerRect = layer.getBoundingClientRect();
@@ -2355,138 +2337,33 @@
 
   loadCurrent();
   
-  // ==================== 文字特效控制 ====================
-  // 1. 在样式面板中点击文字时，自动读取它已有的特性和顺序
-  // 2. 修改下拉框，实时应用特效和顺序
-  
-  // 保存当前激活文字的原始引用
-  var currentFxTarget = null;
+  // ==================== 初始化 ====================
+  bindAll();
+  refreshCollectionMenu();
+  refreshLinkOptions(); 
+  setEdit(false);
+
+  // ==================== 开屏逻辑（极简稳定版） ====================
+  setTimeout(function() {
+    var splash = document.getElementById('splash');
+    var splashCard = document.getElementById('splashCard');
+    var splashBtn = document.getElementById('splashEnterBtn');
     
-    // 读取当前元素的特效
-    var fxType = 'none';
-    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
-    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
-    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
-    
-    document.getElementById('spFxType').value = fxType;
-    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
-  };
-  
-  // 监听特效类型改变
-  document.getElementById('spFxType').addEventListener('change', function(e) {
-    if (!currentFxTarget) return;
-    var val = e.target.value;
-    
-    // 清空所有特效类
-    currentFxTarget.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible');
-    
-    // 应用新特效
-    if (val !== 'none') {
-      currentFxTarget.classList.add(val);
-      // 设置为隐藏状态，等待播放
-      currentFxTarget.classList.add('fx-hidden');
+    if (!splash || !splashCard || !splashBtn) {
+      console.log('开屏元素未找到，跳过');
+      return;
     }
-    
-    save();
-    toast(val === 'none' ? '已取消特效' : '已应用特效');
-  });
 
-  // 监听出场顺序改变
-  document.getElementById('spFxOrder').addEventListener('change', function(e) {
-    if (!currentFxTarget) return;
-    currentFxTarget.dataset.fxOrder = e.target.value;
-    save();
-    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
-  });
+    // 1. 卡片上滑到中间
+    splashCard.classList.add('move-up');
+    splashBtn.classList.add('show');
 
-  // 3. 页面加载时，触发当前激活面板中所有带特效的文字
-  function playPageEffects() {
-    // 获取当前激活面板下所有带特效的元素
-    var currentPanel = document.querySelector('.panel.active');
-    if (!currentPanel) return;
-    
-    var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
-    
-    // 按 data-fx-order 排序
-    var sorted = Array.from(elements).sort(function(a, b) {
-      var orderA = parseInt(a.dataset.fxOrder || '0');
-      var orderB = parseInt(b.dataset.fxOrder || '0');
-      return orderA - orderB;
-    });
-    
-    // 清除之前的计时器
-    if (window.__fxTimers) {
-      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
-    }
-    window.__fxTimers = [];
-    
-    // 按顺序触发
-    sorted.forEach(function(el, index) {
-      var delay = index * 400; // 每个元素间隔 400ms 出现
-      var timer = setTimeout(function() {
-        // 先移除隐藏状态
-        el.classList.remove('fx-hidden');
-        el.classList.add('fx-visible');
-      }, 300 + delay); // 延迟 300ms 开始，避免刚加载就出现
-      window.__fxTimers.push(timer);
-    });
-  }
-  
-  // 切页时重新播放特效
-  var _originalSwitchTab = window.switchTab;
-  window.switchTab = function(id) {
-    if (_originalSwitchTab) _originalSwitchTab(id);
-    setTimeout(playPageEffects, 150);
-  };
-
-// ==================== 开屏动画逻辑（稳定 + 点击任意处跳过） ====================
-  var splash = document.getElementById('splash');
-  var splashCard = document.querySelector('.splash-card');
-  var splashBtn = document.getElementById('splashEnterBtn');
-  
-  // 封装一个“进入主页”的函数，反复调用也没事
-  function enterMainPage() {
-    var sp = document.getElementById('splash');
-    if (!sp) return; // 已经移除过了
-    
-    // 1. 播放音乐（利用点击手势解除浏览器自动播放限制）
-    try {
-      if (typeof playMusic === 'function') { playMusic(); }
-      else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-    } catch(err) {}
-    
-    // 2. 触发文字特效
-    try {
-      if (typeof playPageEffects === 'function') {
-        setTimeout(playPageEffects, 400);
-      }
-    } catch(err) {}
-    
-    // 3. 彻底移除开屏层（这是恢复主页交互的关键）
-    sp.remove();
-    
-    // 4. 提示
-    try { if (typeof toast === 'function') toast('欢迎进入主页'); } catch(err){}
-  }
-
-  if (splash && splashCard && splashBtn) {
-    // 1. 页面加载后，给卡片加上 slide-in 触发滑出动画
-    setTimeout(function() {
-      splashCard.classList.add('slide-in');
-      splashBtn.classList.add('show');
-    }, 200);
-    
-    // 2. 双击开屏文字可编辑
+    // 2. 双击文字编辑
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
         e.stopPropagation();
         el.setAttribute('contenteditable', 'true');
         el.focus();
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
       });
       el.addEventListener('blur', function(){ 
         el.removeAttribute('contenteditable'); 
@@ -2495,145 +2372,25 @@
         if (e.key === 'Enter'){ e.preventDefault(); el.blur(); }
       });
     });
-    
-    // 3. 点击右下角胶囊按钮：进入主页
-    splashBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      enterMainPage();
-    });
-    
-    // 4. 【关键新增】点击开屏层的任意空白处，也可以进入主页，防止再被卡住
-    splash.addEventListener('click', function(e) {
-      // 如果点的是正在编辑的文字，不跳转
+
+    // 3. 点击按钮进入主页
+    splashBtn.onclick = function() {
+      // 播放音乐
+      if (typeof playMusic === 'function') { playMusic(); }
+      // 删掉开屏层
+      splash.remove();
+    };
+
+    // 4. 点击开屏空白处也进入主页
+    splash.onclick = function(e) {
+      // 编辑文字时不触发
       if (e.target.getAttribute('contenteditable') === 'true') return;
-      // 如果点的是文字本身（为了双击编辑），也不跳转
       if (e.target.hasAttribute('data-splash-edit')) return;
-      enterMainPage();
-    });
-    
-    // 5. 兜底：如果等了 5 秒用户还没操作，自动进入主页，绝不死锁
-    setTimeout(function() {
-      if (document.getElementById('splash')) {
-        console.log('开屏超时，自动进入主页');
-        enterMainPage();
-      }
-    }, 5000);
-    
-    // 6. 触发主页特效准备
-    setTimeout(function(){
-      if (typeof playPageEffects === 'function') {
-        playPageEffects();
-      }
-    }, 1500);
-  }
+      if (typeof playMusic === 'function') { playMusic(); }
+      splash.remove();
+    };
 
-  // ==================== 初始化 ====================
-  bindAll();
-  refreshCollectionMenu();
-  refreshLinkOptions(); 
-  setEdit(false);
-
-  // ==================== 文字特效控制 ====================
-  var currentFxTarget = null;
-  
-  // 重写 selectText 的一部分，让它支持特效读取
-  var _originalSelectText = window.selectText;
-  window.selectText = function(el) {
-    if (_originalSelectText) _originalSelectText(el);
-    currentFxTarget = el;
-    
-    var fxType = 'none';
-    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
-    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
-    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
-    
-    document.getElementById('spFxType').value = fxType;
-    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
-  };
-  
-  document.getElementById('spFxType').addEventListener('change', function(e) {
-    if (!currentFxTarget) return;
-    var val = e.target.value;
-    currentFxTarget.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
-    if (val !== 'none') {
-      currentFxTarget.classList.add(val);
-      currentFxTarget.classList.add('fx-hidden');
-    }
-    save();
-    toast(val === 'none' ? '已取消特效' : '已应用特效');
-  });
-
-  document.getElementById('spFxOrder').addEventListener('change', function(e) {
-    if (!currentFxTarget) return;
-    currentFxTarget.dataset.fxOrder = e.target.value;
-    save();
-    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
-  });
-
-  function playPageEffects() {
-    var currentPanel = document.querySelector('.panel.active');
-    if (!currentPanel) return;
-    var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
-    var sorted = Array.from(elements).sort(function(a, b) {
-      return parseInt(a.dataset.fxOrder || '0') - parseInt(b.dataset.fxOrder || '0');
-    });
-    
-    if (window.__fxTimers) {
-      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
-    }
-    window.__fxTimers = [];
-    
-    sorted.forEach(function(el, index) {
-      var delay = index * 400;
-      var timer = setTimeout(function() {
-        el.classList.remove('fx-hidden');
-        el.classList.add('fx-visible');
-      }, 300 + delay);
-      window.__fxTimers.push(timer);
-    });
-  }
-
-  // ==================== 开屏动画逻辑 ====================
-  var splash = document.getElementById('splash');
-  var splashCard = document.querySelector('.splash-card');
-  var splashBtn = document.getElementById('splashEnterBtn');
-  
-  if (splash && splashCard && splashBtn) {
-    // 1. 页面加载 200ms 后，卡片从底部缓慢滑出到居中
-    setTimeout(function() {
-      splashCard.classList.add('slide-in');
-      splashBtn.classList.add('show');
-    }, 200);
-    
-    // 2. 点击卡片自身：如果还没滑出，加速滑出
-    splashCard.addEventListener('click', function() {
-      splashCard.classList.add('slide-in');
-      splashBtn.classList.add('show');
-    });
-    
-    // 3. 点击右下角胶囊按钮：进入主页
-    splashBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      
-      // 切换到第一页
-      if (typeof window.switchTab === 'function') {
-        window.switchTab('panel-0');
-      }
-      
-      // 触发特效
-      setTimeout(playPageEffects, 400);
-      
-      // 淡出开屏
-      splash.classList.add('hide');
-      setTimeout(function() {
-        splash.remove();
-      }, 600);
-    });
-    
-    // 4. 启动特效
-    setTimeout(playPageEffects, 1500);
-  }
+  }, 200);
 
 })();
 </script>
