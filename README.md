@@ -986,56 +986,103 @@
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
   // ==================== 图片点击 ====================
-   function bindImg(img){
-    if(!img || img.dataset.bound === '1') return;
-    img.dataset.bound = '1';
+  // 用一个全局监听器统一处理所有图片点击
+  var __imgPressStart = 0;
+  var __imgPressX = 0;
+  var __imgPressY = 0;
+  var __imgPressTarget = null;
+  var __lastImgOpen = 0;
 
-    var t0 = 0, x0 = 0, y0 = 0, moved = false;
-    var lastOpenAt = 0;
-
-    function start(e){
-      t0 = Date.now();
-      moved = false;
-      var p = e.touches ? e.touches[0] : e;
-      x0 = p.clientX; y0 = p.clientY;
-    }
-
-    function move(e){
-      var p = e.touches ? e.touches[0] : e;
-      var dx = Math.abs(p.clientX - x0);
-      var dy = Math.abs(p.clientY - y0);
-      if(dx > 15 || dy > 15) moved = true;
-    }
-
-    function trigger(){
-      if(!editMode || isReadonly) return;
-      if(moved) return;
-      if(Date.now() - t0 > 800) return;
-      var now = Date.now();
-      if(now - lastOpenAt < 400) return;
-      lastOpenAt = now;
-      openPicker(img, false);
-    }
-
-    // 触摸屏
-    img.addEventListener('touchstart', start, {passive: true, capture: true});
-    img.addEventListener('touchmove', move, {passive: true, capture: true});
-    img.addEventListener('touchend', function(e){
-      trigger();
-      e.preventDefault();   // 阻止 touchend 之后的 click 再次触发
-      e.stopPropagation();
-    }, {passive: false, capture: true});
-
-    // 鼠标（桌面）
-    img.addEventListener('mousedown', function(e){
-      if(e.button !== 0) return;
-      start(e);
-    }, true);
-    img.addEventListener('mousemove', move, true);
-    img.addEventListener('mouseup', function(e){
-      trigger();
-    }, true);
+  function __isEditableImg(el){
+    if(!el) return false;
+    // 普通图片：带 data-edit-img
+    if(el.tagName === 'IMG' && el.hasAttribute('data-edit-img')) return true;
+    // 图片框里的图片
+    if(el.tagName === 'IMG' && el.closest && el.closest('.frame')) return true;
+    return false;
   }
+
+  // 手指/鼠标按下
+  document.addEventListener('touchstart', function(e){
+    if(!editMode || isReadonly) return;
+    var t = e.target;
+    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
+    if(!__isEditableImg(img)) return;
+    __imgPressTarget = img;
+    __imgPressStart = Date.now();
+    var p = e.touches[0];
+    __imgPressX = p.clientX;
+    __imgPressY = p.clientY;
+  }, true);
+
+  document.addEventListener('mousedown', function(e){
+    if(!editMode || isReadonly) return;
+    if(e.button !== 0) return;
+    var t = e.target;
+    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
+    if(!__isEditableImg(img)) return;
+    __imgPressTarget = img;
+    __imgPressStart = Date.now();
+    __imgPressX = e.clientX;
+    __imgPressY = e.clientY;
+  }, true);
+
+  // 手指/鼠标移动
+  document.addEventListener('touchmove', function(e){
+    if(!__imgPressTarget) return;
+    var p = e.touches[0];
+    if(Math.abs(p.clientX - __imgPressX) > 15 || Math.abs(p.clientY - __imgPressY) > 15){
+      __imgPressTarget = null;
+    }
+  }, true);
+
+  document.addEventListener('mousemove', function(e){
+    if(!__imgPressTarget) return;
+    if(Math.abs(e.clientX - __imgPressX) > 15 || Math.abs(e.clientY - __imgPressY) > 15){
+      __imgPressTarget = null;
+    }
+  }, true);
+
+  // 手指/鼠标松开 —— 关键在这里
+  function __finishImgPress(upX, upY){
+    if(!__imgPressTarget) return;
+    var target = __imgPressTarget;
+    __imgPressTarget = null;
+
+    if(!editMode || isReadonly) return;
+    if(Date.now() - __imgPressStart > 900) return;   // 长按不触发
+    var now = Date.now();
+    if(now - __lastImgOpen < 500) return;            // 防抖
+    __lastImgOpen = now;
+
+    openPicker(target, false);
+  }
+
+  document.addEventListener('touchend', function(e){
+    var p = e.changedTouches && e.changedTouches[0];
+    if(p) __finishImgPress(p.clientX, p.clientY);
+  }, true);
+
+  document.addEventListener('mouseup', function(e){
+    __finishImgPress(e.clientX, e.clientY);
+  }, true);
+
+  // 兼容 click（防止有些浏览器不触发 touchend）
+  document.addEventListener('click', function(e){
+    if(!editMode || isReadonly) return;
+    var t = e.target;
+    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
+    if(!__isEditableImg(img)) return;
+    if(__imgPressTarget) return;   // 刚才 touchend 已经处理了
+    var now = Date.now();
+    if(now - __lastImgOpen < 500) return;
+    __lastImgOpen = now;
+    e.preventDefault();
+    openPicker(img, false);
+  }, true);
+
+  // 保留原 bindImg 的空壳，以免其他地方调用报错
+  function bindImg(img){ /* 空 */ }
   // ==================== 图片库 ====================
   var picker = document.getElementById('picker');
   var pickerGrid = document.getElementById('pickerGrid');
