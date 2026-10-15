@@ -225,27 +225,39 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  .bwrap{position:relative; padding-right:32px;}
-  .bwrap > .row-tools{
-    position:absolute;
-    top:0;
-    right:-4px;
-    display:none;
-    flex-direction:column;
-    gap:2px;
-    z-index:20;
+  /* ===== 修复：工具栏水平排列，方便点击 ===== */
+  .bwrap { position: relative; padding-right: 0; padding-bottom: 42px; }
+  .bwrap > .row-tools {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex !important;
+    flex-direction: row;
+    gap: 8px;
+    opacity: 0.8;
+    z-index: 20;
   }
-  .row-tools button{
-    width:26px; height:26px; border-radius:6px;
-    border:1px solid var(--border);
-    background:var(--accent); color:var(--accent-text);
-    font-size:13px; cursor:pointer; padding:0; line-height:1;
-    display:flex; align-items:center; justify-content:center;
-    transition:all .15s;
+  body.editing .row-tools { display: flex !important; opacity: 1; }
+
+  .row-tools button {
+    width: 32px; 
+    height: 32px; 
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--accent); 
+    color: var(--accent-text);
+    font-size: 16px; 
+    cursor: pointer; 
+    padding: 0; 
+    line-height: 1;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: all .15s;
   }
-  .row-tools button.dvd{background:#7d90b8; font-size:15px;}
-  .row-tools button.del{background:#e5484d;}
-  .row-tools button:hover{transform:scale(1.1);}
+  .row-tools button.dvd { background: #7d90b8; font-size: 18px; }
+  .row-tools button.del { background: #e5484d; }
+  .row-tools button:hover { transform: scale(1.1); }
 
   .shape{
     position:absolute; z-index:998;
@@ -436,12 +448,12 @@
   .mp-ctrl-btn:hover { background: rgba(127, 127, 127, 0.2); }
 
   .mp-ctrl-btn.play {
-    background: var(--accent); color: var(--ac:cent-text); margin: 0 2px;
+    background: var(--accent); color: var(--accent-text); margin: 0 2px;
   }
   .mp-ctrl-btn.play:hover { transform: scale(1.05); }
 
   .mp-vol-container {
-    display: flex; align-items center; justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     height: 38px; width: 20px;
   }
   #mpVolume {
@@ -574,12 +586,6 @@
   }
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
-  /* ===== 修复移动端和PC端悬停问题 ===== */
-  body.editing .row-tools { display: flex !important; opacity: 0.6; }
-  body.editing .row-tools:hover { opacity: 1; }
-  body.editing .shape .xdel, body.editing .frame .xdel, body.editing .floater .xdel { display: flex !important; opacity: 0.7; }
-  body.editing .shape .xdel:hover, body.editing .frame .xdel:hover, body.editing .floater .xdel:hover { opacity: 1; }
-
   /* ===== 卡片操作按钮 ===== */
   .card-actions { position: absolute; top: 8px; right: 8px; display: none; gap: 4px; z-index: 100; }
   body.editing .card-actions { display: flex !important; }
@@ -599,7 +605,7 @@
   /* ==================== 开屏动画样式（绝对居中） ==================== */
   #splash {
     position: fixed; inset: 0; z-index: 9999;
-    background: #1c1c1e; /* 独立深灰背景 */
+    background: #1c1c1e;
     overflow: hidden;
   }
 
@@ -615,10 +621,8 @@
     align-items: center; justify-content: center;
     padding: 30px; text-align: center; gap: 20px;
     
-    /* 初始状态：稍微缩小并透明 */
     transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
-    /* 平滑放大淡入 */
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
   }
 
@@ -680,6 +684,8 @@
     #stylePanel .sp-note{display:none;}
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
+    .bwrap > .row-tools { gap: 6px; }
+    .row-tools button { width: 30px; height: 30px; font-size: 15px; }
   }
 </style>
 </head>
@@ -1183,10 +1189,61 @@
 
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
-  function getCenterPos(elWidth, elHeight) { var layer = document.getElementById('floatLayer'); var layerRect = layer.getBoundingClientRect(); var viewCenterX = window.scrollX + document.documentElement.clientWidth / 2; var viewCenterY = window.scrollY + document.documentElement.clientHeight / 2; var layerLeft = window.scrollX + layerRect.left; var layerTop = window.scrollY + layerRect.top; var left = viewCenterX - layerLeft - (elWidth / 2); var top = viewCenterY - layerTop - (elHeight / 2); if (left < 10) left = 10; if (top < 10) top = 10; return { left: left, top: top }; }
+  
+  // 修复：获取元素在 floatLayer 内的视口绝对中心坐标
+  function getCenterPos(elWidth, elHeight) {
+      var layer = document.getElementById('floatLayer');
+      var layerRect = layer.getBoundingClientRect();
+      // 用 innerHeight 和 layerRect.top 计算视口中心，完美处理滚动条情况
+      var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
+      var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
+      if (left < 10) left = 10;
+      if (top < 10) top = 10;
+      return { left: left, top: top };
+  }
+
   function makeShape(type){ var el = document.createElement('div'); el.className = 'shape'; var pos = getCenterPos(80, 80); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); }
-  function makeFrame(shape){ var el = document.createElement('div'); el.className = 'frame'; var pos = getCenterPos(120, 120); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = document.createElement('img'); img.setAttribute('data-edit-img', ''); img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; el.appendChild(img); el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); }
-  function makeFloater(){ var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; var pos = getCenterPos(160, 40); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '160px'; el.textContent = '自由文本'; el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); setTimeout(function(){ el.focus(); }, 50); save(); toast('已添加浮动文本'); }
+  
+  function makeFrame(shape){ 
+    var el = document.createElement('div'); el.className = 'frame'; 
+    var pos = getCenterPos(120, 120); 
+    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+    el.style.width = '120px'; el.style.height = '120px'; 
+    if(shape === 'circle') el.style.borderRadius = '50%'; 
+    else if(shape === 'rounded') el.style.borderRadius = '16px'; 
+    
+    var img = document.createElement('img'); 
+    img.setAttribute('data-edit-img', ''); 
+    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; 
+    
+    // 修复：不要用 innerHTML +=，避免破坏 img 引用
+    var rz = document.createElement('div'); rz.className = 'rz';
+    var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+    
+    el.appendChild(img); el.appendChild(rz); el.appendChild(xdel); 
+    
+    floatLayer.appendChild(el); 
+    makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
+    save(); toast('已添加图片框'); 
+  }
+  
+  function makeFloater(){ 
+    var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
+    var pos = getCenterPos(160, 40); 
+    el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
+    el.style.width = '160px'; el.textContent = '自由文本'; 
+    
+    // 修复：不要用 innerHTML +=
+    var rz = document.createElement('div'); rz.className = 'rz';
+    var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+    el.appendChild(rz); el.appendChild(xdel); 
+    
+    floatLayer.appendChild(el); 
+    makeMovable(el); bindXDel(el); bindResize(el); 
+    setTimeout(function(){ el.focus(); }, 50); 
+    save(); toast('已添加浮动文本'); 
+  }
+
   document.getElementById('btnAddShape').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('framePicker').classList.remove('show'); document.getElementById('shapePicker').classList.toggle('show'); });
   document.getElementById('btnAddFrame').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('shapePicker').classList.remove('show'); document.getElementById('framePicker').classList.toggle('show'); });
   document.getElementById('btnAddFloat').addEventListener('click', makeFloater);
@@ -1233,14 +1290,13 @@
   // ==================== 初始化 ====================
   bindAll(); refreshCollectionMenu(); refreshLinkOptions(); setEdit(false);
 
-  // ==================== 开屏逻辑（终极稳如泰山版） ====================
+  // ==================== 开屏逻辑 ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
     var splashCard = document.getElementById('splashCard');
     var splashBtn = document.getElementById('splashEnterBtn');
     if (!splash) return;
 
-    // 1. 稍微延迟，确保页面渲染完毕，加上 show 类滑出
     setTimeout(function() {
       if (splashCard) splashCard.classList.add('show');
       if (splashBtn) splashBtn.classList.add('show');
@@ -1248,15 +1304,10 @@
 
     var clickTimer = null;
 
-    // 2. 核心进入函数：先移除开屏，再尝试播放音乐（隔离错误）
     function enterMainPage() {
       var sp = document.getElementById('splash');
       if (!sp) return;
-      
-      // 立刻移除遮罩层，让主页功能恢复
       sp.remove();
-      
-      // 延迟且隔离地尝试播放音乐
       setTimeout(function() {
         try {
           if (typeof playMusic === 'function') { playMusic(); }
@@ -1265,7 +1316,6 @@
       }, 100);
     }
 
-    // 3. 双击文字编辑（阻止单击进入）
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
         e.stopPropagation();
@@ -1278,7 +1328,6 @@
       el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
     });
 
-    // 4. 全局单击监听（延迟250ms执行，避开双击冲突）
     splash.addEventListener('click', function(e) {
       if (e.target.getAttribute('contenteditable') === 'true') return;
       if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
@@ -1286,7 +1335,6 @@
       clickTimer = setTimeout(enterMainPage, 250);
     });
 
-    // 5. 按钮单击直接进入（不再延迟）
     if (splashBtn) {
       splashBtn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -1295,7 +1343,6 @@
       });
     }
 
-    // 6. 兜底保护：如果 6 秒后还没进入，自动进入主页，防卡死
     setTimeout(function() {
       if (document.getElementById('splash')) {
         console.log('开屏超时兜底，自动进入主页');
