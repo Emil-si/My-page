@@ -2504,39 +2504,6 @@
 
 })();
 
-    // 2. 【额外彩蛋】在开屏卡片文字上双击，即可临时编辑（自带保存）
-    // 这样你就能直接在页面上修改文字，无需改代码
-    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
-      el.style.cursor = 'text';
-      el.style.outline = 'none';
-      
-      el.addEventListener('dblclick', function(e) {
-        e.stopPropagation();
-        el.setAttribute('contenteditable', 'true');
-        el.focus();
-        // 选中全文字，方便直接覆盖
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      });
-
-      el.addEventListener('blur', function() {
-        el.removeAttribute('contenteditable');
-      });
-
-      // 回车取消编辑
-      el.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          el.blur();
-        }
-      });
-    });
-  }
-
-})();
 </script>
 </body>
 </html>
