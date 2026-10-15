@@ -645,21 +645,27 @@
     background: rgba(74,158,255,0.08);
   }
 
-  /* ==================== 开屏动画样式 ==================== */
+/* ==================== 开屏动画样式（绝对稳定版） ==================== */
   #splash {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: #1c1c1e;
+    background: #1c1c1e; /* 独立深灰背景 */
     display: flex;
-    align-items: center-content: center;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.5s ease;
   }
 
-.splash-card {
-    position: absolute; /* 强制绝对定位 */
-    top: 50%;
-    left: 50%;
+  /* 退出状态：淡出 */
+  #splash.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .splash-card {
     width: 82%;
     max-width: 420px;
     aspect-ratio: 4 / 5;
@@ -674,14 +680,13 @@
     text-align: center;
     gap: 20px;
     
-    /* 初始位置：从底部滑入，加上 -50% 的偏移量确保居中 */
-    transform: translate(-50%, calc(-50% + 70vh));
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    /* 使用关键帧动画，从下方滑入，不依赖任何 vh 计算 */
+    animation: splashSlideUp 0.8s ease-out forwards;
   }
 
-  /* 滑出后回到正中心 */
-  .splash-card.move-up {
-    transform: translate(-50%, -50%);
+  @keyframes splashSlideUp {
+    0% { transform: translateY(80px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 
   .splash-title {
@@ -709,11 +714,11 @@
     font-family: monospace;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.5s ease 0.8s;
+    animation: fadeInBtn 0.5s ease forwards 0.6s; /* 延迟出现 */
   }
 
-  .splash-enter-btn.show {
-    opacity: 1;
+  @keyframes fadeInBtn {
+    to { opacity: 1; }
   }
 
   /* ==================== 文字特效基础样式 ==================== */
@@ -2347,67 +2352,73 @@
   refreshLinkOptions(); 
   setEdit(false);
 
-  // ==================== 开屏逻辑（极简稳定版） ====================
+  // ==================== 开屏逻辑（强化点击穿透版） ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
-    var splashCard = document.getElementById('splashCard');
-    var splashBtn = document.getElementById('splashEnterBtn');
+    if (!splash) return;
+
+    // 防止重复触发
+    var isEntered = false;
     
-    if (!splash || !splashCard || !splashBtn) {
-      console.log('开屏元素未找到，跳过');
-      return;
+    function enterMainPage() {
+      if (isEntered) return;
+      isEntered = true;
+      
+      // 1. 先播放音乐（利用用户点击手势解锁）
+      try {
+        if (typeof playMusic === 'function') {
+          playMusic();
+        } else if (typeof music !== 'undefined' && music.src) {
+          music.play().catch(function(){});
+        }
+      } catch(err) {
+        console.log('音乐播放失败:', err);
+      }
+
+      // 2. 立刻淡出并移除开屏层，确保主页功能恢复
+      splash.classList.add('hide');
+      setTimeout(function() {
+        if (splash.parentNode) splash.remove();
+      }, 500);
     }
 
-    // 1. 卡片上滑到中间
-    splashCard.classList.add('move-up');
-    splashBtn.classList.add('show');
+    // 3. 监听开屏层的点击事件
+    splash.addEventListener('click', function(e) {
+      // 如果点击的是正在编辑的文本，不触发跳转
+      if (e.target.getAttribute('contenteditable') === 'true') return;
+      // 双击文本编辑逻辑
+      if (e.target.hasAttribute('data-splash-edit')) {
+        if (e.detail === 2) {
+          e.stopPropagation();
+          e.target.setAttribute('contenteditable', 'true');
+          e.target.focus();
+          return;
+        }
+      }
+      // 其他任何点击（包括卡片、按钮、空白处），统统进入主页
+      enterMainPage();
+    });
 
-    // 2. 双击文字编辑
-    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
-      el.addEventListener('dblclick', function(e){
+    // 4. 监听进入按钮（防止点击按钮时不触发上面的监听）
+    var btn = document.getElementById('splashEnterBtn');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        el.setAttribute('contenteditable', 'true');
-        el.focus();
+        enterMainPage();
       });
-      el.addEventListener('blur', function(){ 
+    }
+
+    // 5. 给开屏卡片内的文字绑定失焦保存
+    splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
+      el.addEventListener('blur', function() { 
         el.removeAttribute('contenteditable'); 
       });
-      el.addEventListener('keydown', function(e){
-        if (e.key === 'Enter'){ e.preventDefault(); el.blur(); }
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
       });
     });
 
-    // 3. 点击按钮进入主页
-    splashBtn.onclick = function() {
-      // 【关键修复】先移除开屏层，确保主页交互立即恢复
-      var sp = document.getElementById('splash');
-      if (sp) sp.remove();
-      
-      // 再尝试播放音乐，即使失败也不影响进入主页
-      try {
-        if (typeof playMusic === 'function') { playMusic(); }
-      } catch(err) {
-        console.log('音乐播放出错:', err);
-      }
-    };
-
-    // 4. 点击开屏空白处也进入主页
-    splash.onclick = function(e) {
-      // 编辑文字时不触发
-      if (e.target.getAttribute('contenteditable') === 'true') return;
-      if (e.target.hasAttribute('data-splash-edit')) return;
-      
-      // 【关键修复】先移除开屏层
-      var sp = document.getElementById('splash');
-      if (sp) sp.remove();
-      
-      // 再尝试播放音乐
-      try {
-        if (typeof playMusic === 'function') { playMusic(); }
-      } catch(err) {
-        console.log('音乐播放出错:', err);
-      }
-    };
+  }, 100);
 
 </script>
 </body>
