@@ -127,7 +127,7 @@
   .citem.active{background:var(--accent); color:var(--accent-text);}
   .cempty{padding:8px 12px; font-size:11px; color:var(--sub); text-align:center;}
 
-  #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10;}
+  #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10; min-height: 100vh;}
   .panel{display:none;}
   .panel.active{display:block;}
 
@@ -262,10 +262,12 @@
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
 
-  /* ===== 浮动图层修复（提高层级，绝对不遮挡） ===== */
+  /* ===== 浮动图层修复：高度撑满，尺寸兜底 ===== */
   #floatLayer {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%;
+    min-height: 100vh; /* 关键：强制撑满整个屏幕高度 */
     pointer-events: none;
     z-index: 9999;
     overflow: visible;
@@ -1211,31 +1213,32 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 修复：获取元素在 floatLayer 内的视口绝对中心坐标，并强制滚动到可见区域
-  function getViewportCenterPos(elWidth, elHeight) {
-      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
-      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
+  // 修复：获取元素相对于 floatLayer 的视口绝对中心坐标
+  function getCenterPos(elWidth, elHeight) {
+      var layer = document.getElementById('floatLayer');
+      if (!layer) return { left: 100, top: 100 };
+      var layerRect = layer.getBoundingClientRect();
+      // 视口中心相对于 floatLayer 的坐标
+      var left = (window.innerWidth / 2) - layerRect.left - (elWidth / 2);
+      var top = (window.innerHeight / 2) - layerRect.top - (elHeight / 2);
+      if (left < 10) left = 10;
+      if (top < 10) top = 10;
       return { left: left, top: top };
   }
 
+  // 强制显示并滚动到视野
   function forceVisible(el) {
-      // 暴力确保元素在屏幕中显示
       el.style.setProperty('display', 'block', 'important');
       el.style.setProperty('z-index', '10000', 'important');
       setTimeout(function() {
-          var rect = el.getBoundingClientRect();
-          // 如果元素不在视口内，强制滚动到它所在的位置
-          if (rect.top < 0 || rect.bottom > window.innerHeight || rect.left < 0 || rect.right > window.innerWidth) {
-              var targetY = el.offsetTop + (el.offsetHeight / 2) - (window.innerHeight / 2);
-              window.scrollTo({ top: targetY, behavior: 'smooth' });
-          }
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
   }
 
   function makeShape(type){ 
     try {
       var el = document.createElement('div'); el.className = 'shape'; 
-      var pos = getViewportCenterPos(80, 80); 
+      var pos = getCenterPos(80, 80); 
       el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
       el.style.width = '80px'; el.style.height = '80px'; 
       el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; 
@@ -1251,7 +1254,7 @@
   function makeFrame(shape){ 
     try {
       var el = document.createElement('div'); el.className = 'frame'; 
-      var pos = getViewportCenterPos(120, 120); 
+      var pos = getCenterPos(120, 120); 
       el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
       el.style.width = '120px'; el.style.height = '120px'; 
       el.style.pointerEvents = 'auto';
@@ -1277,7 +1280,7 @@
   function makeFloater(){ 
     try {
       var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
-      var pos = getViewportCenterPos(160, 40); 
+      var pos = getCenterPos(160, 40); 
       el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
       el.style.width = '160px'; el.style.pointerEvents = 'auto'; el.textContent = '自由文本'; 
       
