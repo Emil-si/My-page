@@ -850,7 +850,7 @@
 (function(){
   'use strict';
 
-  var IMG_BASE = 'https://emil-si.github.io/My-page/';
+  var IMG_BASE = 'https://cdn.jsdelivr.net/gh/emil-si/My-page@main/';
   var IMAGES = [
     'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
     'IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg',
@@ -1477,7 +1477,7 @@
     var pad = function(n){ return String(n).padStart(2, '0'); };
     var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
                 '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds());
-    var fileName = 'preview-' + stamp + '.html';
+    var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html';
 
     var blob = new Blob([html], {type:'text/html;charset=utf-8'});
     var a = document.createElement('a');
