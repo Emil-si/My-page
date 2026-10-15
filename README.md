@@ -406,8 +406,8 @@
   /* ===== 音乐播放面板（胶囊风格，与悬浮球水平并排） ===== */
   #musicPanel {
     position: fixed;
-    bottom: calc(20px + var(--safe-bottom)); /* 与悬浮球底部对齐 */
-    right: calc(14px + 48px + 12px); /* 偏移至悬浮球左侧 */
+    bottom: calc(20px + var(--safe-bottom));
+    right: calc(14px + 48px + 12px);
     z-index: 210;
     background: var(--bar);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -473,7 +473,7 @@
     right: 14px;
     width: 48px; height: 48px; 
     border-radius: 50%;
-    background: var(--card); /* 保持玻璃质感黑底 */
+    background: var(--card);
     border: 1px solid var(--border);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
     box-shadow: 0 6px 24px rgba(0,0,0,.35);
@@ -484,7 +484,6 @@
     touch-action: none; user-select: none;
   }
 
-  /* 播放时仅旋转，保留玻璃质感 */
   #musicBtn.playing {
     animation: spin 4s linear infinite;
   }
@@ -575,7 +574,7 @@
   }
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
-  /* ===== 修复移动端和PC端悬停问题：编辑模式下强制显示工具 ===== */
+  /* ===== 修复移动端和PC端悬停问题 ===== */
   body.editing .row-tools {
     display: flex !important;
     opacity: 0.6;
@@ -595,7 +594,7 @@
     opacity: 1;
   }
 
-  /* ===== 卡片操作按钮（删除卡片） ===== */
+  /* ===== 卡片操作按钮 ===== */
   .card-actions {
     position: absolute;
     top: 8px;
@@ -621,7 +620,7 @@
     transform: scale(1.05);
   }
 
-  /* ===== 添加新卡片按钮（底部） ===== */
+  /* ===== 添加新卡片按钮 ===== */
   .add-card-btn {
     display: none;
     width: 100%;
@@ -771,7 +770,7 @@
       <button class="sp-btn" id="spUnderline">U</button>
     </div>
   </div>
-<div class="sp-row"><span>链接到</span>
+  <div class="sp-row"><span>链接到</span>
     <select id="spLink">
       <option value="">无</option>
     </select>
@@ -963,10 +962,10 @@
   </section>
 </div>
 
-<!-- 右下角悬浮球：改回 ♪ 符号，保持玻璃质感 -->
+<!-- 右下角悬浮球 -->
 <div id="musicBtn">♪</div>
 
-<!-- 胶囊控制面板：与悬浮球水平对齐，排在其左侧 -->
+<!-- 胶囊控制面板 -->
 <div id="musicPanel">
   <div class="mp-controls">
     <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
@@ -1425,30 +1424,22 @@
     save(); 
     toast('已添加新卡片');
   };
-// ==================== 动态刷新“链接到”下拉菜单 ====================
+
+  // ==================== 动态刷新“链接到”下拉菜单 ====================
   function refreshLinkOptions(){
     var sel = document.getElementById('spLink');
     if(!sel) return;
-    
-    // 保存当前选中的值，避免刷新后丢失
     var currentVal = sel.value;
-    
-    // 清空并保留“无”选项
     sel.innerHTML = '<option value="">无</option>';
-    
-    // 遍历所有页面，提取 ID 和名称
     document.querySelectorAll('#app .panel').forEach(function(p){
       var opt = document.createElement('option');
       opt.value = p.id;
-      // 优先使用 data-name，没有则用标题，再没有则用 ID
       opt.textContent = p.dataset.name || (p.querySelector('.navlink') ? p.querySelector('.navlink').textContent : p.id);
       sel.appendChild(opt);
     });
-    
-    // 还原之前的选择
     if(currentVal) sel.value = currentVal;
   }
-  
+
   // ==================== 样式面板 ====================
   var stylePanel = document.getElementById('stylePanel');
 
@@ -1668,7 +1659,10 @@
     if(editMode){
       sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
     }
-    refreshCollectionMenu(); refreshLinkOptions();save(); toast('已添加：' + name);
+    refreshCollectionMenu(); 
+    refreshLinkOptions(); 
+    save(); 
+    toast('已添加：' + name);
   });
 
   // ==================== 返回 ====================
@@ -1686,11 +1680,11 @@
     setEdit(false);
     save();
     refreshCollectionMenu();
-    refreshLinkOptions();：
+    refreshLinkOptions();
     toast('已重置');
   });
 
-  // ==================== 导出（文件名自动带时间戳） ====================
+  // ==================== 导出 ====================
   document.getElementById('btnExport').addEventListener('click', function(){
     save();
 
@@ -1803,11 +1797,16 @@
     return s[type] || s.circle;
   }
 
-  // 辅助函数：获取当前屏幕中心相对于 #app 的坐标
+  // 获取当前屏幕中心相对于 #floatLayer 的坐标（修复滚动后不可见问题）
   function getCenterPos(elWidth, elHeight) {
-      var appRect = app.getBoundingClientRect();
-      var left = (window.innerWidth / 2) - appRect.left - (elWidth / 2);
-      var top = (window.innerHeight / 2) - appRect.top - (elHeight / 2);
+      var layer = document.getElementById('floatLayer');
+      var layerRect = layer.getBoundingClientRect();
+      var viewCenterX = window.scrollX + document.documentElement.clientWidth / 2;
+      var viewCenterY = window.scrollY + document.documentElement.clientHeight / 2;
+      var layerLeft = window.scrollX + layerRect.left;
+      var layerTop = window.scrollY + layerRect.top;
+      var left = viewCenterX - layerLeft - (elWidth / 2);
+      var top = viewCenterY - layerTop - (elHeight / 2);
       if (left < 10) left = 10;
       if (top < 10) top = 10;
       return { left: left, top: top };
@@ -2156,7 +2155,7 @@
   // ==================== 初始化 ====================
   bindAll();
   refreshCollectionMenu();
-  refreshLinkOptions();
+  refreshLinkOptions(); 
   setEdit(false);
 
 })();
