@@ -262,43 +262,41 @@
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
 
-  /* ===== 浮动图层修复：完全脱离 #app，直接挂载在 body 下 ===== */
-  #floatLayer {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    min-height: 100vh; /* 强制撑满整屏 */
-    pointer-events: none;
-    z-index: 9999;
-    overflow: visible;
-  }
-
+  /* ===== 浮动元素样式 ===== */
   .shape{
-    position:absolute; z-index:10000;
-    display:none; cursor:move;
-    pointer-events:auto; touch-action:none; user-select:none;
-    filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));
+    position: absolute;
+    z-index: 999999;
+    cursor: move;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,.3));
+    display: block; /* 默认显示 */
   }
   .shape svg{width:100%; height:100%; display:block; pointer-events:none;}
   .frame{
-    position:absolute; z-index:10000;
+    position: absolute;
+    z-index: 999999;
     overflow:hidden; background:#333;
     border:2px solid var(--border);
-    display:none; cursor:move;
+    cursor:move;
     pointer-events:auto; touch-action:none; user-select:none;
     box-shadow:0 6px 24px rgba(0,0,0,.3);
+    display: block; /* 默认显示 */
   }
   .frame img{width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;}
   .floater{
-    position:absolute; z-index:10000; min-width:100px; min-height:40px;
+    position: absolute;
+    z-index: 999999;
+    min-width:100px; min-height:40px;
     padding:12px; border-radius:12px; border:2px dashed var(--accent);
     background:var(--card);
     -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
     color:var(--text); font-size:14px; line-height:1.5;
     word-break:break-word; cursor:move; outline:none;
-    display:none; pointer-events:auto; touch-action:none;
+    pointer-events:auto; touch-action:none;
+    display: block; /* 默认显示 */
   }
-  body.editing .shape, body.editing .frame, body.editing .floater{display:block;}
 
   .xdel{
     position:absolute; top:-10px; left:-10px;
@@ -328,7 +326,7 @@
     position:fixed;
     top:calc(110px + var(--safe-top));
     left:50%; transform:translateX(-50%);
-    z-index:10001;
+    z-index:100001;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     backdrop-filter:blur(24px) saturate(180%);
@@ -380,7 +378,7 @@
   #stylePanel{
     position:fixed;
     right:14px; top:calc(110px + var(--safe-top));
-    z-index:10000;
+    z-index:100000;
     width:260px;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
@@ -533,7 +531,7 @@
 
   #picker{
     position:fixed; left:0; right:0; bottom:0;
-    height:52vh; z-index:10002;
+    height:52vh; z-index:100002;
     background:var(--bar);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     backdrop-filter:blur(24px) saturate(180%);
@@ -569,12 +567,12 @@
     background:var(--accent); color:var(--accent-text);
     padding:9px 18px; border-radius:18px;
     font-size:12px; opacity:0; pointer-events:none;
-    transition:all .3s; z-index:10003;
+    transition:all .3s; z-index:100003;
   }
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
   #musicDialog{
-    position:fixed; inset:0; z-index:10004;
+    position:fixed; inset:0; z-index:100004;
     background:rgba(0,0,0,.5);
     -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
     display:none; align-items:center; justify-content:center; padding:20px;
@@ -660,7 +658,7 @@
   /* ==================== 文字特效基础样式 ==================== */
   [data-edit].fx-hidden { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
   [data-edit].fx-visible { opacity: 1; transform: translateY(0); }
-  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity Menu0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
   [data-edit].fx-slide-up.fx-visible { opacity: 1; transform: translateY(0); }
   [data-edit].fx-fade-in { opacity: 0; transition: opacity 1s ease; }
   [data-edit].fx-fade-in.fx-visible { opacity: 1; }
@@ -668,7 +666,7 @@
   [data-edit].fx-scale-in.fx-visible { opacity: 1; transform: scale(1); }
 
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collection, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
+    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
     html.light #toolbar, html.light #topnav, html.light .card, html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn, html.light #collectionMenu, html.light #shapePicker, html.light #framePicker, html.light #stylePanel, html.light #musicPanel { background-color:rgba(255,255,255,0.97) !important; background-image:none !important; }
   }
 
@@ -963,9 +961,6 @@
   </section>
 </div>
 
-<!-- 将浮动层移出 #app，直接放在 body 下 -->
-<div id="floatLayer"></div>
-
 <div id="musicBtn">♪</div>
 
 <div id="musicPanel">
@@ -1027,7 +1022,7 @@
   if(isReadonly) document.body.classList.add('readonly');
 
   var K_THEME = 'myPage.theme.v5', K_BG = 'myPage.bg.v5', K_CONTENT = 'myPage.content.v6', K_MUSIC = 'myPage.music.v5', K_ALPHA = 'myPage.alpha.v2';
-  var app = document.getElementById('app'), bgLayer = document.getElementById('bgLayer'), floatLayer = document.getElementById('floatLayer'), toastEl = document.getElementById('toast');
+  var app = document.getElementById('app'), bgLayer = document.getElementById('bgLayer'), toastEl = document.getElementById('toast');
   var editMode = false, activeImg = null, bgMode = false, activeTextEl = null, DEFAULT_HTML = app.innerHTML;
 
   // ==================== 主题 ====================
@@ -1214,79 +1209,57 @@
   // ==================== 图形 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
   
-  // 修复：直接在 body 坐标系下计算视口中心
-  function getCenterPos(elWidth, elHeight) {
-      var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX;
-      var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY;
-      return { left: left, top: top };
-  }
-
-  function forceVisible(el) {
-      el.style.setProperty('display', 'block', 'important');
-      el.style.setProperty('z-index', '10000', 'important');
-      setTimeout(function() {
-          var rect = el.getBoundingClientRect();
-          var scrollTop = window.scrollY + rect.top - (window.innerHeight / 2) + (el.offsetHeight / 2);
-          window.scrollTo({ top: scrollTop, behavior: 'smooth' });
-      }, 100);
+  // 终极方案：直接固定在屏幕正中心
+  function createFloatingElement(className, innerHTML, isContentEditable) {
+      var el = document.createElement('div');
+      el.className = className;
+      if (isContentEditable) el.contentEditable = 'true';
+      el.innerHTML = innerHTML;
+      
+      el.style.position = 'fixed';
+      el.style.left = '50%';
+      el.style.top = '50%';
+      el.style.transform = 'translate(-50%, -50%)';
+      el.style.zIndex = '999999';
+      el.style.display = 'block';
+      el.style.pointerEvents = 'auto';
+      
+      document.body.appendChild(el);
+      return el;
   }
 
   function makeShape(type){ 
     try {
-      var el = document.createElement('div'); el.className = 'shape'; 
-      var pos = getCenterPos(80, 80); 
-      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-      el.style.width = '80px'; el.style.height = '80px'; 
-      el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; 
-      el.style.pointerEvents = 'auto';
-      el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; 
-      floatLayer.appendChild(el); 
+      var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false);
+      el.style.width = '80px';
+      el.style.height = '80px';
+      el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
       makeMovable(el); bindXDel(el); bindResize(el); 
-      forceVisible(el);
       save(); toast('已添加图形'); 
     } catch(e) { alert('添加图形失败: ' + e.message); }
   }
   
   function makeFrame(shape){ 
     try {
-      var el = document.createElement('div'); el.className = 'frame'; 
-      var pos = getCenterPos(120, 120); 
-      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-      el.style.width = '120px'; el.style.height = '120px'; 
-      el.style.pointerEvents = 'auto';
+      var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">';
+      var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false);
+      el.style.width = '120px';
+      el.style.height = '120px';
       if(shape === 'circle') el.style.borderRadius = '50%'; 
       else if(shape === 'rounded') el.style.borderRadius = '16px'; 
       
-      var img = document.createElement('img'); 
-      img.setAttribute('data-edit-img', ''); 
-      img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; 
-      
-      var rz = document.createElement('div'); rz.className = 'rz';
-      var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
-      
-      el.appendChild(img); el.appendChild(rz); el.appendChild(xdel); 
-      
-      floatLayer.appendChild(el); 
+      var img = el.querySelector('img');
       makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); 
-      forceVisible(el);
       save(); toast('已添加图片框'); 
     } catch(e) { alert('添加图片框失败: ' + e.message); }
   }
   
   function makeFloater(){ 
     try {
-      var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; 
-      var pos = getCenterPos(160, 40); 
-      el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; 
-      el.style.width = '160px'; el.style.pointerEvents = 'auto'; el.textContent = '自由文本'; 
+      var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true);
+      el.style.width = '160px';
       
-      var rz = document.createElement('div'); rz.className = 'rz';
-      var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
-      el.appendChild(rz); el.appendChild(xdel); 
-      
-      floatLayer.appendChild(el); 
       makeMovable(el); bindXDel(el); bindResize(el); 
-      forceVisible(el);
       setTimeout(function(){ el.focus(); }, 150); 
       save(); toast('已添加浮动文本'); 
     } catch(e) { alert('添加浮动文本失败: ' + e.message); }
@@ -1302,7 +1275,7 @@
   document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); document.getElementById('framePicker').classList.remove('show'); }); });
 
   // ==================== 拖拽 / 缩放 / 删除 ====================
-  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = el.offsetLeft; st = el.offsetTop; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
+  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; if(el.style.position === 'fixed'){ var rect = el.getBoundingClientRect(); el.style.position = 'absolute'; el.style.left = (rect.left + window.scrollX) + 'px'; el.style.top = (rect.top + window.scrollY) + 'px'; el.style.transform = 'none'; } var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
   function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
   function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
 
