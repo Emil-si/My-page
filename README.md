@@ -436,12 +436,12 @@
   .mp-ctrl-btn:hover { background: rgba(127, 127, 127, 0.2); }
 
   .mp-ctrl-btn.play {
-    background: var(--accent); color: var(--accent-text); margin: 0 2px;
+    background: var(--accent); color: var(--ac:cent-text); margin: 0 2px;
   }
   .mp-ctrl-btn.play:hover { transform: scale(1.05); }
 
   .mp-vol-container {
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items center; justify-content: center;
     height: 38px; width: 20px;
   }
   #mpVolume {
@@ -476,11 +476,10 @@
     background: var(--card);
     border: 1px solid var(--border);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    box-shadow: 0 6px 24px rgba(0,0,0;
-,.35);
-    display: flex; align-items: center; justify-content:    center;
+    box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center;
     color: var(--text); 
-    font-size: justify 22px;
+    font-size: 22px;
     cursor: pointer; z-index: 220;
     touch-action: none; user-select: none;
   }
@@ -576,111 +575,55 @@
   .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
 
   /* ===== 修复移动端和PC端悬停问题 ===== */
-  body.editing .row-tools {
-    display: flex !important;
-    opacity: 0.6;
-  }
-  body.editing .row-tools:hover {
-    opacity: 1;
-  }
-  body.editing .shape .xdel,
-  body.editing .frame .xdel,
-  body.editing .floater .xdel {
-    display: flex !important;
-    opacity: 0.7;
-  }
-  body.editing .shape .xdel:hover,
-  body.editing .frame .xdel:hover,
-  body.editing .floater .xdel:hover {
-    opacity: 1;
-  }
+  body.editing .row-tools { display: flex !important; opacity: 0.6; }
+  body.editing .row-tools:hover { opacity: 1; }
+  body.editing .shape .xdel, body.editing .frame .xdel, body.editing .floater .xdel { display: flex !important; opacity: 0.7; }
+  body.editing .shape .xdel:hover, body.editing .frame .xdel:hover, body.editing .floater .xdel:hover { opacity: 1; }
 
   /* ===== 卡片操作按钮 ===== */
-  .card-actions {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: none;
-    gap: 4px;
-    z-index: 100;
-  }
-  body.editing .card-actions {
-    display: flex !important;
-  }
-  .card-actions button {
-    background: #e5484d;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: monospace;
-  }
-  .card-actions button:hover {
-    transform: scale(1.05);
-  }
+  .card-actions { position: absolute; top: 8px; right: 8px; display: none; gap: 4px; z-index: 100; }
+  body.editing .card-actions { display: flex !important; }
+  .card-actions button { background: #e5484d; color: #fff; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-family: monospace; }
+  .card-actions button:hover { transform: scale(1.05); }
 
   /* ===== 添加新卡片按钮 ===== */
   .add-card-btn {
-    display: none;
-    width: 100%;
-    padding: 12px;
-    margin: 4px 0 14px 0;
-    border: 1px dashed var(--border);
-    background: rgba(127,127,127,0.05);
-    color: var(--sub);
-    border-radius: 14px;
-    cursor: pointer;
-    font-family: monospace;
-    font-size: 12px;
-    transition: all 0.2s;
+    display: none; width: 100%; padding: 12px; margin: 4px 0 14px 0;
+    border: 1px dashed var(--border); background: rgba(127,127,127,0.05);
+    color: var(--sub); border-radius: 14px; cursor: pointer;
+    font-family: monospace; font-size: 12px; transition: all 0.2s;
   }
-  body.editing .add-card-btn {
-    display: block !important;
-  }
-  .add-card-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(74,158,255,0.08);
-  }
+  body.editing .add-card-btn { display: block !important; }
+  .add-card-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(74,158,255,0.08); }
 
-/* ==================== 开屏动画样式 ==================== */
+  /* ==================== 开屏动画样式（绝对居中） ==================== */
   #splash {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #1c1c1e;
+    position: fixed; inset: 0; z-index: 9999;
+    background: #1c1c1e; /* 独立深灰背景 */
     overflow: hidden;
   }
 
   .splash-card {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 82%;
-    max-width: 420px;
+    top: 50%; left: 50%;
+    width: 82%; max-width: 420px;
     aspect-ratio: 4 / 5;
     background: rgba(25,25,30,0.85);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    text-align: center;
-    gap: 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 30px; text-align: center; gap: 20px;
     
-    /* 初始隐藏，等待 JS 唤醒 */
-    transform: translate(-50%, calc(-50% + 100px));
+    /* 初始状态：稍微缩小并透明 */
+    transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+    /* 平滑放大淡入 */
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
   }
 
-  /* 被 JS 加上 show 类后，滑出并居中 */
   .splash-card.show {
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
 
@@ -688,71 +631,27 @@
   .splash-desc { font-size: 14px; color: #999; font-family: monospace; }
 
   .splash-enter-btn {
-    position: absolute;
-    bottom: 40px;
-    right: 24px;
-    padding: 12px 20px;
-    background: rgba(25,25,30,0.85);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 999px;
-    color: #f0f0f0;
-    font-size: 13px;
-    font-family: monospace;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.5s ease 0.6s;
+    position: absolute; bottom: 40px; right: 24px;
+    padding: 12px 20px; background: rgba(25,25,30,0.85);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 999px;
+    color: #f0f0f0; font-size: 13px; font-family: monospace;
+    cursor: pointer; opacity: 0; transition: opacity 0.5s ease 0.4s;
   }
   .splash-enter-btn.show { opacity: 1; }
 
   /* ==================== 文字特效基础样式 ==================== */
-  [data-edit].fx-hidden {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  [data-edit].fx-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-edit].fx-slide-up {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  [data-edit].fx-slide-up.fx-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  [data-edit].fx-fade-in {
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-  [data-edit].fx-fade-in.fx-visible {
-    opacity: 1;
-  }
-  [data-edit].fx-scale-in {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  [data-edit].fx-scale-in.fx-visible {
-    opacity: 1;
-    transform: scale(1);
-  }
+  [data-edit].fx-hidden { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  [data-edit].fx-visible { opacity: 1; transform: translateY(0); }
+  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  [data-edit].fx-slide-up.fx-visible { opacity: 1; transform: translateY(0); }
+  [data-edit].fx-fade-in { opacity: 0; transition: opacity 1s ease; }
+  [data-edit].fx-fade-in.fx-visible { opacity: 1; }
+  [data-edit].fx-scale-in { opacity: 0; transform: scale(0.9); transition: opacity 0.8s ease, transform 0.8s ease; }
+  [data-edit].fx-scale-in.fx-visible { opacity: 1; transform: scale(1); }
 
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu,
-    #shapePicker, #framePicker, #stylePanel, #musicPanel{
-      background-color:rgba(20,20,25,0.96) !important;
-      background-image:none !important;
-    }
-    html.light #toolbar, html.light #topnav, html.light .card,
-    html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn,
-    html.light #collectionMenu, html.light #shapePicker, html.light #framePicker,
-    html.light #stylePanel, html.light #musicPanel{
-      background-color:rgba(255,255,255,0.97) !important;
-      background-image:none !important;
-    }
+    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
+    html.light #toolbar, html.light #topnav, html.light .card, html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn, html.light #collectionMenu, html.light #shapePicker, html.light #framePicker, html.light #stylePanel, html.light #musicPanel { background-color:rgba(255,255,255,0.97) !important; background-image:none !important; }
   }
 
   @media (max-width:640px){
@@ -772,23 +671,7 @@
     .pgrid{grid-template-columns:repeat(3, 1fr);}
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
-
-    #stylePanel{
-      top:auto !important;
-      bottom:0 !important;
-      left:0 !important;
-      right:0 !important;
-      width:100vw !important;
-      max-width:100vw !important;
-      max-height:38vh;
-      border-radius:20px 20px 0 0 !important;
-      padding:10px 14px calc(10px + var(--safe-bottom)) 14px;
-      transform:translateY(100%);
-      transition:transform .3s cubic-bezier(.2,.8,.2,1);
-      display:flex !important;
-      visibility:hidden;
-      font-size:11px;
-    }
+    #stylePanel{ top:auto !important; bottom:0 !important; left:0 !important; right:0 !important; width:100vw !important; max-width:100vw !important; max-height:38vh; border-radius:20px 20px 0 0 !important; padding:10px 14px calc(10px + var(--safe-bottom)) 14px; transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1); display:flex !important; visibility:hidden; font-size:11px; }
     #stylePanel.show{transform:translateY(0); visibility:visible;}
     #stylePanel .sp-title{margin-top:4px;padding-bottom:3px;}
     #stylePanel .sp-row{margin-bottom:4px;gap:6px;}
@@ -808,7 +691,6 @@
     <div class="splash-title" data-splash-edit="title">肆</div>
     <div class="splash-desc" data-splash-edit="desc">双击此文字可修改</div>
   </div>
-  
   <button class="splash-enter-btn" id="splashEnterBtn">
     <span class="splash-btn-text">进入主页</span>
   </button>
@@ -852,7 +734,6 @@
 <div id="stylePanel">
   <div class="sp-title">卡片透明度</div>
   <div class="sp-row"><span>不透明</span><input type="range" id="spCardAlpha" min="0" max="100" value="55"><span id="spCardAlphaVal" style="min-width:34px;text-align:right;">55%</span></div>
-
   <div class="sp-title" style="margin-top:6px;">文字样式</div>
   <div class="sp-row"><span>字号</span><input type="range" id="spFontSize" min="10" max="48" value="14"><span id="spFontSizeVal" style="min-width:34px;text-align:right;">14px</span></div>
   <div class="sp-row"><span>字体</span>
@@ -879,9 +760,7 @@
     </div>
   </div>
   <div class="sp-row"><span>链接到</span>
-    <select id="spLink">
-      <option value="">无</option>
-    </select>
+    <select id="spLink"><option value="">无</option></select>
   </div>
   <div class="sp-row"><span>文字特效</span>
     <select id="spFxType">
@@ -900,7 +779,6 @@
       <option value="4">第 5 个出现</option>
     </select>
   </div>
-
   <div class="sp-note">💡 想分享给朋友看：编辑完 → 点「⬇ 导出」下载 HTML → 上传到 GitHub → 分享新链接。</div>
 </div>
 
@@ -909,17 +787,12 @@
 
   <section class="panel active" id="panel-0">
     <div class="card">
-      <div class="card-actions">
-        <button onclick="deleteCard(this)">× 删除卡片</button>
-      </div>
-      
+      <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
       <div class="cover">
         <img data-edit-img id="coverImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23111'/%3E%3Ctext x='80' y='49' font-size='7' fill='%23555' text-anchor='middle' font-family='monospace'%3E点击更换封面%3C/text%3E%3C/svg%3E" alt="封面">
       </div>
       <div class="profile">
-        <div class="avatar">
-          <img data-edit-img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23222'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像">
-        </div>
+        <div class="avatar"><img data-edit-img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23222'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EH%3C/text%3E%3C/svg%3E" alt="头像"></div>
         <div class="namebox">
           <div class="name bwrap"><span class="etext" data-edit>肆</span></div>
           <div class="handle bwrap"><span class="etext" data-edit>@InfernalBeyond.com</span></div>
@@ -936,7 +809,6 @@
           <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
-
       <div class="grid" id="grid0">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='26' fill='%23888' text-anchor='middle'%3E1%3C/text%3E%3C/svg%3E" alt="图1">
         <img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' font-size='26' fill='%23888' text-anchor='middle'%3E2%3C/text%3E%3C/svg%3E" alt="图2">
@@ -949,7 +821,6 @@
           <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
-
       <div class="bwrap">
         <div class="quote"><span class="etext" data-edit>——They say time devours all things but say nothing about what becomes of the things as time digest them.</span></div>
         <div class="row-tools">
@@ -958,7 +829,6 @@
           <button class="del" onclick="deleteRow(this)">×</button>
         </div>
       </div>
-
       <div class="post">
         <input type="text" placeholder="说点什么..." data-edit>
         <div class="postrow">
@@ -967,11 +837,8 @@
         </div>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-actions">
-        <button onclick="deleteCard(this)">× 删除卡片</button>
-      </div>
+      <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
       <div class="bwrap">
         <div class="feed">
           <div class="fav"><img data-edit-img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23555'/%3E%3Ctext x='50' y='68' font-size='40' fill='%23fff' text-anchor='middle' font-family='monospace'%3EW%3C/text%3E%3C/svg%3E" alt="动态头像"></div>
@@ -989,14 +856,11 @@
         </div>
       </div>
     </div>
-
     <div class="extras">
       <button class="exbtn" onclick="addTextEnd(this, 'panel-0')">＋ 末尾加文字</button>
       <button class="exbtn" onclick="addDividerEnd(this, 'panel-0')">— 末尾加分隔线</button>
     </div>
-
     <button class="add-card-btn" onclick="addCard(this, 'panel-0')">＋ 添加新卡片</button>
-
     <div class="pagenav">
       <div class="spacer30"></div>
       <button class="navbtn" onclick="switchTab('panel-1')">→</button>
@@ -1005,9 +869,7 @@
 
   <section class="panel" id="panel-1">
     <div class="card">
-      <div class="card-actions">
-        <button onclick="deleteCard(this)">× 删除卡片</button>
-      </div>
+      <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是个人信息区域，可以在编辑模式下自由修改文字和图片。</div>
         <div class="row-tools">
@@ -1030,9 +892,7 @@
 
   <section class="panel" id="panel-2">
     <div class="card">
-      <div class="card-actions">
-        <button onclick="deleteCard(this)">× 删除卡片</button>
-      </div>
+      <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是个人风格展示区域，可以放你的作品或爱好。</div>
         <div class="row-tools">
@@ -1055,9 +915,7 @@
 
   <section class="panel" id="panel-3">
     <div class="card">
-      <div class="card-actions">
-        <button onclick="deleteCard(this)">× 删除卡片</button>
-      </div>
+      <div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div>
       <div class="bwrap">
         <div class="etext" data-edit>这里是分类区域，可以放你的收藏或分类信息。</div>
         <div class="row-tools">
@@ -1087,27 +945,15 @@
   </section>
 </div>
 
-<!-- 右下角悬浮球 -->
 <div id="musicBtn">♪</div>
 
-<!-- 胶囊控制面板 -->
 <div id="musicPanel">
   <div class="mp-controls">
-    <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-    </button>
-    <button class="mp-ctrl-btn play" id="mpPlay" title="播放/暂停">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-    <button class="mp-ctrl-btn" id="mpNext" title="下一首">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
-    </button>
+    <button class="mp-ctrl-btn" id="mpPrev" title="上一首"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+    <button class="mp-ctrl-btn play" id="mpPlay" title="播放/暂停"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="mp-ctrl-btn" id="mpNext" title="下一首"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg></button>
   </div>
-  
-  <div class="mp-vol-container">
-    <input type="range" id="mpVolume" min="0" max="100" value="100">
-  </div>
-
+  <div class="mp-vol-container"><input type="range" id="mpVolume" min="0" max="100" value="100"></div>
   <button class="mp-add" id="mpAdd" title="添加音乐">＋</button>
 </div>
 
@@ -1133,10 +979,7 @@
 </div>
 
 <div id="picker">
-  <div class="ph">
-    <div class="ptitle">选择图片</div>
-    <button class="pclose" id="pickerClose">×</button>
-  </div>
+  <div class="ph"><div class="ptitle">选择图片</div><button class="pclose" id="pickerClose">×</button></div>
   <div class="pgrid" id="pickerGrid"></div>
 </div>
 
@@ -1144,15 +987,11 @@
   <div class="mcard">
     <h3>更换音乐</h3>
     <input type="text" id="musicInput" placeholder="music.mp3 或 https://.../song.mp3">
-    <div class="row">
-      <button id="musicCancel">取消</button>
-      <button class="primary" id="musicOk">确定</button>
-    </div>
+    <div class="row"><button id="musicCancel">取消</button><button class="primary" id="musicOk">确定</button></div>
   </div>
 </div>
 
 <div id="toast"></div>
-
 <audio id="bgMusic" loop preload="none"></audio>
 
 <script>
@@ -1160,1260 +999,313 @@
   'use strict';
 
   var IMG_BASE = 'https://cdn.jsdelivr.net/gh/emil-si/My-page@main/';
-  var IMAGES = [
-    'IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg',
-    'IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg',
-    'IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg',
-    'IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg',
-    'IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png',
-    'IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png',
-    'IMG_9014.png','IMG_9016.png'
-  ];
+  var IMAGES = ['IMG_6273.jpeg','IMG_6334.jpeg','IMG_6394.jpeg','IMG_6395.jpeg','IMG_6396.jpeg','IMG_7871.jpeg','IMG_7872.jpeg','IMG_7873.jpeg','IMG_7874.jpeg','IMG_8450.jpeg','IMG_8451.jpeg','IMG_8452.jpeg','IMG_8453.jpeg','IMG_8454.jpeg','IMG_8455.jpeg','IMG_8456.jpeg','IMG_9006.png','IMG_9007.png','IMG_9008.png','IMG_9009.png','IMG_9010.png','IMG_9011.png','IMG_9012.png','IMG_9013.png','IMG_9014.png','IMG_9016.png'];
 
   var isReadonly = false;
-  try {
-    var qp = new URLSearchParams(location.search);
-    isReadonly = qp.has('view') || qp.has('readonly');
-  } catch(e){}
+  try { var qp = new URLSearchParams(location.search); isReadonly = qp.has('view') || qp.has('readonly'); } catch(e){}
   if(isReadonly) document.body.classList.add('readonly');
 
-  var K_THEME = 'myPage.theme.v5';
-  var K_BG    = 'myPage.bg.v5';
-  var K_CONTENT = 'myPage.content.v6';
-  var K_MUSIC = 'myPage.music.v5';
-  var K_ALPHA = 'myPage.alpha.v2';
-
-  var app = document.getElementById('app');
-  var bgLayer = document.getElementById('bgLayer');
-  var floatLayer = document.getElementById('floatLayer');
-  var toastEl = document.getElementById('toast');
-  var editMode = false;
-  var activeImg = null;
-  var bgMode = false;
-  var activeTextEl = null;
-  var DEFAULT_HTML = app.innerHTML;
+  var K_THEME = 'myPage.theme.v5', K_BG = 'myPage.bg.v5', K_CONTENT = 'myPage.content.v6', K_MUSIC = 'myPage.music.v5', K_ALPHA = 'myPage.alpha.v2';
+  var app = document.getElementById('app'), bgLayer = document.getElementById('bgLayer'), floatLayer = document.getElementById('floatLayer'), toastEl = document.getElementById('toast');
+  var editMode = false, activeImg = null, bgMode = false, activeTextEl = null, DEFAULT_HTML = app.innerHTML;
 
   // ==================== 主题 ====================
-  function resolveTheme(){
-    var s = null;
-    try { s = localStorage.getItem(K_THEME); } catch(e){}
-    if(s === 'dark' || s === 'light') return s;
-    try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){}
-    return 'light';
-  }
-  function applyTheme(t){
-    document.documentElement.classList.toggle('light', t === 'light');
-    document.getElementById('themeIcon').textContent = (t === 'dark') ? '☀' : '◐';
-  }
+  function resolveTheme(){ var s = null; try { s = localStorage.getItem(K_THEME); } catch(e){} if(s === 'dark' || s === 'light') return s; try { if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'; } catch(e){} return 'light'; }
+  function applyTheme(t){ document.documentElement.classList.toggle('light', t === 'light'); document.getElementById('themeIcon').textContent = (t === 'dark') ? '☀' : '◐'; }
   applyTheme(resolveTheme());
-  document.getElementById('btnTheme').addEventListener('click', function(){
-    var nowDark = !document.documentElement.classList.contains('light');
-    var next = nowDark ? 'light' : 'dark';
-    applyTheme(next);
-    try { localStorage.setItem(K_THEME, next); } catch(e){}
-    toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天');
-  });
+  document.getElementById('btnTheme').addEventListener('click', function(){ var nowDark = !document.documentElement.classList.contains('light'); var next = nowDark ? 'light' : 'dark'; applyTheme(next); try { localStorage.setItem(K_THEME, next); } catch(e){} toast(next === 'dark' ? '已切换至暗夜' : '已切换至白天'); });
 
   // ==================== Toast ====================
   var toastTimer;
-  function toast(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400);
-  }
+  function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1400); }
 
   // ==================== 卡片透明度 ====================
-  function applyAlpha(v){
-    var a = Math.max(0, Math.min(1, v / 100));
-    document.documentElement.style.setProperty('--card-alpha', a);
-    document.getElementById('spCardAlphaVal').textContent = Math.round(v) + '%';
-    try { localStorage.setItem(K_ALPHA, v); } catch(e){}
-  }
-  try {
-    var savedAlpha = localStorage.getItem(K_ALPHA);
-    if(savedAlpha !== null){
-      applyAlpha(savedAlpha);
-      document.getElementById('spCardAlpha').value = savedAlpha;
-    }
-  } catch(e){}
-  document.getElementById('spCardAlpha').addEventListener('input', function(e){
-    applyAlpha(e.target.value);
-  });
+  function applyAlpha(v){ var a = Math.max(0, Math.min(1, v / 100)); document.documentElement.style.setProperty('--card-alpha', a); document.getElementById('spCardAlphaVal').textContent = Math.round(v) + '%'; try { localStorage.setItem(K_ALPHA, v); } catch(e){} }
+  try { var savedAlpha = localStorage.getItem(K_ALPHA); if(savedAlpha !== null){ applyAlpha(savedAlpha); document.getElementById('spCardAlpha').value = savedAlpha; } } catch(e){}
+  document.getElementById('spCardAlpha').addEventListener('input', function(e){ applyAlpha(e.target.value); });
 
   // ==================== 背景 ====================
-  function setBg(url){
-    if(url) bgLayer.style.backgroundImage = 'url(' + url + ')';
-    else bgLayer.style.backgroundImage = 'none';
-  }
-  try {
-    var savedBg = localStorage.getItem(K_BG);
-    if(savedBg) setBg(savedBg);
-  } catch(e){}
+  function setBg(url){ if(url) bgLayer.style.backgroundImage = 'url(' + url + ')'; else bgLayer.style.backgroundImage = 'none'; }
+  try { var savedBg = localStorage.getItem(K_BG); if(savedBg) setBg(savedBg); } catch(e){}
 
   // ==================== 内容恢复 ====================
-  try {
-    var savedContent = localStorage.getItem(K_CONTENT);
-    if(savedContent) app.innerHTML = savedContent;
-  } catch(e){}
-
-  function serialize(){
-    var clone = app.cloneNode(true);
-    clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    return clone.innerHTML;
-  }
+  try { var savedContent = localStorage.getItem(K_CONTENT); if(savedContent) app.innerHTML = savedContent; } catch(e){}
+  function serialize(){ var clone = app.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); return clone.innerHTML; }
   var saveTimer;
-  function save(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){
-      try {
-        localStorage.setItem(K_CONTENT, serialize());
-      } catch(e){
-        alert('保存失败：浏览器存储空间已满\n\n解决方法：\n1. 点「重置」清空\n2. 使用 GitHub 图片库（不占空间）');
-      }
-    }, 300);
-  }
+  function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ try { localStorage.setItem(K_CONTENT, serialize()); } catch(e){ alert('保存失败：浏览器存储空间已满\n\n解决方法：\n1. 点「重置」清空\n2. 使用 GitHub 图片库（不占空间）'); } }, 300); }
   app.addEventListener('input', function(){ if(editMode) save(); });
 
   // ==================== 编辑模式 ====================
   function setEdit(on){
-    if(isReadonly) return;
-    editMode = on;
-    document.body.classList.toggle('editing', on);
-    document.querySelectorAll('[data-edit]').forEach(function(el){
-      if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
-      else el.removeAttribute('contenteditable');
-    });
-    var btn = document.getElementById('btnEdit');
-    btn.classList.toggle('on', on);
-    btn.querySelector('.ico').textContent = on ? '✓' : '✎';
-    btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
-    if(!on) { document.getElementById('stylePanel').classList.remove('show'); }
-    if(on) { bindAll(); toast('编辑已开启'); }
-    else { save(); toast('已保存'); }
+    if(isReadonly) return; editMode = on; document.body.classList.toggle('editing', on);
+    document.querySelectorAll('[data-edit]').forEach(function(el){ if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); } else el.removeAttribute('contenteditable'); });
+    var btn = document.getElementById('btnEdit'); btn.classList.toggle('on', on); btn.querySelector('.ico').textContent = on ? '✓' : '✎'; btn.querySelector('.lbl').textContent = on ? '完成' : '编辑';
+    if(!on) { document.getElementById('stylePanel').classList.remove('show'); } if(on) { bindAll(); toast('编辑已开启'); } else { save(); toast('已保存'); }
   }
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
   // ==================== 图片点击 ====================
-  var __imgPressStart = 0;
-  var __imgPressX = 0;
-  var __imgPressY = 0;
-  var __imgPressTarget = null;
-  var __lastImgOpen = 0;
-
-  function __isEditableImg(el){
-    if(!el) return false;
-    if(el.tagName === 'IMG' && el.hasAttribute('data-edit-img')) return true;
-    if(el.tagName === 'IMG' && el.closest && el.closest('.frame')) return true;
-    return false;
-  }
-
-  document.addEventListener('touchstart', function(e){
-    if(!editMode || isReadonly) return;
-    var t = e.target;
-    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
-    if(!__isEditableImg(img)) return;
-    __imgPressTarget = img;
-    __imgPressStart = Date.now();
-    var p = e.touches[0];
-    __imgPressX = p.clientX;
-    __imgPressY = p.clientY;
-  }, true);
-
-  document.addEventListener('mousedown', function(e){
-    if(!editMode || isReadonly) return;
-    if(e.button !== 0) return;
-    var t = e.target;
-    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
-    if(!__isEditableImg(img)) return;
-    __imgPressTarget = img;
-    __imgPressStart = Date.now();
-    __imgPressX = e.clientX;
-    __imgPressY = e.clientY;
-  }, true);
-
-  document.addEventListener('touchmove', function(e){
-    if(!__imgPressTarget) return;
-    var p = e.touches[0];
-    if(Math.abs(p.clientX - __imgPressX) > 15 || Math.abs(p.clientY - __imgPressY) > 15){
-      __imgPressTarget = null;
-    }
-  }, true);
-
-  document.addEventListener('mousemove', function(e){
-    if(!__imgPressTarget) return;
-    if(Math.abs(e.clientX - __imgPressX) > 15 || Math.abs(e.clientY - __imgPressY) > 15){
-      __imgPressTarget = null;
-    }
-  }, true);
-
-  function __finishImgPress(upX, upY){
-    if(!__imgPressTarget) return;
-    var target = __imgPressTarget;
-    __imgPressTarget = null;
-
-    if(!editMode || isReadonly) return;
-    if(Date.now() - __imgPressStart > 900) return;
-    var now = Date.now();
-    if(now - __lastImgOpen < 500) return;
-    __lastImgOpen = now;
-
-    openPicker(target, false);
-  }
-
-  document.addEventListener('touchend', function(e){
-    var p = e.changedTouches && e.changedTouches[0];
-    if(p) __finishImgPress(p.clientX, p.clientY);
-  }, true);
-
-  document.addEventListener('mouseup', function(e){
-    __finishImgPress(e.clientX, e.clientY);
-  }, true);
-
-  document.addEventListener('click', function(e){
-    if(!editMode || isReadonly) return;
-    var t = e.target;
-    var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null);
-    if(!__isEditableImg(img)) return;
-    if(__imgPressTarget) return;
-    var now = Date.now();
-    if(now - __lastImgOpen < 500) return;
-    __lastImgOpen = now;
-    e.preventDefault();
-    openPicker(img, false);
-  }, true);
-
+  var __imgPressStart = 0, __imgPressX = 0, __imgPressY = 0, __imgPressTarget = null, __lastImgOpen = 0;
+  function __isEditableImg(el){ if(!el) return false; if(el.tagName === 'IMG' && el.hasAttribute('data-edit-img')) return true; if(el.tagName === 'IMG' && el.closest && el.closest('.frame')) return true; return false; }
+  document.addEventListener('touchstart', function(e){ if(!editMode || isReadonly) return; var t = e.target; var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null); if(!__isEditableImg(img)) return; __imgPressTarget = img; __imgPressStart = Date.now(); var p = e.touches[0]; __imgPressX = p.clientX; __imgPressY = p.clientY; }, true);
+  document.addEventListener('mousedown', function(e){ if(!editMode || isReadonly) return; if(e.button !== 0) return; var t = e.target; var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null); if(!__isEditableImg(img)) return; __imgPressTarget = img; __imgPressStart = Date.now(); __imgPressX = e.clientX; __imgPressY = e.clientY; }, true);
+  document.addEventListener('touchmove', function(e){ if(!__imgPressTarget) return; var p = e.touches[0]; if(Math.abs(p.clientX - __imgPressX) > 15 || Math.abs(p.clientY - __imgPressY) > 15){ __imgPressTarget = null; } }, true);
+  document.addEventListener('mousemove', function(e){ if(!__imgPressTarget) return; if(Math.abs(e.clientX - __imgPressX) > 15 || Math.abs(e.clientY - __imgPressY) > 15){ __imgPressTarget = null; } }, true);
+  function __finishImgPress(upX, upY){ if(!__imgPressTarget) return; var target = __imgPressTarget; __imgPressTarget = null; if(!editMode || isReadonly) return; if(Date.now() - __imgPressStart > 900) return; var now = Date.now(); if(now - __lastImgOpen < 500) return; __lastImgOpen = now; openPicker(target, false); }
+  document.addEventListener('touchend', function(e){ var p = e.changedTouches && e.changedTouches[0]; if(p) __finishImgPress(p.clientX, p.clientY); }, true);
+  document.addEventListener('mouseup', function(e){ __finishImgPress(e.clientX, e.clientY); }, true);
+  document.addEventListener('click', function(e){ if(!editMode || isReadonly) return; var t = e.target; var img = t.tagName === 'IMG' ? t : (t.closest ? t.closest('img') : null); if(!__isEditableImg(img)) return; if(__imgPressTarget) return; var now = Date.now(); if(now - __lastImgOpen < 500) return; __lastImgOpen = now; e.preventDefault(); openPicker(img, false); }, true);
   function bindImg(img){ /* 空壳 */ }
 
   // ==================== 图片库 ====================
-  var picker = document.getElementById('picker');
-  var pickerGrid = document.getElementById('pickerGrid');
-    function openPicker(img, isBg){
-    activeImg = img || null;
-    bgMode = !!isBg;
-    pickerGrid.innerHTML = '';
-
-    var observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting){
-          var el = entry.target;
-          if(el.dataset.src){
-            el.src = el.dataset.src;
-            el.removeAttribute('data-src');
-          }
-          observer.unobserve(el);
-        }
-      });
-    }, { root: pickerGrid, rootMargin: '150px' });
-
-    IMAGES.forEach(function(name){
-      var url = IMG_BASE + name;
-      var el = document.createElement('img');
-      el.dataset.src = url;
-      el.alt = name;
-      el.style.background = 'rgba(127,127,127,0.15)';
-      el.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        if(bgMode){
-          setBg(url);
-          try { localStorage.setItem(K_BG, url); } catch(e){}
-          toast('背景已更新');
-        } else if(activeImg){
-          activeImg.src = url; save(); toast('图片已更新');
-        }
-        closePicker();
-      });
-      pickerGrid.appendChild(el);
-      observer.observe(el);
-    });
+  var picker = document.getElementById('picker'), pickerGrid = document.getElementById('pickerGrid');
+  function openPicker(img, isBg){
+    activeImg = img || null; bgMode = !!isBg; pickerGrid.innerHTML = '';
+    var observer = new IntersectionObserver(function(entries){ entries.forEach(function(entry){ if(entry.isIntersecting){ var el = entry.target; if(el.dataset.src){ el.src = el.dataset.src; el.removeAttribute('data-src'); } observer.unobserve(el); } }); }, { root: pickerGrid, rootMargin: '150px' });
+    IMAGES.forEach(function(name){ var url = IMG_BASE + name; var el = document.createElement('img'); el.dataset.src = url; el.alt = name; el.style.background = 'rgba(127,127,127,0.15)'; el.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if(bgMode){ setBg(url); try { localStorage.setItem(K_BG, url); } catch(e){} toast('背景已更新'); } else if(activeImg){ activeImg.src = url; save(); toast('图片已更新'); } closePicker(); }); pickerGrid.appendChild(el); observer.observe(el); });
     picker.classList.add('show');
   }
-  function closePicker(){
-    picker.classList.remove('show');
-    activeImg = null; bgMode = false;
-  }
+  function closePicker(){ picker.classList.remove('show'); activeImg = null; bgMode = false; }
   document.getElementById('pickerClose').addEventListener('click', closePicker);
-  document.getElementById('btnBg').addEventListener('click', function(e){
-    e.preventDefault(); e.stopPropagation();
-    openPicker(null, true);
-  });
+  document.getElementById('btnBg').addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openPicker(null, true); });
 
   // ==================== 增删行 ====================
-  function makeTextRow(content){
-    var wrap = document.createElement('div');
-    wrap.className = 'bwrap';
-    wrap.style.marginTop = '8px';
-    wrap.innerHTML = '<div class="etext" data-edit>' + (content || '点击输入新内容...') + '</div>' +
-      '<div class="row-tools">' +
-        '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
-        '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
-        '<button class="del" onclick="deleteRow(this)">×</button>' +
-      '</div>';
-    return wrap;
-  }
-
-  function makeDividerRow(){
-    var wrap = document.createElement('div');
-    wrap.className = 'bwrap';
-    wrap.style.marginTop = '6px';
-    wrap.innerHTML = '<div class="divider"><div class="line"></div></div>' +
-      '<div class="row-tools">' +
-        '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
-        '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
-        '<button class="del" onclick="deleteRow(this)">×</button>' +
-      '</div>';
-    return wrap;
-  }
-
-  window.addTextAfter = function(btn){
-    var wrap = btn.closest('.bwrap');
-    var newRow = makeTextRow();
-    wrap.parentNode.insertBefore(newRow, wrap.nextSibling);
-    if(editMode){
-      var tb = newRow.querySelector('.etext');
-      tb.setAttribute('contenteditable', 'true');
-      tb.focus();
-      selectText(tb);
-    }
-    save(); toast('已添加文字');
-  };
-
-  window.addDividerAfter = function(btn){
-    var wrap = btn.closest('.bwrap');
-    var newRow = makeDividerRow();
-    wrap.parentNode.insertBefore(newRow, wrap.nextSibling);
-    save(); toast('已添加分隔线');
-  };
-
-  window.deleteRow = function(btn){
-    var wrap = btn.closest('.bwrap');
-    if(confirm('删除这一行？')){ wrap.remove(); save(); toast('已删除'); }
-  };
-
-  window.addTextEnd = function(btn, panelId){
-    var panel = document.getElementById(panelId);
-    var card = panel.querySelector('.card');
-    var newRow = makeTextRow();
-    card.appendChild(newRow);
-    if(editMode){
-      var tb = newRow.querySelector('.etext');
-      tb.setAttribute('contenteditable', 'true');
-      tb.focus();
-    }
-    save(); toast('已添加文字');
-  };
-  window.addDividerEnd = function(btn, panelId){
-    var panel = document.getElementById(panelId);
-    var card = panel.querySelector('.card');
-    card.appendChild(makeDividerRow());
-    save(); toast('已添加分隔线');
-  };
+  function makeTextRow(content){ var wrap = document.createElement('div'); wrap.className = 'bwrap'; wrap.style.marginTop = '8px'; wrap.innerHTML = '<div class="etext" data-edit>' + (content || '点击输入新内容...') + '</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div>'; return wrap; }
+  function makeDividerRow(){ var wrap = document.createElement('div'); wrap.className = 'bwrap'; wrap.style.marginTop = '6px'; wrap.innerHTML = '<div class="divider"><div class="line"></div></div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div>'; return wrap; }
+  window.addTextAfter = function(btn){ var wrap = btn.closest('.bwrap'); var newRow = makeTextRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); selectText(tb); } save(); toast('已添加文字'); };
+  window.addDividerAfter = function(btn){ var wrap = btn.closest('.bwrap'); var newRow = makeDividerRow(); wrap.parentNode.insertBefore(newRow, wrap.nextSibling); save(); toast('已添加分隔线'); };
+  window.deleteRow = function(btn){ var wrap = btn.closest('.bwrap'); if(confirm('删除这一行？')){ wrap.remove(); save(); toast('已删除'); } };
+  window.addTextEnd = function(btn, panelId){ var panel = document.getElementById(panelId); var card = panel.querySelector('.card'); var newRow = makeTextRow(); card.appendChild(newRow); if(editMode){ var tb = newRow.querySelector('.etext'); tb.setAttribute('contenteditable', 'true'); tb.focus(); } save(); toast('已添加文字'); };
+  window.addDividerEnd = function(btn, panelId){ var panel = document.getElementById(panelId); var card = panel.querySelector('.card'); card.appendChild(makeDividerRow()); save(); toast('已添加分隔线'); };
 
   // ==================== 卡片增删功能 ====================
-  window.deleteCard = function(btn){
-    var card = btn.closest('.card');
-    if(!card) return;
-    if(confirm('确定删除这张卡片及其所有内容吗？')){
-      card.remove();
-      save();
-      toast('卡片已删除');
-    }
-  };
-
+  window.deleteCard = function(btn){ var card = btn.closest('.card'); if(!card) return; if(confirm('确定删除这张卡片及其所有内容吗？')){ card.remove(); save(); toast('卡片已删除'); } };
   window.addCard = function(btn, panelId){
-    var panel = document.getElementById(panelId);
-    if(!panel) return;
-    
-    var newCard = document.createElement('div');
-    newCard.className = 'card';
-    newCard.innerHTML = 
-      '<div class="card-actions">' +
-        '<button onclick="deleteCard(this)">× 删除卡片</button>' +
-      '</div>' +
-      '<div class="bwrap">' +
-        '<div class="etext" data-edit>新卡片内容...点击编辑</div>' +
-        '<div class="row-tools">' +
-          '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
-          '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
-          '<button class="del" onclick="deleteRow(this)">×</button>' +
-        '</div>' +
-      '</div>';
-      
+    var panel = document.getElementById(panelId); if(!panel) return;
+    var newCard = document.createElement('div'); newCard.className = 'card';
+    newCard.innerHTML = '<div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新卡片内容...点击编辑</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div>';
     panel.insertBefore(newCard, btn);
-    
-    if(editMode){
-      newCard.querySelectorAll('[data-edit]').forEach(function(el){ 
-        el.setAttribute('contenteditable', 'true'); 
-      });
-    }
-    save(); 
-    toast('已添加新卡片');
+    if(editMode){ newCard.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); }); }
+    save(); toast('已添加新卡片');
   };
 
-  // ==================== 动态刷新“链接到”下拉菜单 ====================
-  function refreshLinkOptions(){
-    var sel = document.getElementById('spLink');
-    if(!sel) return;
-    var currentVal = sel.value;
-    sel.innerHTML = '<option value="">无</option>';
-    document.querySelectorAll('#app .panel').forEach(function(p){
-      var opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = p.dataset.name || (p.querySelector('.navlink') ? p.querySelector('.navlink').textContent : p.id);
-      sel.appendChild(opt);
-    });
-    if(currentVal) sel.value = currentVal;
-  }
+  // ==================== 动态刷新链接下拉 ====================
+  function refreshLinkOptions(){ var sel = document.getElementById('spLink'); if(!sel) return; var currentVal = sel.value; sel.innerHTML = '<option value="">无</option>'; document.querySelectorAll('#app .panel').forEach(function(p){ var opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.dataset.name || (p.querySelector('.navlink') ? p.querySelector('.navlink').textContent : p.id); sel.appendChild(opt); }); if(currentVal) sel.value = currentVal; }
 
   // ==================== 样式面板 ====================
   var stylePanel = document.getElementById('stylePanel');
-
-  document.getElementById('btnStyle').addEventListener('click', function(e){
-    e.stopPropagation();
-    stylePanel.classList.toggle('show');
-  });
+  document.getElementById('btnStyle').addEventListener('click', function(e){ e.stopPropagation(); stylePanel.classList.toggle('show'); });
 
   function selectText(el){
-    activeTextEl = el;
-    var cs = getComputedStyle(el);
-    document.getElementById('spFontSize').value = parseInt(cs.fontSize) || 14;
-    document.getElementById('spFontSizeVal').textContent = (parseInt(cs.fontSize) || 14) + 'px';
+    activeTextEl = el; var cs = getComputedStyle(el);
+    document.getElementById('spFontSize').value = parseInt(cs.fontSize) || 14; document.getElementById('spFontSizeVal').textContent = (parseInt(cs.fontSize) || 14) + 'px';
     document.getElementById('spTextColor').value = rgbToHex(cs.color);
-    var ff = cs.fontFamily.split(',')[0].replace(/['"]/g,'');
-    var sel = document.getElementById('spFontFamily');
-    var found = false;
-    for(var i=0;i<sel.options.length;i++){
-      if(sel.options[i].value.indexOf(ff) !== -1){ sel.value = sel.options[i].value; found = true; break; }
-    }
+    var ff = cs.fontFamily.split(',')[0].replace(/['"]/g,''); var sel = document.getElementById('spFontFamily'); var found = false;
+    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.indexOf(ff) !== -1){ sel.value = sel.options[i].value; found = true; break; } }
     if(!found) sel.value = 'default';
     document.getElementById('spLink').value = el.getAttribute('data-link') || '';
-    
-    // 读取当前元素的特效
-    var fxType = 'none';
-    if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up';
-    else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in';
-    else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
-    document.getElementById('spFxType').value = fxType;
-    document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
+    var fxType = 'none'; if (el.classList.contains('fx-slide-up')) fxType = 'fx-slide-up'; else if (el.classList.contains('fx-fade-in')) fxType = 'fx-fade-in'; else if (el.classList.contains('fx-scale-in')) fxType = 'fx-scale-in';
+    document.getElementById('spFxType').value = fxType; document.getElementById('spFxOrder').value = el.dataset.fxOrder || '0';
   }
+  function rgbToHex(c){ if(!c) return '#f0f0f0'; var m = c.match(/\d+/g); if(!m) return '#f0f0f0'; return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join(''); }
 
-  function rgbToHex(c){
-    if(!c) return '#f0f0f0';
-    var m = c.match(/\d+/g);
-    if(!m) return '#f0f0f0';
-    return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join('');
-  }
-
-  document.getElementById('spFontSize').addEventListener('input', function(e){
-    if(!activeTextEl) return;
-    activeTextEl.style.fontSize = e.target.value + 'px';
-    document.getElementById('spFontSizeVal').textContent = e.target.value + 'px';
-    save();
-  });
-  document.getElementById('spTextColor').addEventListener('input', function(e){
-    if(!activeTextEl) return;
-    activeTextEl.style.color = e.target.value;
-    save();
-  });
-  document.getElementById('spFontFamily').addEventListener('change', function(e){
-    if(!activeTextEl) return;
-    activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value;
-    save();
-  });
-  document.querySelectorAll('#stylePanel .sp-btn[data-align]').forEach(function(b){
-    b.addEventListener('click', function(){
-      if(!activeTextEl) return;
-      activeTextEl.style.textAlign = this.getAttribute('data-align');
-      activeTextEl.style.display = 'block';
-      save();
-    });
-  });
-  document.getElementById('spBold').addEventListener('click', function(){
-    if(!activeTextEl) return;
-    var on = activeTextEl.style.fontWeight === 'bold';
-    activeTextEl.style.fontWeight = on ? 'normal' : 'bold';
-    this.classList.toggle('on', !on);
-    save();
-  });
-  document.getElementById('spItalic').addEventListener('click', function(){
-    if(!activeTextEl) return;
-    var on = activeTextEl.style.fontStyle === 'italic';
-    activeTextEl.style.fontStyle = on ? 'normal' : 'italic';
-    this.classList.toggle('on', !on);
-    save();
-  });
-  document.getElementById('spUnderline').addEventListener('click', function(){
-    if(!activeTextEl) return;
-    var on = activeTextEl.style.textDecoration === 'underline';
-    activeTextEl.style.textDecoration = on ? 'none' : 'underline';
-    this.classList.toggle('on', !on);
-    save();
-  });
-  document.getElementById('spLink').addEventListener('change', function(e){
-    if(!activeTextEl) return;
-    var v = e.target.value;
-    if(v){
-      activeTextEl.setAttribute('data-link', v);
-      activeTextEl.classList.add('linktext');
-    } else {
-      activeTextEl.removeAttribute('data-link');
-      activeTextEl.classList.remove('linktext');
-    }
-    save();
-    toast(v ? '已链接到 ' + v : '已取消链接');
-  });
-
-  // 文字特效控制
-  document.getElementById('spFxType').addEventListener('change', function(e) {
-    if (!activeTextEl) return;
-    var val = e.target.value;
-    activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
-    if (val !== 'none') {
-      activeTextEl.classList.add(val);
-      activeTextEl.classList.add('fx-hidden');
-    }
-    save();
-    toast(val === 'none' ? '已取消特效' : '已应用特效');
-  });
-
-  document.getElementById('spFxOrder').addEventListener('change', function(e) {
-    if (!activeTextEl) return;
-    activeTextEl.dataset.fxOrder = e.target.value;
-    save();
-    toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个');
-  });
+  document.getElementById('spFontSize').addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.fontSize = e.target.value + 'px'; document.getElementById('spFontSizeVal').textContent = e.target.value + 'px'; save(); });
+  document.getElementById('spTextColor').addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.color = e.target.value; save(); });
+  document.getElementById('spFontFamily').addEventListener('change', function(e){ if(!activeTextEl) return; activeTextEl.style.fontFamily = e.target.value === 'default' ? 'inherit' : e.target.value; save(); });
+  document.querySelectorAll('#stylePanel .sp-btn[data-align]').forEach(function(b){ b.addEventListener('click', function(){ if(!activeTextEl) return; activeTextEl.style.textAlign = this.getAttribute('data-align'); activeTextEl.style.display = 'block'; save(); }); });
+  document.getElementById('spBold').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.fontWeight === 'bold'; activeTextEl.style.fontWeight = on ? 'normal' : 'bold'; this.classList.toggle('on', !on); save(); });
+  document.getElementById('spItalic').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.fontStyle === 'italic'; activeTextEl.style.fontStyle = on ? 'normal' : 'italic'; this.classList.toggle('on', !on); save(); });
+  document.getElementById('spUnderline').addEventListener('click', function(){ if(!activeTextEl) return; var on = activeTextEl.style.textDecoration === 'underline'; activeTextEl.style.textDecoration = on ? 'none' : 'underline'; this.classList.toggle('on', !on); save(); });
+  document.getElementById('spLink').addEventListener('change', function(e){ if(!activeTextEl) return; var v = e.target.value; if(v){ activeTextEl.setAttribute('data-link', v); activeTextEl.classList.add('linktext'); } else { activeTextEl.removeAttribute('data-link'); activeTextEl.classList.remove('linktext'); } save(); toast(v ? '已链接到 ' + v : '已取消链接'); });
+  document.getElementById('spFxType').addEventListener('change', function(e) { if (!activeTextEl) return; var val = e.target.value; activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden'); if (val !== 'none') { activeTextEl.classList.add(val); activeTextEl.classList.add('fx-hidden'); } save(); toast(val === 'none' ? '已取消特效' : '已应用特效'); });
+  document.getElementById('spFxOrder').addEventListener('change', function(e) { if (!activeTextEl) return; activeTextEl.dataset.fxOrder = e.target.value; save(); toast('出场顺序已设为第 ' + (parseInt(e.target.value) + 1) + ' 个'); });
 
   function playPageEffects() {
-    var currentPanel = document.querySelector('.panel.active');
-    if (!currentPanel) return;
+    var currentPanel = document.querySelector('.panel.active'); if (!currentPanel) return;
     var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
-    var sorted = Array.from(elements).sort(function(a, b) {
-      return parseInt(a.dataset.fxOrder || '0') - parseInt(b.dataset.fxOrder || '0');
-    });
-    
-    if (window.__fxTimers) {
-      window.__fxTimers.forEach(function(t) { clearTimeout(t); });
-    }
+    var sorted = Array.from(elements).sort(function(a, b) { return parseInt(a.dataset.fxOrder || '0') - parseInt(b.dataset.fxOrder || '0'); });
+    if (window.__fxTimers) { window.__fxTimers.forEach(function(t) { clearTimeout(t); }); }
     window.__fxTimers = [];
-    
-    sorted.forEach(function(el, index) {
-      var delay = index * 400;
-      var timer = setTimeout(function() {
-        el.classList.remove('fx-hidden');
-        el.classList.add('fx-visible');
-      }, 300 + delay);
-      window.__fxTimers.push(timer);
-    });
+    sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
-  document.addEventListener('focusin', function(e){
-    if(!editMode || isReadonly) return;
-    var el = e.target.closest('[contenteditable="true"]');
-    if(el){
-      selectText(el);
-      stylePanel.classList.add('show');
-    }
-  });
+  document.addEventListener('focusin', function(e){ if(!editMode || isReadonly) return; var el = e.target.closest('[contenteditable="true"]'); if(el){ selectText(el); stylePanel.classList.add('show'); } });
 
   // ==================== 链接跳转 ====================
-  document.addEventListener('click', function(e){
-    if(editMode) return;
-    var el = e.target.closest('[data-link]');
-    if(el && el.getAttribute('data-link')){
-      var t = el.getAttribute('data-link');
-      if(document.getElementById(t)){
-        e.preventDefault();
-        window.switchTab(t);
-      }
-    }
-  });
+  document.addEventListener('click', function(e){ if(editMode) return; var el = e.target.closest('[data-link]'); if(el && el.getAttribute('data-link')){ var t = el.getAttribute('data-link'); if(document.getElementById(t)){ e.preventDefault(); window.switchTab(t); } } });
 
   // ==================== 页面切换 ====================
   var navHistory = [];
   window.switchTab = function(id){
-    var cur = document.querySelector('.panel.active');
-    if(cur && cur.id !== id){
-      navHistory.push(cur.id);
-      if(navHistory.length > 30) navHistory.shift();
-    }
+    var cur = document.querySelector('.panel.active'); if(cur && cur.id !== id){ navHistory.push(cur.id); if(navHistory.length > 30) navHistory.shift(); }
     document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id === id); });
-    document.querySelectorAll('.navlink').forEach(function(n){
-      if(n.getAttribute('data-panel')) n.classList.toggle('active', n.getAttribute('data-panel') === id);
-    });
-    refreshCollectionActive();
-    window.scrollTo(0, 0);
-    // 切换页面后播放文字特效
-    setTimeout(playPageEffects, 150);
+    document.querySelectorAll('.navlink').forEach(function(n){ if(n.getAttribute('data-panel')) n.classList.toggle('active', n.getAttribute('data-panel') === id); });
+    refreshCollectionActive(); window.scrollTo(0, 0); setTimeout(playPageEffects, 150);
   };
-  document.querySelectorAll('.navlink[data-panel]').forEach(function(n){
-    n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); });
-  });
+  document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
 
   // ==================== 合集菜单 ====================
-  var navCollection = document.getElementById('navCollection');
-  var collectionMenu = document.getElementById('collectionMenu');
-  var collectionList = document.getElementById('collectionList');
-  function refreshCollectionMenu(){
-    collectionList.innerHTML = '';
-    var items = document.querySelectorAll('#app .panel[data-collection="true"]');
-    if(items.length === 0){ collectionList.innerHTML = '<div class="cempty">暂无页面</div>'; return; }
-    items.forEach(function(p){
-      var d = document.createElement('div');
-      d.className = 'citem';
-      d.setAttribute('data-panel', p.id);
-      d.textContent = p.dataset.name || p.id;
-      d.addEventListener('click', function(){
-        window.switchTab(p.id);
-        collectionMenu.classList.remove('show');
-      });
-      collectionList.appendChild(d);
-    });
-    refreshCollectionActive();
-  }
-  function refreshCollectionActive(){
-    var cur = document.querySelector('.panel.active');
-    if(!cur) return;
-    var isC = cur.getAttribute('data-collection') === 'true';
-    navCollection.classList.toggle('active', isC);
-    collectionList.querySelectorAll('.citem').forEach(function(c){
-      c.classList.toggle('active', c.getAttribute('data-panel') === cur.id);
-    });
-  }
-  navCollection.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(collectionMenu.classList.contains('show')) collectionMenu.classList.remove('show');
-    else { refreshCollectionMenu(); collectionMenu.classList.add('show'); }
-  });
-  document.addEventListener('click', function(e){
-    if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){
-      collectionMenu.classList.remove('show');
-    }
-    var sp = document.getElementById('stylePanel');
-    var spBtn = document.getElementById('btnStyle');
-    if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){
-      sp.classList.remove('show');
-    }
-  });
+  var navCollection = document.getElementById('navCollection'), collectionMenu = document.getElementById('collectionMenu'), collectionList = document.getElementById('collectionList');
+  function refreshCollectionMenu(){ collectionList.innerHTML = ''; var items = document.querySelectorAll('#app .panel[data-collection="true"]'); if(items.length === 0){ collectionList.innerHTML = '<div class="cempty">暂无页面</div>'; return; } items.forEach(function(p){ var d = document.createElement('div'); d.className = 'citem'; d.setAttribute('data-panel', p.id); d.textContent = p.dataset.name || p.id; d.addEventListener('click', function(){ window.switchTab(p.id); collectionMenu.classList.remove('show'); }); collectionList.appendChild(d); }); refreshCollectionActive(); }
+  function refreshCollectionActive(){ var cur = document.querySelector('.panel.active'); if(!cur) return; var isC = cur.getAttribute('data-collection') === 'true'; navCollection.classList.toggle('active', isC); collectionList.querySelectorAll('.citem').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-panel') === cur.id); }); }
+  navCollection.addEventListener('click', function(e){ e.stopPropagation(); if(collectionMenu.classList.contains('show')) collectionMenu.classList.remove('show'); else { refreshCollectionMenu(); collectionMenu.classList.add('show'); } });
+  document.addEventListener('click', function(e){ if(collectionMenu.classList.contains('show') && !collectionMenu.contains(e.target) && !navCollection.contains(e.target)){ collectionMenu.classList.remove('show'); } var sp = document.getElementById('stylePanel'); var spBtn = document.getElementById('btnStyle'); if(sp.classList.contains('show') && !sp.contains(e.target) && !spBtn.contains(e.target) && !e.target.closest('[contenteditable="true"]')){ sp.classList.remove('show'); } });
 
   // ==================== 新页面 ====================
   document.getElementById('btnAddPanel').addEventListener('click', function(){
-    var name = prompt('新页面名称（会加入合集）:', '新页面');
-    if(!name) return;
-    name = name.trim(); if(!name) return;
-    var panels = document.querySelectorAll('#app .panel');
-    var used = {}; panels.forEach(function(p){ used[p.id] = true; });
-    var idx = 0; while(used['panel-' + idx]) idx++;
-    var newId = 'panel-' + idx;
-
-    var sec = document.createElement('section');
-    sec.className = 'panel';
-    sec.id = newId;
-    sec.setAttribute('data-collection', 'true');
-    sec.dataset.name = name;
-    sec.innerHTML = '<div class="card">' +
-      '<div class="card-actions">' +
-        '<button onclick="deleteCard(this)">× 删除卡片</button>' +
-      '</div>' +
-      '<div class="bwrap">' +
-        '<div class="etext" data-edit>新页面内容...</div>' +
-        '<div class="row-tools">' +
-          '<button title="加文字" onclick="addTextAfter(this)">＋</button>' +
-          '<button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button>' +
-          '<button class="del" onclick="deleteRow(this)">×</button>' +
-        '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="extras">' +
-        '<button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button>' +
-        '<button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button>' +
-      '</div>' +
-      '<button class="add-card-btn" onclick="addCard(this, \'' + newId + '\')">＋ 添加新卡片</button>' +
-      '<div class="pagenav">' +
-        '<button class="navbtn" onclick="window.goBack()">←</button>' +
-        '<div class="spacer30"></div>' +
-      '</div>';
-
-    app.appendChild(sec);
-    if(editMode){
-      sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); });
-    }
-    refreshCollectionMenu(); 
-    refreshLinkOptions(); 
-    save(); 
-    toast('已添加：' + name);
+    var name = prompt('新页面名称（会加入合集）:', '新页面'); if(!name) return; name = name.trim(); if(!name) return;
+    var panels = document.querySelectorAll('#app .panel'); var used = {}; panels.forEach(function(p){ used[p.id] = true; }); var idx = 0; while(used['panel-' + idx]) idx++; var newId = 'panel-' + idx;
+    var sec = document.createElement('section'); sec.className = 'panel'; sec.id = newId; sec.setAttribute('data-collection', 'true'); sec.dataset.name = name;
+    sec.innerHTML = '<div class="card"><div class="card-actions"><button onclick="deleteCard(this)">× 删除卡片</button></div><div class="bwrap"><div class="etext" data-edit>新页面内容...</div><div class="row-tools"><button title="加文字" onclick="addTextAfter(this)">＋</button><button class="dvd" title="加分隔线" onclick="addDividerAfter(this)">—</button><button class="del" onclick="deleteRow(this)">×</button></div></div></div><div class="extras"><button class="exbtn" onclick="addTextEnd(this, \'' + newId + '\')">＋ 末尾加文字</button><button class="exbtn" onclick="addDividerEnd(this, \'' + newId + '\')">— 末尾加分隔线</button></div><button class="add-card-btn" onclick="addCard(this, \'' + newId + '\')">＋ 添加新卡片</button><div class="pagenav"><button class="navbtn" onclick="window.goBack()">←</button><div class="spacer30"></div></div>';
+    app.appendChild(sec); if(editMode){ sec.querySelectorAll('[data-edit]').forEach(function(el){ el.setAttribute('contenteditable', 'true'); }); }
+    refreshCollectionMenu(); refreshLinkOptions(); save(); toast('已添加：' + name);
   });
 
-  // ==================== 返回 ====================
-  window.goBack = function(){
-    var prev = navHistory.pop();
-    if(prev) window.switchTab(prev);
-    else window.switchTab('panel-0');
-  };
+  window.goBack = function(){ var prev = navHistory.pop(); if(prev) window.switchTab(prev); else window.switchTab('panel-0'); };
 
   // ==================== 重置 ====================
-  document.getElementById('btnReset').addEventListener('click', function(){
-    if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return;
-    app.innerHTML = DEFAULT_HTML;
-    bindAll();
-    setEdit(false);
-    save();
-    refreshCollectionMenu();
-    refreshLinkOptions();
-    toast('已重置');
-  });
+  document.getElementById('btnReset').addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
 
   // ==================== 导出 ====================
   document.getElementById('btnExport').addEventListener('click', function(){
-    save();
-
-    var clone = document.documentElement.cloneNode(true);
-    clone.querySelector('body').classList.remove('editing');
-    clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); });
-    clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); });
-    clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
-
-    var currentContent = serialize();
-    var currentBg = '';
-    var currentAlpha = '';
-    var currentTheme = '';
-    var currentMusic = '';
-    try {
-      currentBg = localStorage.getItem(K_BG) || '';
-      currentAlpha = localStorage.getItem(K_ALPHA) || '55';
-      currentTheme = localStorage.getItem(K_THEME) || 'light';
-      currentMusic = localStorage.getItem(K_MUSIC) || '';
-    } catch(e){}
-
-    var injectScript = document.createElement('script');
-    injectScript.textContent =
-      '(function(){try{' +
-      'var _c=' + JSON.stringify(currentContent) + ';' +
-      'var _bg=' + JSON.stringify(currentBg) + ';' +
-      'var _a=' + JSON.stringify(currentAlpha) + ';' +
-      'var _t=' + JSON.stringify(currentTheme) + ';' +
-      'var _m=' + JSON.stringify(currentMusic) + ';' +
-      'localStorage.setItem("myPage.content.v6",_c);' +
-      'if(_bg)localStorage.setItem("myPage.bg.v5",_bg);' +
-      'if(_a)localStorage.setItem("myPage.alpha.v2",_a);' +
-      'if(_t)localStorage.setItem("myPage.theme.v5",_t);' +
-      'if(_m)localStorage.setItem("myPage.music.v5",_m);' +
-      '}catch(e){}})();';
-
+    save(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); });
+    var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '';
+    try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; } catch(e){}
+    var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);}catch(e){}})();';
     clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild);
-
-    var html = '<!DOCTYPE html>\n' + clone.outerHTML;
-
-    var d = new Date();
-    var pad = function(n){ return String(n).padStart(2, '0'); };
-    var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
-                '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds());
-    var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html';
-
-    var blob = new Blob([html], {type:'text/html;charset=utf-8'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
-
-    toast('已导出 ' + fileName);
-    setTimeout(function(){
-      alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName);
-    }, 400);
+    var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html';
+    var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400);
   });
 
   // ==================== 导入 ====================
-  document.getElementById('btnImport').addEventListener('click', function(){
-    var inp = document.createElement('input');
-    inp.type = 'file';
-    inp.accept = '.html,.htm,text/html';
-    inp.onchange = function(){
-      var f = inp.files && inp.files[0]; if(!f) return;
-      var reader = new FileReader();
-      reader.onload = function(ev){
-        try {
-          var doc = new DOMParser().parseFromString(ev.target.result, 'text/html');
-          var imported = doc.getElementById('app');
-          if(!imported) throw new Error('no app');
-          app.innerHTML = imported.innerHTML;
-          bindAll();
-          setEdit(false);
-          save();
-          refreshCollectionMenu();
-          refreshLinkOptions();
-          toast('导入成功');
-        } catch(err){
-          alert('导入失败：文件里没有识别到内容');
-        }
-      };
-      reader.readAsText(f);
-    };
-    inp.click();
-  });
+  document.getElementById('btnImport').addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
 
   // ==================== 图形 ====================
-  function shapeSVG(type){
-    var s = {
-      circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>',
-      square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>',
-      rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>',
-      triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>',
-      star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>',
-      heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>',
-      arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>',
-      diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>',
-      hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>',
-      cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>'
-    };
-    return s[type] || s.circle;
-  }
-
-  function getCenterPos(elWidth, elHeight) {
-      var layer = document.getElementById('floatLayer');
-      var layerRect = layer.getBoundingClientRect();
-      var viewCenterX = window.scrollX + document.documentElement.clientWidth / 2;
-      var viewCenterY = window.scrollY + document.documentElement.clientHeight / 2;
-      var layerLeft = window.scrollX + layerRect.left;
-      var layerTop = window.scrollY + layerRect.top;
-      var left = viewCenterX - layerLeft - (elWidth / 2);
-      var top = viewCenterY - layerTop - (elHeight / 2);
-      if (left < 10) left = 10;
-      if (top < 10) top = 10;
-      return { left: left, top: top };
-  }
-
-  function makeShape(type){
-    var el = document.createElement('div');
-    el.className = 'shape';
-    var pos = getCenterPos(80, 80);
-    el.style.left = pos.left + 'px';
-    el.style.top = pos.top + 'px';
-    el.style.width = '80px';
-    el.style.height = '80px';
-    el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff';
-    el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>';
-    floatLayer.appendChild(el);
-    makeMovable(el); bindXDel(el); bindResize(el);
-    save(); toast('已添加图形');
-  }
-
-  function makeFrame(shape){
-    var el = document.createElement('div');
-    el.className = 'frame';
-    var pos = getCenterPos(120, 120);
-    el.style.left = pos.left + 'px';
-    el.style.top = pos.top + 'px';
-    el.style.width = '120px';
-    el.style.height = '120px';
-    if(shape === 'circle') el.style.borderRadius = '50%';
-    else if(shape === 'rounded') el.style.borderRadius = '16px';
-
-    var img = document.createElement('img');
-    img.setAttribute('data-edit-img', '');
-    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E';
-    el.appendChild(img);
-    el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
-
-    floatLayer.appendChild(el);
-    makeMovable(el); bindXDel(el); bindResize(el); bindImg(img);
-    save(); toast('已添加图片框');
-  }
-
-  function makeFloater(){
-    var el = document.createElement('div');
-    el.className = 'floater';
-    el.contentEditable = 'true';
-    var pos = getCenterPos(160, 40);
-    el.style.left = pos.left + 'px';
-    el.style.top = pos.top + 'px';
-    el.style.width = '160px';
-    el.textContent = '自由文本';
-    el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>';
-    floatLayer.appendChild(el);
-    makeMovable(el); bindXDel(el); bindResize(el);
-    setTimeout(function(){ el.focus(); }, 50);
-    save(); toast('已添加浮动文本');
-  }
-
-  document.getElementById('btnAddShape').addEventListener('click', function(e){
-    e.stopPropagation();
-    document.getElementById('framePicker').classList.remove('show');
-    document.getElementById('shapePicker').classList.toggle('show');
-  });
-  document.getElementById('btnAddFrame').addEventListener('click', function(e){
-    e.stopPropagation();
-    document.getElementById('shapePicker').classList.remove('show');
-    document.getElementById('framePicker').classList.toggle('show');
-  });
+  function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
+  function getCenterPos(elWidth, elHeight) { var layer = document.getElementById('floatLayer'); var layerRect = layer.getBoundingClientRect(); var viewCenterX = window.scrollX + document.documentElement.clientWidth / 2; var viewCenterY = window.scrollY + document.documentElement.clientHeight / 2; var layerLeft = window.scrollX + layerRect.left; var layerTop = window.scrollY + layerRect.top; var left = viewCenterX - layerLeft - (elWidth / 2); var top = viewCenterY - layerTop - (elHeight / 2); if (left < 10) left = 10; if (top < 10) top = 10; return { left: left, top: top }; }
+  function makeShape(type){ var el = document.createElement('div'); el.className = 'shape'; var pos = getCenterPos(80, 80); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.innerHTML = shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); }
+  function makeFrame(shape){ var el = document.createElement('div'); el.className = 'frame'; var pos = getCenterPos(120, 120); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = document.createElement('img'); img.setAttribute('data-edit-img', ''); img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23333"/%3E%3Ctext x="50" y="55" font-size="12" fill="%23999" text-anchor="middle" font-family="sans-serif"%3E点击换图%3C/text%3E%3C/svg%3E'; el.appendChild(img); el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); }
+  function makeFloater(){ var el = document.createElement('div'); el.className = 'floater'; el.contentEditable = 'true'; var pos = getCenterPos(160, 40); el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.width = '160px'; el.textContent = '自由文本'; el.innerHTML += '<div class="rz"></div><button class="xdel">×</button>'; floatLayer.appendChild(el); makeMovable(el); bindXDel(el); bindResize(el); setTimeout(function(){ el.focus(); }, 50); save(); toast('已添加浮动文本'); }
+  document.getElementById('btnAddShape').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('framePicker').classList.remove('show'); document.getElementById('shapePicker').classList.toggle('show'); });
+  document.getElementById('btnAddFrame').addEventListener('click', function(e){ e.stopPropagation(); document.getElementById('shapePicker').classList.remove('show'); document.getElementById('framePicker').classList.toggle('show'); });
   document.getElementById('btnAddFloat').addEventListener('click', makeFloater);
-  document.querySelectorAll('#shapePicker .pick').forEach(function(p){
-    p.addEventListener('click', function(){
-      makeShape(this.dataset.shape);
-      document.getElementById('shapePicker').classList.remove('show');
-    });
-  });
-  document.querySelectorAll('#framePicker .pick').forEach(function(p){
-    p.addEventListener('click', function(){
-      makeFrame(this.dataset.frame);
-      document.getElementById('framePicker').classList.remove('show');
-    });
-  });
+  document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); document.getElementById('shapePicker').classList.remove('show'); }); });
+  document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); document.getElementById('framePicker').classList.remove('show'); }); });
 
   // ==================== 拖拽 / 缩放 / 删除 ====================
-  function makeMovable(el){
-    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
-    function down(e){
-      if(!editMode) return;
-      if(e.target.classList.contains('rz')) return;
-      if(e.target.classList.contains('xdel')) return;
-      e.preventDefault();
-      dragging = true; moved = false;
-      var p = e.touches ? e.touches[0] : e;
-      sx = p.clientX; sy = p.clientY;
-      sl = el.offsetLeft; st = el.offsetTop;
-      document.addEventListener('mousemove', move);
-      document.addEventListener('touchmove', move, {passive:false});
-      document.addEventListener('mouseup', up);
-      document.addEventListener('touchend', up);
-    }
-    function move(e){
-      if(!dragging) return;
-      e.preventDefault();
-      var p = e.touches ? e.touches[0] : e;
-      var dx = p.clientX - sx, dy = p.clientY - sy;
-      if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-      el.style.left = (sl + dx) + 'px';
-      el.style.top = (st + dy) + 'px';
-    }
-    function up(){
-      dragging = false;
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('touchmove', move);
-      document.removeEventListener('mouseup', up);
-      document.removeEventListener('touchend', up);
-      if(moved) save();
-    }
-    el.addEventListener('mousedown', down);
-    el.addEventListener('touchstart', down, {passive:false});
-  }
+  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = el.offsetLeft; st = el.offsetTop; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
+  function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
+  function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
 
-  function bindResize(el){
-    var rz = el.querySelector('.rz');
-    if(!rz) return;
-    var rs = false, sw = 0, sh = 0, sx = 0, sy = 0;
-    function down(e){
-      e.preventDefault(); e.stopPropagation();
-      rs = true;
-      var p = e.touches ? e.touches[0] : e;
-      sx = p.clientX; sy = p.clientY;
-      sw = el.offsetWidth; sh = el.offsetHeight;
-      document.addEventListener('mousemove', move);
-      document.addEventListener('touchmove', move, {passive:false});
-      document.addEventListener('mouseup', up);
-      document.addEventListener('touchend', up);
-    }
-    function move(e){
-      if(!rs) return;
-      e.preventDefault();
-      var p = e.touches ? e.touches[0] : e;
-      el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px';
-      el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px';
-    }
-    function up(){
-      rs = false;
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('touchmove', move);
-      document.removeEventListener('mouseup', up);
-      document.removeEventListener('touchend', up);
-      save();
-    }
-    rz.addEventListener('mousedown', down);
-    rz.addEventListener('touchstart', down, {passive:false});
-  }
-
-  function bindXDel(el){
-    var d = el.querySelector('.xdel');
-    if(!d) return;
-    d.addEventListener('click', function(e){
-      e.stopPropagation();
-      if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); }
-    });
-  }
-
-  // ==================== 初始化卡片工具 ====================
-  function initCardTools(){
-    document.querySelectorAll('#app .card').forEach(function(card){
-      if(!card.querySelector('.card-actions')){
-        var actions = document.createElement('div');
-        actions.className = 'card-actions';
-        actions.innerHTML = '<button onclick="deleteCard(this)">× 删除卡片</button>';
-        card.insertBefore(actions, card.firstChild);
-      }
-    });
-  }
-
-  // ==================== 绑定所有 ====================
-  function bindAll(){
-    initCardTools();
-    document.querySelectorAll('img[data-edit-img]').forEach(bindImg);
-    document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){
-      if(!el.dataset.moveBound){
-        el.dataset.moveBound = '1';
-        makeMovable(el); bindXDel(el); bindResize(el);
-        var img = el.querySelector('img');
-        if(img) bindImg(img);
-      }
-    });
-  }
+  function initCardTools(){ document.querySelectorAll('#app .card').forEach(function(card){ if(!card.querySelector('.card-actions')){ var actions = document.createElement('div'); actions.className = 'card-actions'; actions.innerHTML = '<button onclick="deleteCard(this)">× 删除卡片</button>'; card.insertBefore(actions, card.firstChild); } }); }
+  function bindAll(){ initCardTools(); document.querySelectorAll('img[data-edit-img]').forEach(bindImg); document.querySelectorAll('.shape, .frame, .floater').forEach(function(el){ if(!el.dataset.moveBound){ el.dataset.moveBound = '1'; makeMovable(el); bindXDel(el); bindResize(el); var img = el.querySelector('img'); if(img) bindImg(img); } }); }
 
   // ==================== 音乐播放器 ====================
-  var music = document.getElementById('bgMusic');
-  var musicBtn = document.getElementById('musicBtn');
-  var musicPanel = document.getElementById('musicPanel');
-  var mpPrev = document.getElementById('mpPrev');
-  var mpPlay = document.getElementById('mpPlay');
-  var mpNext = document.getElementById('mpNext');
-  var mpVolume = document.getElementById('mpVolume');
-  var mpAdd = document.getElementById('mpAdd');
-
-  var playlist = [];
-  var currentIndex = 0;
-  var currentVolume = 1;
-
-  try {
-    var savedList = localStorage.getItem(K_MUSIC);
-    if(savedList){
-      playlist = savedList.split('\n').filter(function(s){ return s.trim(); });
-    }
-    var savedIdx = parseInt(localStorage.getItem('myPage.musicIndex') || '0');
-    if(!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < playlist.length){
-      currentIndex = savedIdx;
-    }
-    var savedVol = localStorage.getItem('myPage.musicVolume');
-    if(savedVol !== null) currentVolume = parseFloat(savedVol);
-  } catch(e){}
-
-  music.volume = Math.max(0, Math.min(1, currentVolume));
-  mpVolume.value = Math.round(currentVolume * 100);
-
-  function loadCurrent(){
-    if(playlist.length === 0){
-      music.removeAttribute('src');
-      return;
-    }
-    music.src = playlist[currentIndex];
-    music.load();
-  }
-
-  function saveMusic(){
-    try {
-      localStorage.setItem(K_MUSIC, playlist.join('\n'));
-      localStorage.setItem('myPage.musicIndex', currentIndex);
-    } catch(e){}
-  }
-
-  function playMusic(){
-    if(playlist.length === 0){ toast('请先添加音乐'); return; }
-    if(!music.src) loadCurrent();
-    music.play().then(function(){
-      musicBtn.classList.add('playing');
-      mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
-    }).catch(function(){ toast('播放失败'); });
-  }
-  
-  function pauseMusic(){
-    music.pause();
-    musicBtn.classList.remove('playing');
-    mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>';
-  }
-
-  function prevMusic(){
-    if(playlist.length === 0) return;
-    var wasPlaying = !music.paused;
-    currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-    loadCurrent();
-    saveMusic();
-    if(wasPlaying) setTimeout(playMusic, 100);
-  }
-  function nextMusic(){
-    if(playlist.length === 0) return;
-    var wasPlaying = !music.paused;
-    currentIndex = (currentIndex + 1) % playlist.length;
-    loadCurrent();
-    saveMusic();
-    if(wasPlaying) setTimeout(playMusic, 100);
-  }
-
-  musicBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    musicPanel.classList.toggle('show');
-  });
-
-  mpPlay.addEventListener('click', function(){
-    if(music.paused) playMusic();
-    else pauseMusic();
-  });
-  mpPrev.addEventListener('click', prevMusic);
-  mpNext.addEventListener('click', nextMusic);
-
-  mpVolume.addEventListener('input', function(){
-    currentVolume = mpVolume.value / 100;
-    music.volume = currentVolume;
-    try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){}
-  });
-
-  mpAdd.addEventListener('click', function(){
-    var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', '');
-    if(url === null) return;
-    url = url.trim();
-    if(!url) return;
-    playlist.push(url);
-    currentIndex = playlist.length - 1;
-    loadCurrent();
-    saveMusic();
-    toast('已添加，点 ▶ 播放');
-    playMusic();
-  });
-
-  // 长按 ♪ → 编辑/删除当前音乐
+  var music = document.getElementById('bgMusic'), musicBtn = document.getElementById('musicBtn'), musicPanel = document.getElementById('musicPanel'), mpPrev = document.getElementById('mpPrev'), mpPlay = document.getElementById('mpPlay'), mpNext = document.getElementById('mpNext'), mpVolume = document.getElementById('mpVolume'), mpAdd = document.getElementById('mpAdd');
+  var playlist = [], currentIndex = 0, currentVolume = 1;
+  try { var savedList = localStorage.getItem(K_MUSIC); if(savedList){ playlist = savedList.split('\n').filter(function(s){ return s.trim(); }); } var savedIdx = parseInt(localStorage.getItem('myPage.musicIndex') || '0'); if(!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < playlist.length){ currentIndex = savedIdx; } var savedVol = localStorage.getItem('myPage.musicVolume'); if(savedVol !== null) currentVolume = parseFloat(savedVol); } catch(e){}
+  music.volume = Math.max(0, Math.min(1, currentVolume)); mpVolume.value = Math.round(currentVolume * 100);
+  function loadCurrent(){ if(playlist.length === 0){ music.removeAttribute('src'); return; } music.src = playlist[currentIndex]; music.load(); }
+  function saveMusic(){ try { localStorage.setItem(K_MUSIC, playlist.join('\n')); localStorage.setItem('myPage.musicIndex', currentIndex); } catch(e){} }
+  function playMusic(){ if(playlist.length === 0){ toast('请先添加音乐'); return; } if(!music.src) loadCurrent(); music.play().then(function(){ musicBtn.classList.add('playing'); mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>'; }).catch(function(){ toast('播放失败'); }); }
+  function pauseMusic(){ music.pause(); musicBtn.classList.remove('playing'); mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>'; }
+  function prevMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
+  function nextMusic(){ if(playlist.length === 0) return; var wasPlaying = !music.paused; currentIndex = (currentIndex + 1) % playlist.length; loadCurrent(); saveMusic(); if(wasPlaying) setTimeout(playMusic, 100); }
+  musicBtn.addEventListener('click', function(e){ e.stopPropagation(); musicPanel.classList.toggle('show'); });
+  mpPlay.addEventListener('click', function(){ if(music.paused) playMusic(); else pauseMusic(); });
+  mpPrev.addEventListener('click', prevMusic); mpNext.addEventListener('click', nextMusic);
+  mpVolume.addEventListener('input', function(){ currentVolume = mpVolume.value / 100; music.volume = currentVolume; try { localStorage.setItem('myPage.musicVolume', currentVolume); } catch(e){} });
+  mpAdd.addEventListener('click', function(){ var url = prompt('输入音乐链接（以 .mp3 结尾）\n\n可以多次添加，之后用上一首/下一首切换', ''); if(url === null) return; url = url.trim(); if(!url) return; playlist.push(url); currentIndex = playlist.length - 1; loadCurrent(); saveMusic(); toast('已添加，点 ▶ 播放'); playMusic(); });
   var pressTimer = null, longPressed = false;
-  function startPress(){
-    longPressed = false;
-    clearTimeout(pressTimer);
-    pressTimer = setTimeout(function(){
-      longPressed = true;
-      var cur = playlist[currentIndex] || '';
-      var url = prompt('修改当前音乐链接：\n（留空 = 删除这首）', cur);
-      if(url === null) return;
-      url = url.trim();
-      if(!url){
-        playlist.splice(currentIndex, 1);
-        if(currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1);
-        loadCurrent();
-      } else {
-        playlist[currentIndex] = url;
-        loadCurrent();
-      }
-      saveMusic();
-      toast('已更新');
-    }, 700);
-  }
+  function startPress(){ longPressed = false; clearTimeout(pressTimer); pressTimer = setTimeout(function(){ longPressed = true; var cur = playlist[currentIndex] || ''; var url = prompt('修改当前音乐链接：\n（留空 = 删除这首）', cur); if(url === null) return; url = url.trim(); if(!url){ playlist.splice(currentIndex, 1); if(currentIndex >= playlist.length) currentIndex = Math.max(0, playlist.length - 1); loadCurrent(); } else { playlist[currentIndex] = url; loadCurrent(); } saveMusic(); toast('已更新'); }, 700); }
   function cancelPress(){ clearTimeout(pressTimer); }
-
   musicBtn.addEventListener('mousedown', function(e){ e.preventDefault(); startPress(); });
-  musicBtn.addEventListener('mouseup', function(e){
-    cancelPress();
-    if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); }
-  });
+  musicBtn.addEventListener('mouseup', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); } });
   musicBtn.addEventListener('mouseleave', cancelPress);
   musicBtn.addEventListener('touchstart', startPress, {passive:true});
-  musicBtn.addEventListener('touchend', function(e){
-    cancelPress();
-    if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); }
-  });
+  musicBtn.addEventListener('touchend', function(e){ cancelPress(); if(!longPressed){ e.preventDefault(); musicPanel.classList.toggle('show'); } });
   musicBtn.addEventListener('touchcancel', cancelPress);
   musicBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-
-  document.addEventListener('click', function(e){
-    if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){
-      musicPanel.classList.remove('show');
-    }
-  });
-
+  document.addEventListener('click', function(e){ if(musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){ musicPanel.classList.remove('show'); } });
   loadCurrent();
   
   // ==================== 初始化 ====================
-  bindAll();
-  refreshCollectionMenu();
-  refreshLinkOptions(); 
-  setEdit(false);
+  bindAll(); refreshCollectionMenu(); refreshLinkOptions(); setEdit(false);
 
-  // ==================== 开屏逻辑（终极修复版） ====================
+  // ==================== 开屏逻辑（终极稳如泰山版） ====================
   setTimeout(function() {
     var splash = document.getElementById('splash');
     var splashCard = document.getElementById('splashCard');
     var splashBtn = document.getElementById('splashEnterBtn');
-    
     if (!splash) return;
 
-    // 【关键修复】添加这行，触发卡片和按钮的滑出动画，解决"卡片失踪"问题
+    // 1. 稍微延迟，确保页面渲染完毕，加上 show 类滑出
     setTimeout(function() {
       if (splashCard) splashCard.classList.add('show');
       if (splashBtn) splashBtn.classList.add('show');
     }, 100);
 
-    var clickTimer = null; // 用于区分单击和双击
+    var clickTimer = null;
 
-    // 1. 强制进入主页的逻辑（先移除开屏层，再播音乐，绝不卡死）
-    function forceEnter() {
+    // 2. 核心进入函数：先移除开屏，再尝试播放音乐（隔离错误）
+    function enterMainPage() {
       var sp = document.getElementById('splash');
       if (!sp) return;
       
-      // 立刻移除开屏层，让主页功能瞬间恢复
+      // 立刻移除遮罩层，让主页功能恢复
       sp.remove();
       
-      // 音乐播放隔离在 try/catch 和延迟中，即使报错也绝不阻止进入主页
+      // 延迟且隔离地尝试播放音乐
       setTimeout(function() {
         try {
           if (typeof playMusic === 'function') { playMusic(); }
           else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-        } catch(err) {
-          console.log('音乐播放失败:', err);
-        }
+        } catch(err) {}
       }, 100);
     }
 
-    // 2. 双击文字进入编辑状态
+    // 3. 双击文字编辑（阻止单击进入）
     splash.querySelectorAll('[data-splash-edit]').forEach(function(el){
       el.addEventListener('dblclick', function(e){
-        e.stopPropagation(); 
-        clearTimeout(clickTimer); // 关键：清除单击延迟，防止进入主页
+        e.stopPropagation();
+        clearTimeout(clickTimer);
         el.setAttribute('contenteditable', 'true');
         el.focus();
-        // 全选文字
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
+        var range = document.createRange(); range.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
       });
-      el.addEventListener('blur', function() { 
-        el.removeAttribute('contenteditable'); 
-      });
-      el.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
-      });
+      el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
+      el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
     });
 
-    // 3. 全局单击监听（延迟执行，避免和双击冲突）
+    // 4. 全局单击监听（延迟250ms执行，避开双击冲突）
     splash.addEventListener('click', function(e) {
       if (e.target.getAttribute('contenteditable') === 'true') return;
-      // 如果在双击文字，不触发跳转
       if (e.target.hasAttribute('data-splash-edit') && e.detail === 2) return;
-      
-      clickTimer = setTimeout(function() {
-        forceEnter();
-      }, 300); // 300ms 内如果没有第二下点击，就进入主页
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(enterMainPage, 250);
     });
 
-    // 4. 按钮单独监听（防止被卡片遮挡）
+    // 5. 按钮单击直接进入（不再延迟）
     if (splashBtn) {
       splashBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        clearTimeout(clickTimer); // 清除单击延迟，立即进入
-        forceEnter();
+        clearTimeout(clickTimer);
+        enterMainPage();
       });
     }
 
+    // 6. 兜底保护：如果 6 秒后还没进入，自动进入主页，防卡死
+    setTimeout(function() {
+      if (document.getElementById('splash')) {
+        console.log('开屏超时兜底，自动进入主页');
+        enterMainPage();
+      }
+    }, 6000);
+
   }, 100);
 
+})();
 </script>
 </body>
 </html>
