@@ -731,7 +731,7 @@
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--border);
-    border-radius: 28px; /* 恢复四周圆角 */
+    border-radius: 28px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -741,15 +741,17 @@
     text-align: center;
     gap: 20px;
     
-    /* 初始隐藏：位于屏幕下方 100% 处 */
-    transform: translateY(100%);
-    /* 平滑上滑至居中 */
-    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    /* 关键：初始状态完全隐藏在屏幕下方 */
+    transform: translateY(100vh);
+    opacity: 0;
+    /* 平滑上滑到屏幕正中心 */
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
   }
 
   /* 滑出后回到正中心 */
   .splash-card.slide-in {
     transform: translateY(0);
+    opacity: 1;
   }
 
   /* 标题样式 */
