@@ -540,22 +540,28 @@
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
 
-    #stylePanel{
+        #stylePanel{
       top:auto !important;
       bottom:0 !important;
       left:0 !important;
       right:0 !important;
       width:100vw !important;
       max-width:100vw !important;
-      max-height:60vh;
+      max-height:38vh;
       border-radius:20px 20px 0 0 !important;
-      padding:14px 14px calc(14px + var(--safe-bottom)) 14px;
+      padding:10px 14px calc(10px + var(--safe-bottom)) 14px;
       transform:translateY(100%);
       transition:transform .3s cubic-bezier(.2,.8,.2,1);
       display:flex !important;
       visibility:hidden;
+      font-size:11px;
     }
     #stylePanel.show{transform:translateY(0); visibility:visible;}
+    #stylePanel .sp-title{margin-top:4px;padding-bottom:3px;}
+    #stylePanel .sp-row{margin-bottom:4px;gap:6px;}
+    #stylePanel .sp-row > span{font-size:10px; min-width:48px;}
+    #stylePanel .sp-btn{padding:4px 8px; font-size:10px;}
+    #stylePanel .sp-note{display:none;}
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
@@ -980,32 +986,56 @@
   document.getElementById('btnEdit').addEventListener('click', function(){ setEdit(!editMode); });
 
   // ==================== 图片点击 ====================
-  function bindImg(img){
+   function bindImg(img){
     if(!img || img.dataset.bound === '1') return;
     img.dataset.bound = '1';
+
     var t0 = 0, x0 = 0, y0 = 0, moved = false;
-    function down(e){
-      t0 = Date.now(); moved = false;
+    var lastOpenAt = 0;
+
+    function start(e){
+      t0 = Date.now();
+      moved = false;
       var p = e.touches ? e.touches[0] : e;
       x0 = p.clientX; y0 = p.clientY;
     }
+
     function move(e){
       var p = e.touches ? e.touches[0] : e;
-      if(Math.abs(p.clientX - x0) > 10 || Math.abs(p.clientY - y0) > 10) moved = true;
+      var dx = Math.abs(p.clientX - x0);
+      var dy = Math.abs(p.clientY - y0);
+      if(dx > 15 || dy > 15) moved = true;
     }
-    function up(e){
+
+    function trigger(){
       if(!editMode || isReadonly) return;
-      if(moved || Date.now() - t0 > 700) return;
-      e.preventDefault(); e.stopPropagation();
+      if(moved) return;
+      if(Date.now() - t0 > 800) return;
+      var now = Date.now();
+      if(now - lastOpenAt < 400) return;
+      lastOpenAt = now;
       openPicker(img, false);
     }
-    img.addEventListener('mousedown', down, true);
-    img.addEventListener('touchstart', down, true);
-    img.addEventListener('mousemove', move, true);
-    img.addEventListener('touchmove', move, true);
-    img.addEventListener('click', up, true);
-  }
 
+    // 触摸屏
+    img.addEventListener('touchstart', start, {passive: true, capture: true});
+    img.addEventListener('touchmove', move, {passive: true, capture: true});
+    img.addEventListener('touchend', function(e){
+      trigger();
+      e.preventDefault();   // 阻止 touchend 之后的 click 再次触发
+      e.stopPropagation();
+    }, {passive: false, capture: true});
+
+    // 鼠标（桌面）
+    img.addEventListener('mousedown', function(e){
+      if(e.button !== 0) return;
+      start(e);
+    }, true);
+    img.addEventListener('mousemove', move, true);
+    img.addEventListener('mouseup', function(e){
+      trigger();
+    }, true);
+  }
   // ==================== 图片库 ====================
   var picker = document.getElementById('picker');
   var pickerGrid = document.getElementById('pickerGrid');
