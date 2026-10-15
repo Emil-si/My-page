@@ -741,17 +741,27 @@
     text-align: center;
     gap: 20px;
     
-    /* 关键：初始状态完全隐藏在屏幕下方 */
-    transform: translateY(100vh);
+    /* 默认隐藏，等待动画播放 */
     opacity: 0;
-    /* 平滑上滑到屏幕正中心 */
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+    animation: splashSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-play-state: paused; /* 初始不播放，等 JS 确认再播放 */
   }
 
-  /* 滑出后回到正中心 */
+  /* 当 JS 给卡片加上 slide-in 时，触发动画 */
   .splash-card.slide-in {
-    transform: translateY(0);
-    opacity: 1;
+    animation-play-state: running;
+  }
+
+  /* 关键帧动画：从屏幕下方滑入到正中间 */
+  @keyframes splashSlideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(50vh) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   /* 标题样式 */
@@ -2429,13 +2439,38 @@
     setTimeout(playPageEffects, 150);
   };
 
-  // ==================== 开屏动画逻辑（终极纯净版） ====================
+// ==================== 开屏动画逻辑（稳定 + 点击任意处跳过） ====================
   var splash = document.getElementById('splash');
   var splashCard = document.querySelector('.splash-card');
   var splashBtn = document.getElementById('splashEnterBtn');
   
+  // 封装一个“进入主页”的函数，反复调用也没事
+  function enterMainPage() {
+    var sp = document.getElementById('splash');
+    if (!sp) return; // 已经移除过了
+    
+    // 1. 播放音乐（利用点击手势解除浏览器自动播放限制）
+    try {
+      if (typeof playMusic === 'function') { playMusic(); }
+      else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
+    } catch(err) {}
+    
+    // 2. 触发文字特效
+    try {
+      if (typeof playPageEffects === 'function') {
+        setTimeout(playPageEffects, 400);
+      }
+    } catch(err) {}
+    
+    // 3. 彻底移除开屏层（这是恢复主页交互的关键）
+    sp.remove();
+    
+    // 4. 提示
+    try { if (typeof toast === 'function') toast('欢迎进入主页'); } catch(err){}
+  }
+
   if (splash && splashCard && splashBtn) {
-    // 1. 页面加载后卡片滑出
+    // 1. 页面加载后，给卡片加上 slide-in 触发滑出动画
     setTimeout(function() {
       splashCard.classList.add('slide-in');
       splashBtn.classList.add('show');
@@ -2457,45 +2492,35 @@
         el.removeAttribute('contenteditable'); 
       });
       el.addEventListener('keydown', function(e){
-        if (e.key === 'Enter'){ 
-          e.preventDefault(); 
-          el.blur(); 
-        }
+        if (e.key === 'Enter'){ e.preventDefault(); el.blur(); }
       });
     });
     
-    // 3. 点击胶囊按钮：只做三件事——移开屏、播音乐、触发特效
+    // 3. 点击右下角胶囊按钮：进入主页
     splashBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       e.preventDefault();
-      
-      // 【关键修复】彻底移除此开屏层，恢复页面正常交互
-      splash.remove();
-      
-      // 播放音乐（利用点击手势解除浏览器限制）
-      try {
-        if (typeof playMusic === 'function') { playMusic(); }
-        else if (typeof music !== 'undefined' && music.src) { music.play().catch(function(){}); }
-      } catch(err) {
-        console.log('音乐未播放:', err);
-      }
-      
-      // 触发主页文字特效
-      try {
-        if (typeof playPageEffects === 'function') {
-          setTimeout(playPageEffects, 400);
-        }
-      } catch(err) {
-        console.log('特效未触发:', err);
-      }
-      
-      // 提示用户已进入主页
-      try {
-        if (typeof toast === 'function') { toast('欢迎进入主页'); }
-      } catch(err) {}
+      enterMainPage();
     });
     
-    // 4. 启动主页文字特效（在后台准备）
+    // 4. 【关键新增】点击开屏层的任意空白处，也可以进入主页，防止再被卡住
+    splash.addEventListener('click', function(e) {
+      // 如果点的是正在编辑的文字，不跳转
+      if (e.target.getAttribute('contenteditable') === 'true') return;
+      // 如果点的是文字本身（为了双击编辑），也不跳转
+      if (e.target.hasAttribute('data-splash-edit')) return;
+      enterMainPage();
+    });
+    
+    // 5. 兜底：如果等了 5 秒用户还没操作，自动进入主页，绝不死锁
+    setTimeout(function() {
+      if (document.getElementById('splash')) {
+        console.log('开屏超时，自动进入主页');
+        enterMainPage();
+      }
+    }, 5000);
+    
+    // 6. 触发主页特效准备
     setTimeout(function(){
       if (typeof playPageEffects === 'function') {
         playPageEffects();
