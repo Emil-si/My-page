@@ -565,65 +565,148 @@
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
   }
-  /* ===== 音乐播放面板 ===== */
-  #musicPanel{
-    position:fixed;
-    bottom:calc(80px + var(--safe-bottom));
-    right:14px;
-    z-index:210;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(24px) saturate(180%);
-    backdrop-filter:blur(24px) saturate(180%);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:0 12px 40px rgba(0,0,0,.4);
-    display:none;
-    flex-direction:column;
-    gap:10px;
-    min-width:230px;
-    font-size:12px;
-  }
-  #musicPanel.show{display:flex;}
-  .mp-controls{
-    display:flex; align-items:center; justify-content:center; gap:14px;
-  }
-  .mp-ctrl-btn{
-    width:38px; height:38px;
-    border-radius:50%;
-    border:1px solid var(--border);
-    background:transparent;
-    color:var(--text);
-    font-size:15px;
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    padding:0;
-    transition:all .15s;
-  }
-  .mp-ctrl-btn:hover{background:rgba(127,127,127,0.12);}
-  .mp-ctrl-btn:active{transform:scale(.92);}
-  .mp-ctrl-btn.play{
-    width:48px; height:48px;
-    background:var(--accent);
-    color:var(--accent-text);
-    border-color:var(--accent);
-    font-size:18px;
-  }
-  .mp-row{display:flex; align-items:center; gap:8px;}
-  .mp-row > span{font-size:14px; color:var(--sub);}
-  .mp-row input[type="range"]{flex:1; cursor:pointer; height:20px;}
-  .mp-add{
-    width:100%; padding:8px;
-    border-radius:10px;
-    border:1px dashed var(--border);
-    background:transparent;
-    color:var(--sub);
-    font-size:11px;
-    font-family:monospace;
-    cursor:pointer;
-    transition:all .15s;
-  }
-  .mp-add:hover{border-color:var(--accent); color:var(--accent);}
+  /* ===== 音乐播放面板（胶囊型改造） ===== */
+#musicPanel {
+  position: fixed;
+  bottom: calc(80px + var(--safe-bottom));
+  right: 14px;
+  z-index: 210;
+  background: var(--bar); /* 使用你原有的背景色变量 */
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* 细微外边框 */
+  border-radius: 999px; /* 胶囊形状 */
+  padding: 6px 14px 6px 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  display: none;
+  flex-direction: row; /* 横向排列 */
+  align-items: center;
+  gap: 12px;
+}
+
+#musicPanel.show {
+  display: flex;
+}
+
+/* 左侧音符图标按钮 */
+.music-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.music-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.music-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 中间控制按钮 */
+.mp-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mp-ctrl-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.mp-ctrl-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mp-ctrl-btn:hover {
+  background: rgba(127, 127, 127, 0.2);
+}
+
+.mp-ctrl-btn.play {
+  background: var(--accent);
+  color: var(--accent-text);
+  margin: 0 2px;
+}
+
+.mp-ctrl-btn.play:hover {
+  transform: scale(1.05);
+}
+
+/* 竖向音量控制区 */
+.mp-vol-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  width: 20px;
+  overflow: hidden;
+}
+
+#mpVolume {
+  /* 旋转90度实现竖向效果，同时保持极简外观 */
+  transform: rotate(-90deg);
+  width: 38px;
+  height: 4px;
+  -webkit-appearance: none;
+  background: rgba(127, 127, 127, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#mpVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  cursor: pointer;
+}
+
+/* 添加音乐按钮 */
+.mp-add {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--sub);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.mp-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 </style>
 </head>
 <body>
@@ -861,16 +944,35 @@
 
 <div id="musicBtn">♪</div>
 <div id="musicPanel">
+  <!-- 左侧：带边框的音乐图标 -->
+  <button class="music-icon-btn" id="mpInfoBtn" title="音乐信息">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V5l12-2v13"></path>
+      <circle cx="6" cy="18" r="3"></circle>
+      <circle cx="18" cy="16" r="3"></circle>
+    </svg>
+  </button>
+  
+  <!-- 控制按钮区 -->
   <div class="mp-controls">
-    <button class="mp-ctrl-btn" id="mpPrev" title="上一首">⏮</button>
-    <button class="mp-ctrl-btn play" id="mpPlay" title="播放/暂停">▶</button>
-    <button class="mp-ctrl-btn" id="mpNext" title="下一首">⏭</button>
+    <button class="mp-ctrl-btn" id="mpPrev" title="上一首">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+    <button class="mp-ctrl-btn play" id="mpPlay" title="播放/暂停">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="mp-ctrl-btn" id="mpNext" title="下一首">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+    </button>
   </div>
-  <div class="mp-row">
-    <span>🔊</span>
+
+  <!-- 竖向音量滑块 -->
+  <div class="mp-vol-container">
     <input type="range" id="mpVolume" min="0" max="100" value="100">
   </div>
-  <button class="mp-add" id="mpAdd">＋ 添加音乐</button>
+
+  <!-- 添加音乐按钮 (替换为极简+号) -->
+  <button class="mp-add" id="mpAdd" title="添加音乐">＋</button>
 </div>
 
 <div id="shapePicker">
@@ -1844,18 +1946,21 @@
     } catch(e){}
   }
 
-  function playMusic(){
+   function playMusic(){
     if(playlist.length === 0){ toast('请先添加音乐'); return; }
     if(!music.src) loadCurrent();
     music.play().then(function(){
       musicBtn.classList.add('playing');
-      mpPlay.textContent = '⏸';
+      // 替换为暂停 SVG 图标
+      mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
     }).catch(function(){ toast('播放失败'); });
   }
+  
   function pauseMusic(){
     music.pause();
     musicBtn.classList.remove('playing');
-    mpPlay.textContent = '▶';
+    // 替换为播放 SVG 图标
+    mpPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>';
   }
 
   function prevMusic(){
