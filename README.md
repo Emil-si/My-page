@@ -32,10 +32,11 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{max-width:100vw;overflow-x:hidden;background:transparent;}
   
-  /* 修复：移除 body 的 padding-top，避免与固定定位冲突 */
+  /* ===== 布局修复核心：body 只负责让出工具栏的高度 ===== */
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--text); min-height:100vh;
+    padding-top: calc(48px + var(--safe-top));
     padding-bottom:calc(30px + var(--safe-bottom));
     padding-left:var(--safe-left); padding-right:var(--safe-right);
   }
@@ -49,12 +50,10 @@
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
   
-  /* 修复：导航栏改为 fixed，彻底解决下沉和推挤 */
+  /* ===== 布局修复核心：导航栏改用 sticky，紧贴工具栏下方，随文档流滚动并吸附 ===== */
   #topnav{
-    position:fixed;
-    top:calc(48px + var(--safe-top));
-    left:0;
-    right:0;
+    position:sticky;
+    top: calc(48px + var(--safe-top));
     z-index:90;
     max-width:640px;
     margin:0 auto;
@@ -81,11 +80,11 @@
   .citem.active{background:var(--accent);color:var(--accent-text);}
   .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
   
-  /* 修复：给内容区留出固定导航栏的高度空间 */
+  /* ===== 布局修复核心：移除多余的 padding-top，内容紧贴导航栏 ===== */
   #app{
     max-width:640px;
     margin:0 auto;
-    padding: calc(48px + 48px + 14px + var(--safe-top)) 14px 14px 14px;
+    padding: 14px;
     position:relative;
     z-index:10;
   }
@@ -424,11 +423,14 @@
 
   /* ==================== 移动端适配修复 ==================== */
   @media (max-width:640px){
-    /* 移动端导航栏位置和高度修正 */
+    body{padding-top:calc(44px + var(--safe-top));}
+    #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
+    .btn{padding:5px 9px; font-size:11px;}
+    .btn .lbl{display:none;}
+    .btn .ico{font-size:15px;}
     #topnav{top:calc(44px + var(--safe-top)); padding:8px 10px; gap:4px;}
     .navlink{padding:6px 11px; font-size:10px;}
-    /* 移动端主体内容顶部内边距修正，预留固定导航栏的高度 */
-    #app{padding: calc(44px + 44px + 10px + var(--safe-top)) 10px 10px 10px;}
+    #app{padding: 10px;}
     .card{padding:14px; border-radius:16px; margin-bottom:10px;}
     .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
     .avatar{width:64px; height:64px; border-width:2px;}
