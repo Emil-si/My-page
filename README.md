@@ -242,7 +242,7 @@
     .bwrap > .row-tools { gap: 6px; }
     .row-tools button { width: 30px; height: 30px; font-size: 15px; }
   }
-  /* ===== 开屏专用工具栏（z-index 已修复） ===== */
+  /* ===== 开屏专用工具栏 ===== */
   #splashToolbar {
     position: fixed;
     top: calc(48px + var(--safe-top));
@@ -263,6 +263,7 @@
   #splashToolbar::-webkit-scrollbar { display: none; }
   #splashToolbar.show { display: flex !important; }
 
+  /* ===== 开屏浮动文本（可编辑 + 拖动手柄分离） ===== */
   .splash-floater {
     position: absolute;
     z-index: 100005;
@@ -276,10 +277,11 @@
     color: #f0f0f0;
     font-size: 14px; line-height: 1.5;
     word-break: break-word;
-    cursor: move; outline: none;
+    outline: none;
     pointer-events: auto;
-    touch-action: none;
-    user-select: none;
+    user-select: text;
+    -webkit-user-select: text;
+    touch-action: auto;
   }
   body:not(.editing) .splash-floater {
     border-color: transparent;
@@ -287,6 +289,38 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     cursor: default;
+  }
+  .splash-text {
+    outline: none;
+    display: block;
+    min-width: 40px;
+    min-height: 20px;
+    cursor: text;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  .splash-fmove {
+    position: absolute;
+    top: -10px; right: -10px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    font-size: 12px;
+    line-height: 1;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 6;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  body:not(.editing) .splash-fmove {
+    display: none;
   }
   .splash-floater .splash-fdel {
     position: absolute;
@@ -305,8 +339,7 @@
     padding: 0;
     z-index: 5;
   }
-  body.editing .splash-floater:hover .splash-fdel,
-  body.editing .splash-floater:focus-within .splash-fdel {
+  body.editing .splash-floater .splash-fdel {
     display: flex;
   }
 </style>
@@ -342,7 +375,6 @@
   <button class="btn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 开屏专用工具栏 -->
 <div id="splashToolbar">
   <button class="btn" id="btnSplashAddFloat"><span class="ico">＋</span><span class="lbl">开屏浮动文本</span></button>
   <span class="spacer"></span>
@@ -811,7 +843,7 @@
   function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ if(!app) return; try { localStorage.setItem(K_CONTENT, serialize()); } catch(e){ alert('保存失败：浏览器存储空间已满'); } }, 300); }
   if (app) app.addEventListener('input', function(){ if(editMode) save(); });
 
-  // ==================== 6. 编辑模式（同步开屏编辑） ====================
+  // ==================== 6. 编辑模式 ====================
   function setEdit(on){
     if(isReadonly) return; 
     editMode = on; 
@@ -916,7 +948,7 @@
 
   function refreshLinkOptions(){ var sel = document.getElementById('spLink'); if(!sel) return; var currentVal = sel.value; sel.innerHTML = '<option value="">无</option>'; document.querySelectorAll('#app .panel').forEach(function(p){ var opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.dataset.name || p.id; sel.appendChild(opt); }); if(currentVal) sel.value = currentVal; }
 
-  // ==================== 10. 样式面板与浮动元素编辑 ====================
+  // ==================== 10. 样式面板 ====================
   var stylePanel = document.getElementById('stylePanel');
   var btnStyle = document.getElementById('btnStyle'); if(btnStyle) btnStyle.addEventListener('click', function(e){ e.stopPropagation(); if(stylePanel) stylePanel.classList.toggle('show'); });
 
@@ -1006,7 +1038,7 @@
   document.addEventListener('click', function(e){ if(musicPanel && musicPanel.classList.contains('show') && !musicPanel.contains(e.target) && !musicBtn.contains(e.target)){ musicPanel.classList.remove('show'); } });
   loadCurrent();
 
-  // ==================== 13. 页面切换与集合（恢复链接跳转） ====================
+  // ==================== 13. 页面切换 ====================
   var navHistory = [];
   window.switchTab = function(id){
     var cur = document.querySelector('.panel.active'); if(cur && cur.id !== id){ navHistory.push(cur.id); if(navHistory.length > 30) navHistory.shift(); }
@@ -1043,7 +1075,7 @@
   var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); saveSplash(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '', currentSplash = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; currentSplash = localStorage.getItem(K_SPLASH) || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';var _s=' + JSON.stringify(currentSplash) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);if(_s)localStorage.setItem("myPage.splash.v1",_s);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
   var btnImport = document.getElementById('btnImport'); if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); if(app) app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
 
-  // ==================== 15. 文字特效初始化 ====================
+  // ==================== 15. 文字特效 ====================
   function playPageEffects() {
     var currentPanel = document.querySelector('.panel.active'); if (!currentPanel) return;
     var elements = currentPanel.querySelectorAll('[data-edit][class*="fx-"]');
@@ -1053,7 +1085,7 @@
     sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
-  // ==================== 16. 开屏浮动元素编辑（唯一版本） ====================
+  // ==================== 16. 开屏浮动元素编辑 ====================
   var splashActiveFloater = null;
   var splashToolbar = document.getElementById('splashToolbar');
 
@@ -1063,13 +1095,14 @@
 
   function addSplashFloater() {
       var card = getSplashCard();
-      if (!card) { toast('请先点顶部"🎬 开屏"打开开屏'); return; }
+      if (!card) { toast('请先打开开屏'); return; }
       
       var el = document.createElement('div');
       el.className = 'splash-floater';
-      el.contentEditable = 'true';
-      el.textContent = '开屏文字';
-      el.innerHTML += '<button class="splash-fdel">×</button>';
+      el.innerHTML = '<div class="splash-text" contenteditable="true">开屏文字</div>' +
+                     '<button class="splash-fdel">×</button>' +
+                     '<button class="splash-fmove" title="拖动">✥</button>';
+      
       el.style.left = '50%';
       el.style.top = '50%';
       el.style.transform = 'translate(-50%, -50%)';
@@ -1078,6 +1111,8 @@
       card.appendChild(el);
       
       var delBtn = el.querySelector('.splash-fdel');
+      var textEl = el.querySelector('.splash-text');
+      
       delBtn.addEventListener('click', function(e) {
           e.stopPropagation();
           if (confirm('删除这个开屏浮动文本？')) {
@@ -1094,15 +1129,18 @@
           e.stopPropagation();
           selectSplashText(el);
       });
-      el.addEventListener('dblclick', function(e) {
-          e.stopPropagation();
-          el.focus();
-          var range = document.createRange(); range.selectNodeContents(el);
-          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-      });
-      el.addEventListener('blur', function() { saveSplashFloaters(); });
       
-      el.focus();
+      setTimeout(function() {
+          if (textEl) {
+              textEl.focus();
+              var range = document.createRange();
+              range.selectNodeContents(textEl);
+              var sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+          }
+      }, 100);
+      
       selectSplashText(el);
       saveSplashFloaters();
       toast('已添加开屏浮动文本');
@@ -1116,11 +1154,15 @@
   }
 
   function makeSplashFloaterMovable(el) {
+      var moveHandle = el.querySelector('.splash-fmove');
+      if (!moveHandle) return;
+      
       var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
+      
       function down(e) {
           if (!editMode) return;
-          if (e.target.classList.contains('splash-fdel')) return;
           e.preventDefault();
+          e.stopPropagation();
           dragging = true; moved = false;
           
           if (el.style.transform) {
@@ -1141,6 +1183,7 @@
           document.addEventListener('mouseup', up);
           document.addEventListener('touchend', up);
       }
+      
       function move(e) {
           if (!dragging) return;
           e.preventDefault();
@@ -1150,6 +1193,7 @@
           el.style.left = (sl + dx) + 'px';
           el.style.top = (st + dy) + 'px';
       }
+      
       function up() {
           dragging = false;
           document.removeEventListener('mousemove', move);
@@ -1158,8 +1202,9 @@
           document.removeEventListener('touchend', up);
           if (moved) saveSplashFloaters();
       }
-      el.addEventListener('mousedown', down);
-      el.addEventListener('touchstart', down, {passive:false});
+      
+      moveHandle.addEventListener('mousedown', down);
+      moveHandle.addEventListener('touchstart', down, {passive:false});
   }
 
   function saveSplashFloaters() {
@@ -1169,11 +1214,9 @@
           var floaters = card.querySelectorAll('.splash-floater');
           var data = [];
           floaters.forEach(function(el) {
-              var clone = el.cloneNode(true);
-              var d = clone.querySelector('.splash-fdel');
-              if (d) d.remove();
+              var textEl = el.querySelector('.splash-text');
               data.push({
-                  text: clone.textContent.trim(),
+                  text: textEl ? textEl.textContent.trim() : '',
                   left: el.style.left,
                   top: el.style.top,
                   fontSize: el.style.fontSize,
@@ -1196,9 +1239,10 @@
           arr.forEach(function(item) {
               var el = document.createElement('div');
               el.className = 'splash-floater';
-              el.contentEditable = 'true';
-              el.textContent = item.text || '开屏文字';
-              el.innerHTML += '<button class="splash-fdel">×</button>';
+              var safeText = (item.text || '开屏文字').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              el.innerHTML = '<div class="splash-text" contenteditable="true">' + safeText + '</div>' +
+                             '<button class="splash-fdel">×</button>' +
+                             '<button class="splash-fmove" title="拖动">✥</button>';
               el.style.left = item.left || '50%';
               el.style.top = item.top || '50%';
               el.style.fontSize = item.fontSize || '16px';
