@@ -59,7 +59,7 @@
   .citem:hover{background:rgba(127,127,127,0.15);}
   .citem.active{background:var(--accent);color:var(--accent-text);}
   .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
-  #app{max-width:640px;margin:0 auto;padding:14px;position:relative;z-index:10;}
+  #app{max-width:640px;margin:0 auto;padding:14px;position:relative;z-index:10;min-height:80vh;}
   .panel{display:none;}
   .panel.active{display:block;}
   .card{background:var(--card);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:14px;position:relative;word-break:break-word;}
@@ -239,7 +239,8 @@
     position: fixed;
     inset: 0;
     z-index: 99999;
-    background-color: #1c1c1e;
+    /* 使用渐变兜底，避免图片加载失败时黑屏 */
+    background: linear-gradient(135deg, #1c1c1e 0%, #2a2a2e 100%);
     /* 替换为您真实的图片地址 */
     background-image: url('https://emil-si.github.io/My-page/IMG_2138.png'); 
     background-size: cover;
@@ -249,6 +250,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    touch-action: none; /* 防止移动端触摸滚动穿透 */
   }
   /* 暗色遮罩增强文字可读性 */
   #splash::before {
@@ -824,7 +826,7 @@
               forceEnter();
               return;
           }
-          // 点击背景不跳转，只有点击按钮才跳转
+          // 【已删除】点击背景不跳转，只有点击按钮才跳转
       });
       
       if (splashBtn) {
