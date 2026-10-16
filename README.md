@@ -1990,6 +1990,294 @@
       }
   };
 })();
+
+// ============================================================
+// ========== 开屏编辑器（独立模块，无需修改原有代码）==========
+// ============================================================
+(function(){
+  'use strict';
+  
+  var TOOLBAR_ID = 'splashToolbar';
+  var STYLE_ID = 'splash-toolbar-style';
+  var FLOATERS_KEY = 'myPage.splashFloaters.v2';
+  var activeEl = null;
+  
+  function injectStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    var style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = 
+      '#splashToolbar{position:fixed;top:calc(48px + var(--safe-top));left:0;right:0;z-index:50000;height:44px;padding:0 12px;display:none;align-items:center;gap:8px;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}' +
+      '#splashToolbar::-webkit-scrollbar{display:none;}' +
+      '#splashToolbar.show{display:flex !important;}' +
+      '.splash-tool-btn{padding:6px 12px;border-radius:18px;border:1px solid var(--border);background:rgba(127,127,127,0.06);color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;white-space:nowrap;flex-shrink:0;}' +
+      '.splash-tool-btn:active{transform:scale(0.95);}' +
+      '.splash-tool-label{font-size:11px;color:var(--sub);font-family:monospace;flex-shrink:0;}' +
+      '#splashFontSize{width:80px;flex-shrink:0;}' +
+      '#splashFxType{flex-shrink:0;padding:4px 6px;border-radius:8px;background:rgba(127,127,127,0.08);color:var(--text);border:1px solid var(--border);font-size:11px;outline:none;}' +
+      '.splash-floater{position:absolute;z-index:100005;min-width:80px;min-height:30px;padding:8px 12px;border-radius:10px;border:2px dashed var(--accent);background:rgba(25,25,30,0.7);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#f0f0f0;font-size:16px;line-height:1.5;word-break:break-word;cursor:move;outline:none;pointer-events:auto;touch-action:none;user-select:none;}' +
+      'body:not(.editing) .splash-floater{border-color:transparent;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;cursor:default;}' +
+      '.splash-fdel{position:absolute;top:-10px;left:-10px;width:20px;height:20px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:11px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}' +
+      'body.editing .splash-floater .splash-fdel{display:flex;}' +
+      '.splash-floater.fx-hidden{opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease;}' +
+      '.splash-floater.fx-visible{opacity:1;transform:translateY(0);}' +
+      '.splash-floater.fx-slide-up{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s cubic-bezier(0.16,1,0.3,1);}' +
+      '.splash-floater.fx-slide-up.fx-visible{opacity:1;transform:translateY(0);}' +
+      '.splash-floater.fx-fade-in{opacity:0;transition:opacity 1s ease;}' +
+      '.splash-floater.fx-fade-in.fx-visible{opacity:1;}' +
+      '.splash-floater.fx-scale-in{opacity:0;transform:scale(0.9);transition:opacity .8s ease,transform .8s ease;}' +
+      '.splash-floater.fx-scale-in.fx-visible{opacity:1;transform:scale(1);}';
+    document.head.appendChild(style);
+  }
+  
+  function createToolbar() {
+    if (document.getElementById(TOOLBAR_ID)) return;
+    var bar = document.createElement('div');
+    bar.id = TOOLBAR_ID;
+    bar.innerHTML = 
+      '<button class="splash-tool-btn" id="splashAddFloat">＋ 浮动文本</button>' +
+      '<span style="flex:1;min-width:8px;"></span>' +
+      '<span class="splash-tool-label">字号</span>' +
+      '<input type="range" id="splashFontSize" min="10" max="120" value="16">' +
+      '<span class="splash-tool-label" id="splashFontSizeVal" style="min-width:36px;text-align:right;">16px</span>' +
+      '<span class="splash-tool-label">特效</span>' +
+      '<select id="splashFxType">' +
+        '<option value="none">无</option>' +
+        '<option value="fx-slide-up">上滑</option>' +
+        '<option value="fx-fade-in">淡入</option>' +
+        '<option value="fx-scale-in">缩放</option>' +
+      '</select>' +
+      '<button class="splash-tool-btn" id="splashDone">✓ 完成</button>';
+    document.body.appendChild(bar);
+    return bar;
+  }
+  
+  function saveFloaters() {
+    try {
+      var card = document.querySelector('#splash .splash-card');
+      if (!card) return;
+      var arr = [];
+      card.querySelectorAll('.splash-floater').forEach(function(el) {
+        var txt = el.cloneNode(true);
+        var del = txt.querySelector('.splash-fdel');
+        if (del) del.remove();
+        arr.push({
+          text: txt.textContent.trim(),
+          left: el.style.left,
+          top: el.style.top,
+          fontSize: el.style.fontSize,
+          color: el.style.color,
+          fx: el.dataset.fx || 'none'
+        });
+      });
+      localStorage.setItem(FLOATERS_KEY, JSON.stringify(arr));
+    } catch(e) {}
+  }
+  
+  function restoreFloaters() {
+    try {
+      var data = localStorage.getItem(FLOATERS_KEY);
+      if (!data) return;
+      var arr = JSON.parse(data);
+      var card = document.querySelector('#splash .splash-card');
+      if (!card) return;
+      arr.forEach(function(item) {
+        createFloater(card, item.text, item.left, item.top, item.fontSize, item.color, item.fx);
+      });
+    } catch(e) {}
+  }
+  
+  function createFloater(card, text, left, top, fontSize, color, fx) {
+    var el = document.createElement('div');
+    el.className = 'splash-floater';
+    el.contentEditable = 'true';
+    el.textContent = text || '开屏文字';
+    el.dataset.fx = fx || 'none';
+    el.style.left = left || '50%';
+    el.style.top = top || '50%';
+    el.style.fontSize = fontSize || '16px';
+    if (color) el.style.color = color;
+    if (left === '50%' && top === '50%') el.style.transform = 'translate(-50%, -50%)';
+    
+    var del = document.createElement('button');
+    del.className = 'splash-fdel';
+    del.textContent = '×';
+    del.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (confirm('删除这个开屏文字？')) { el.remove(); saveFloaters(); }
+    });
+    el.appendChild(del);
+    
+    el.addEventListener('click', function(e) {
+      if (!document.body.classList.contains('editing')) return;
+      e.stopPropagation(); selectEl(el);
+    });
+    el.addEventListener('focusin', function() { selectEl(el); });
+    el.addEventListener('dblclick', function(e) {
+      e.stopPropagation();
+      el.setAttribute('contenteditable', 'true');
+      el.focus();
+      var range = document.createRange(); range.selectNodeContents(el);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    });
+    el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); saveFloaters(); });
+    el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+    
+    makeDraggable(el);
+    card.appendChild(el);
+    return el;
+  }
+  
+  function makeDraggable(el) {
+    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
+    function down(e) {
+      if (!document.body.classList.contains('editing')) return;
+      if (e.target.classList.contains('splash-fdel')) return;
+      e.preventDefault();
+      dragging = true; moved = false;
+      if (el.style.transform) {
+        var rect = el.getBoundingClientRect();
+        var pr = el.parentNode.getBoundingClientRect();
+        el.style.transform = 'none';
+        el.style.left = (rect.left - pr.left) + 'px';
+        el.style.top = (rect.top - pr.top) + 'px';
+      }
+      var p = e.touches ? e.touches[0] : e;
+      sx = p.clientX; sy = p.clientY;
+      sl = parseFloat(el.style.left) || 0;
+      st = parseFloat(el.style.top) || 0;
+      document.addEventListener('mousemove', move);
+      document.addEventListener('touchmove', move, {passive:false});
+      document.addEventListener('mouseup', up);
+      document.addEventListener('touchend', up);
+    }
+    function move(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      var p = e.touches ? e.touches[0] : e;
+      var dx = p.clientX - sx, dy = p.clientY - sy;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+      el.style.left = (sl + dx) + 'px';
+      el.style.top = (st + dy) + 'px';
+    }
+    function up() {
+      dragging = false;
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('touchmove', move);
+      document.removeEventListener('mouseup', up);
+      document.removeEventListener('touchend', up);
+      if (moved) saveFloaters();
+    }
+    el.addEventListener('mousedown', down);
+    el.addEventListener('touchstart', down, {passive:false});
+  }
+  
+  function selectEl(el) {
+    activeEl = el;
+    var cs = getComputedStyle(el);
+    var size = parseInt(cs.fontSize) || 16;
+    var sizeInput = document.getElementById('splashFontSize');
+    if (sizeInput) sizeInput.value = size;
+    var sizeVal = document.getElementById('splashFontSizeVal');
+    if (sizeVal) sizeVal.textContent = size + 'px';
+    var fx = document.getElementById('splashFxType');
+    if (fx) fx.value = el.dataset.fx || 'none';
+  }
+  
+  function bindEvents() {
+    var addBtn = document.getElementById('splashAddFloat');
+    if (addBtn) addBtn.addEventListener('click', function() {
+      var card = document.querySelector('#splash .splash-card');
+      if (!card) { alert('请先点顶部"🎬 开屏"打开开屏'); return; }
+      var el = createFloater(card);
+      el.setAttribute('contenteditable', 'true');
+      el.focus();
+      selectEl(el);
+      saveFloaters();
+    });
+    
+    var sizeInput = document.getElementById('splashFontSize');
+    if (sizeInput) sizeInput.addEventListener('input', function(e) {
+      var v = e.target.value;
+      var sizeVal = document.getElementById('splashFontSizeVal');
+      if (sizeVal) sizeVal.textContent = v + 'px';
+      if (activeEl) {
+        activeEl.style.fontSize = v + 'px';
+        saveFloaters();
+      } else {
+        var title = document.querySelector('#splash .splash-title');
+        if (title) {
+          title.style.fontSize = v + 'px';
+          try {
+            var sData = JSON.parse(localStorage.getItem('myPage.splash.v1') || '{}');
+            sData.titleSize = parseInt(v);
+            localStorage.setItem('myPage.splash.v1', JSON.stringify(sData));
+          } catch(err) {}
+        }
+      }
+    });
+    
+    var fxSelect = document.getElementById('splashFxType');
+    if (fxSelect) fxSelect.addEventListener('change', function(e) {
+      var val = e.target.value;
+      if (!activeEl) { alert('请先点击选中一个开屏文字'); return; }
+      activeEl.dataset.fx = val;
+      activeEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+      if (val !== 'none') {
+        activeEl.classList.add(val);
+        activeEl.classList.add('fx-hidden');
+        setTimeout(function() {
+          activeEl.classList.remove('fx-hidden');
+          activeEl.classList.add('fx-visible');
+        }, 200);
+      }
+      saveFloaters();
+    });
+    
+    var doneBtn = document.getElementById('splashDone');
+    if (doneBtn) doneBtn.addEventListener('click', function() {
+      var splash = document.getElementById('splash');
+      if (splash) splash.remove();
+      var bar = document.getElementById(TOOLBAR_ID);
+      if (bar) bar.classList.remove('show');
+      saveFloaters();
+    });
+  }
+  
+  function watchSplash() {
+    var hasSplash = false;
+    setInterval(function() {
+      var splash = document.getElementById('splash');
+      var bar = document.getElementById(TOOLBAR_ID);
+      if (!bar) return;
+      if (splash && !hasSplash) {
+        hasSplash = true;
+        if (document.body.classList.contains('editing')) {
+          bar.classList.add('show');
+          setTimeout(restoreFloaters, 100);
+        }
+      } else if (!splash && hasSplash) {
+        hasSplash = false;
+        bar.classList.remove('show');
+        saveFloaters();
+      }
+    }, 300);
+  }
+  
+  function init() {
+    injectStyle();
+    createToolbar();
+    bindEvents();
+    watchSplash();
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
 </script>
 </body>
 </html>
