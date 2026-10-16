@@ -240,8 +240,8 @@
     inset: 0;
     z-index: 99999;
     background-color: #1c1c1e;
-    /* 这里替换为您想要的背景图URL */
-    background-image: url('https://i.imgur.com/YourImageUrl.jpg'); 
+    /* 替换为您真实的图片地址 */
+    background-image: url('https://emil-si.github.io/My-page/IMG_2138.png'); 
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -824,7 +824,7 @@
               forceEnter();
               return;
           }
-          // 点击背景不跳转，只有点击按钮才跳转，以适应新布局
+          // 点击背景不跳转，只有点击按钮才跳转
       });
       
       if (splashBtn) {
