@@ -1292,11 +1292,18 @@
       save();
   });
 
-  // 新增：链接到页面
+  // ==================== 修复：链接到页面 ====================
   var spLink = document.getElementById('spLink');
   if (spLink) spLink.addEventListener('change', function(e) {
-      if (activeTextEl) activeTextEl.dataset.link = e.target.value;
-      if (activeFloater) activeFloater.dataset.link = e.target.value;
+      var val = e.target.value;
+      if (activeTextEl) {
+          if (val) activeTextEl.dataset.link = val;
+          else activeTextEl.removeAttribute('data-link');
+      }
+      if (activeFloater) {
+          if (val) activeFloater.dataset.link = val;
+          else activeFloater.removeAttribute('data-link');
+      }
       save();
   });
 
@@ -1440,12 +1447,19 @@
     updateFloatersVisibility();
   };
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
+  
+  // ==================== 修复：点击文字跳转（支持浮动文本和主页文本） ====================
   document.addEventListener('click', function(e){
-      if (editMode) return;
-      var el = e.target.closest('#app [data-link]');
-      if (el && el.getAttribute('data-link')) {
+      if (editMode) return; // 编辑模式下不跳转，避免影响编辑
+      
+      // 使用 [data-link] 而不是 #app [data-link]，以便支持 body 下的浮动文本框
+      var el = e.target.closest('[data-link]');
+      if (el) {
           var t = el.getAttribute('data-link');
-          if (document.getElementById(t)) { e.preventDefault(); window.switchTab(t); }
+          if (t && document.getElementById(t)) { 
+              e.preventDefault(); 
+              window.switchTab(t); 
+          }
       }
   });
 
