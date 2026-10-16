@@ -38,626 +38,159 @@
     padding-bottom:calc(30px + var(--safe-bottom));
     padding-left:var(--safe-left); padding-right:var(--safe-right);
   }
-
-  #bgLayer{
-    position:fixed; inset:0; z-index:0;
-    background-color:var(--bg);
-    background-size:cover; background-position:center; background-repeat:no-repeat;
-    pointer-events:none; transition:background-color .3s;
-  }
-
-  #toolbar{
-    position:fixed; top:0; left:0; right:0; z-index:100;
-    height:calc(48px + var(--safe-top));
-    padding-top:var(--safe-top);
-    padding-left:12px; padding-right:12px;
-    display:flex; align-items:center; gap:6px;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(20px) saturate(180%);
-    backdrop-filter:blur(20px) saturate(180%);
-    border-bottom:1px solid var(--border);
-    overflow-x:auto; scrollbar-width:none;
-  }
+  #bgLayer{position:fixed;inset:0;z-index:0;background-color:var(--bg);background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;transition:background-color .3s;}
+  #toolbar{position:fixed;top:0;left:0;right:0;z-index:100;height:calc(48px + var(--safe-top));padding-top:var(--safe-top);padding-left:12px;padding-right:12px;display:flex;align-items:center;gap:6px;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
   #toolbar::-webkit-scrollbar{display:none;}
-  .btn{
-    display:flex; align-items:center; gap:4px;
-    padding:6px 12px; border-radius:18px;
-    border:1px solid var(--border);
-    background:rgba(127,127,127,0.06);
-    color:var(--text); font-size:12px; font-family:monospace;
-    cursor:pointer; white-space:nowrap; flex-shrink:0;
-    transition:all .2s;
-  }
+  .btn{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:18px;border:1px solid var(--border);background:rgba(127,127,127,0.06);color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;}
   .btn:active{transform:scale(.95);}
-  .btn.on{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
+  .btn.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
   .edit-only{display:none !important;}
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
-
-  #topnav{
-    max-width:640px; margin:0 auto;
-    padding:10px 14px; display:flex; gap:6px;
-    position:sticky; top:calc(48px + var(--safe-top));
-    z-index:90;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(20px) saturate(180%);
-    backdrop-filter:blur(20px) saturate(180%);
-    border-bottom:1px solid var(--border);
-    overflow-x:auto; scrollbar-width:none;
-    align-items:center;
-  }
+  #topnav{max-width:640px;margin:0 auto;padding:10px 14px;display:flex;gap:6px;position:sticky;top:calc(48px + var(--safe-top));z-index:90;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;align-items:center;}
   #topnav::-webkit-scrollbar{display:none;}
-  .navlink{
-    flex:1 0 auto; text-align:center;
-    padding:7px 14px; border-radius:18px;
-    background:rgba(127,127,127,0.06);
-    border:1px solid var(--border);
-    color:var(--sub); text-decoration:none;
-    font-size:11px; font-family:monospace; letter-spacing:.08em;
-    cursor:pointer; white-space:nowrap; transition:all .2s;
-  }
-  .navlink.active{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
-  .navlink.collection{
-    flex:0 0 auto; min-width:38px; padding:7px 10px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .navlink.collection.active{background:var(--accent); color:var(--accent-text);}
-
-  #collectionMenu{
-    position:fixed;
-    top:calc(100px + var(--safe-top));
-    left:calc(16px + var(--safe-left));
-    z-index:200;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(20px) saturate(180%);
-    backdrop-filter:blur(20px) saturate(180%);
-    border:1px solid var(--border);
-    border-radius:14px; padding:8px;
-    box-shadow:0 12px 40px rgba(0,0,0,.4);
-    min-width:160px; max-width:80vw;
-    display:none;
-  }
+  .navlink{flex:1 0 auto;text-align:center;padding:7px 14px;border-radius:18px;background:rgba(127,127,127,0.06);border:1px solid var(--border);color:var(--sub);text-decoration:none;font-size:11px;font-family:monospace;letter-spacing:.08em;cursor:pointer;white-space:nowrap;transition:all .2s;}
+  .navlink.active{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
+  .navlink.collection{flex:0 0 auto;min-width:38px;padding:7px 10px;display:flex;align-items:center;justify-content:center;}
+  .navlink.collection.active{background:var(--accent);color:var(--accent-text);}
+  #collectionMenu{position:fixed;top:calc(100px + var(--safe-top));left:calc(16px + var(--safe-left));z-index:200;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--border);border-radius:14px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,.4);min-width:160px;max-width:80vw;display:none;}
   #collectionMenu.show{display:block;}
-  .citem{
-    display:block; padding:8px 12px; border-radius:8px;
-    color:var(--text); font-size:12px; font-family:monospace;
-    cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    transition:all .15s;
-  }
+  .citem{display:block;padding:8px 12px;border-radius:8px;color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .15s;}
   .citem:hover{background:rgba(127,127,127,0.15);}
-  .citem.active{background:var(--accent); color:var(--accent-text);}
-  .cempty{padding:8px 12px; font-size:11px; color:var(--sub); text-align:center;}
-
-  #app{max-width:640px; margin:0 auto; padding:14px; position:relative; z-index:10;}
+  .citem.active{background:var(--accent);color:var(--accent-text);}
+  .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
+  #app{max-width:640px;margin:0 auto;padding:14px;position:relative;z-index:10;}
   .panel{display:none;}
   .panel.active{display:block;}
-
-  .card{
-    background:var(--card);
-    -webkit-backdrop-filter:blur(20px) saturate(180%);
-    backdrop-filter:blur(20px) saturate(180%);
-    border:1px solid var(--border);
-    border-radius:20px; padding:16px;
-    margin-bottom:14px; position:relative;
-    word-break:break-word;
-  }
-
-  .cover{
-    width:calc(100% + 32px); height:180px;
-    border-radius:20px 20px 0 0;
-    background:#1a1a1a; position:relative; overflow:hidden;
-    margin:-16px -16px 0 -16px;
-  }
-  .cover img{width:100%; height:100%; object-fit:cover; display:block;}
-  .cover::after{
-    content:""; position:absolute; inset:auto 0 0 0; height:120px;
-    background:linear-gradient(to bottom, transparent, var(--card));
-    pointer-events:none;
-  }
-
-  .profile{display:flex; align-items:flex-end; gap:12px; margin-top:-28px; position:relative; z-index:2; padding-bottom:10px;}
-  .avatar{
-    width:76px; height:76px; border-radius:50%;
-    border:3px solid var(--card); overflow:hidden; flex-shrink:0;
-    background:#222; box-shadow:0 6px 20px rgba(0,0,0,.4);
-  }
-  .avatar img{width:100%; height:100%; object-fit:cover; display:block;}
-  .namebox{flex:1; padding-bottom:4px;}
-  .name{font-size:22px; font-weight:700; margin-bottom:2px;}
-  .handle{font-size:12px; color:var(--sub); font-family:monospace;}
-
-  .stats{display:flex; gap:18px; font-size:13px; margin:10px 0 6px; color:var(--sub);}
-  .stats b{color:var(--text); font-weight:600;}
-
-  .grid{
-    display:grid; grid-template-columns:repeat(3, 1fr);
-    gap:6px; margin:12px 0;
-  }
-  .grid img{
-    width:100%; aspect-ratio:1; object-fit:cover;
-    border-radius:10px; display:block; cursor:pointer;
-    background:rgba(127,127,127,0.1);
-  }
-
-  .quote{
-    padding:14px; border:1px solid var(--border); border-radius:14px;
-    background:rgba(127,127,127,0.04);
-    font-size:13px; line-height:1.7; color:var(--sub); font-style:italic;
-    margin:12px 0;
-  }
-
-  .post{
-    background:rgba(127,127,127,0.05); border:1px solid var(--border);
-    border-radius:16px; padding:14px; margin:12px 0 0;
-  }
-  .post input{
-    width:100%; background:transparent; border:none; outline:none;
-    color:var(--text); font-size:14px; font-family:inherit;
-  }
+  .card{background:var(--card);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:14px;position:relative;word-break:break-word;}
+  .cover{width:calc(100% + 32px);height:180px;border-radius:20px 20px 0 0;background:#1a1a1a;position:relative;overflow:hidden;margin:-16px -16px 0 -16px;}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .cover::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;background:linear-gradient(to bottom, transparent, var(--card));pointer-events:none;}
+  .profile{display:flex;align-items:flex-end;gap:12px;margin-top:-28px;position:relative;z-index:2;padding-bottom:10px;}
+  .avatar{width:76px;height:76px;border-radius:50%;border:3px solid var(--card);overflow:hidden;flex-shrink:0;background:#222;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+  .namebox{flex:1;padding-bottom:4px;}
+  .name{font-size:22px;font-weight:700;margin-bottom:2px;}
+  .handle{font-size:12px;color:var(--sub);font-family:monospace;}
+  .stats{display:flex;gap:18px;font-size:13px;margin:10px 0 6px;color:var(--sub);}
+  .stats b{color:var(--text);font-weight:600;}
+  .grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin:12px 0;}
+  .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;cursor:pointer;background:rgba(127,127,127,0.1);}
+  .quote{padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(127,127,127,0.04);font-size:13px;line-height:1.7;color:var(--sub);font-style:italic;margin:12px 0;}
+  .post{background:rgba(127,127,127,0.05);border:1px solid var(--border);border-radius:16px;padding:14px;margin:12px 0 0;}
+  .post input{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:inherit;}
   .post input::placeholder{color:var(--sub);}
-  .postrow{display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
-  .postrow .icons{display:flex; gap:10px; color:var(--sub); font-size:16px;}
-  .pubbtn{
-    background:var(--accent); color:var(--accent-text);
-    border:none; padding:7px 18px; border-radius:18px;
-    font-size:12px; font-weight:600; cursor:pointer;
-  }
-
-  .feed{display:flex; gap:10px; margin-bottom:10px; align-items:center;}
-  .feed .fav{width:36px; height:36px; border-radius:50%; overflow:hidden; background:#333; flex-shrink:0;}
-  .feed .fav img{width:100%; height:100%; object-fit:cover; display:block;}
+  .postrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+  .postrow .icons{display:flex;gap:10px;color:var(--sub);font-size:16px;}
+  .pubbtn{background:var(--accent);color:var(--accent-text);border:none;padding:7px 18px;border-radius:18px;font-size:12px;font-weight:600;cursor:pointer;}
+  .feed{display:flex;gap:10px;margin-bottom:10px;align-items:center;}
+  .feed .fav{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#333;flex-shrink:0;}
+  .feed .fav img{width:100%;height:100%;object-fit:cover;display:block;}
   .feed .meta{flex:1;}
-  .feed .meta .n{font-size:13px; font-weight:600;}
-  .feed .meta .h{font-size:11px; color:var(--sub); font-family:monospace;}
-  .feed .time{font-size:11px; color:var(--sub);}
-
-  .etext{
-    font-size:14px; line-height:1.6;
-    padding:4px 0; position:relative;
-  }
-
-  .divider{
-    padding:8px 0; display:flex; align-items:center;
-    position:relative;
-  }
-  .divider .line{
-    height:1px; background:var(--border); width:100%;
-    border-radius:1px; transition:all .2s;
-  }
+  .feed .meta .n{font-size:13px;font-weight:600;}
+  .feed .meta .h{font-size:11px;color:var(--sub);font-family:monospace;}
+  .feed .time{font-size:11px;color:var(--sub);}
+  .etext{font-size:14px;line-height:1.6;padding:4px 0;position:relative;}
+  .divider{padding:8px 0;display:flex;align-items:center;position:relative;}
+  .divider .line{height:1px;background:var(--border);width:100%;border-radius:1px;transition:all .2s;}
   body.editing .divider:hover .line{background:var(--accent);}
-
   .bwrap { position: relative; padding-right: 0; }
   body.editing .bwrap { padding-bottom: 42px; }
-
-  .bwrap > .row-tools {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    display: none;
-    flex-direction: row;
-    gap: 8px;
-    opacity: 0.8;
-    z-index: 20;
-  }
-  body.editing .bwrap > .row-tools { 
-    display: flex !important;
-    opacity: 1; 
-  }
-
-  .row-tools button {
-    width: 32px; 
-    height: 32px; 
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--accent); 
-    color: var(--accent-text);
-    font-size: 16px; 
-    cursor: pointer; 
-    padding: 0; 
-    line-height: 1;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    transition: all .15s;
-  }
+  .bwrap > .row-tools {position:absolute;bottom:0;right:0;display:none;flex-direction:row;gap:8px;opacity:0.8;z-index:20;}
+  body.editing .bwrap > .row-tools { display: flex !important; opacity: 1; }
+  .row-tools button{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:16px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
   .row-tools button.dvd { background: #7d90b8; font-size: 18px; }
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
-
-  /* ===== 浮动元素样式 ===== */
-  .shape{
-    position: absolute;
-    z-index: 999999;
-    cursor: move;
-    pointer-events: auto;
-    touch-action: none;
-    user-select: none;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,.3));
-    display: block;
-  }
-  .shape svg{width:100%; height:100%; display:block; pointer-events:none;}
-  .frame{
-    position: absolute;
-    z-index: 999999;
-    overflow:hidden; background:#333;
-    border:2px solid var(--border);
-    cursor:move;
-    pointer-events:auto; touch-action:none; user-select:none;
-    box-shadow:0 6px 24px rgba(0,0,0,.3);
-    display: block;
-  }
-  .frame img{width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;}
-  .floater{
-    position: absolute;
-    z-index: 999999;
-    min-width:100px; min-height:40px;
-    padding:12px; border-radius:12px; border:2px dashed var(--accent);
-    background:var(--card);
-    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
-    color:var(--text); font-size:14px; line-height:1.5;
-    word-break:break-word; cursor:move; outline:none;
-    pointer-events:auto; touch-action:none;
-    display: block;
-  }
-
-  .xdel{
-    position:absolute; top:-10px; left:-10px;
-    width:22px; height:22px; border-radius:50%;
-    background:#e5484d; color:#fff; border:none;
-    font-size:12px; cursor:pointer; line-height:1;
-    display:none; align-items:center; justify-content:center;
-    padding:0; z-index:5;
-  }
-  
-  .rz{
-    position:absolute; bottom:0; right:0;
-    width:28px; height:28px;
-    background:linear-gradient(135deg, transparent 48%, var(--accent) 48%);
-    cursor:se-resize; z-index:10;
-    border-bottom-right-radius:10px;
-    touch-action:none;
-  }
-  .rz::before{
-    content:""; position:absolute;
-    right:-6px; bottom:-6px; width:44px; height:44px;
-    background:transparent; cursor:se-resize;
-  }
+  .shape{position:absolute;z-index:999999;cursor:move;pointer-events:auto;touch-action:none;user-select:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));display:block;}
+  .shape svg{width:100%;height:100%;display:block;pointer-events:none;}
+  .frame{position:absolute;z-index:999999;overflow:hidden;background:#333;border:2px solid var(--border);cursor:move;pointer-events:auto;touch-action:none;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.3);display:block;}
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+  .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:move;outline:none;pointer-events:auto;touch-action:none;display:block;}
+  .xdel{position:absolute;top:-10px;left:-10px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}
+  .rz{position:absolute;bottom:0;right:0;width:28px;height:28px;background:linear-gradient(135deg, transparent 48%, var(--accent) 48%);cursor:se-resize;z-index:10;border-bottom-right-radius:10px;touch-action:none;}
+  .rz::before{content:"";position:absolute;right:-6px;bottom:-6px;width:44px;height:44px;background:transparent;cursor:se-resize;}
   body:not(.editing) .rz{display:none;}
-
-  #shapePicker, #framePicker{
-    position:fixed;
-    top:calc(110px + var(--safe-top));
-    left:50%; transform:translateX(-50%);
-    z-index:100001;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(24px) saturate(180%);
-    backdrop-filter:blur(24px) saturate(180%);
-    border:1px solid var(--border);
-    border-radius:16px; padding:14px;
-    box-shadow:0 12px 40px rgba(0,0,0,.5);
-    display:none; grid-template-columns:repeat(5, 1fr); gap:8px;
-    max-width:calc(100vw - 24px);
-  }
+  #shapePicker, #framePicker{position:fixed;top:calc(110px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:100001;background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:none;grid-template-columns:repeat(5, 1fr);gap:8px;max-width:calc(100vw - 24px);}
   #shapePicker.show, #framePicker.show{display:grid;}
-  .pick{
-    width:44px; height:44px;
-    display:flex; align-items:center; justify-content:center;
-    border-radius:10px; cursor:pointer;
-    background:rgba(127,127,127,0.06);
-    border:1px solid var(--border);
-    color:var(--text); transition:all .2s;
-  }
-  .pick:hover{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
-  .pick svg{width:26px; height:26px;}
-  .pick-title{
-    grid-column:1/-1; text-align:center;
-    font-size:11px; color:var(--accent);
-    font-family:monospace; letter-spacing:.1em;
-    padding-bottom:6px; border-bottom:1px solid var(--border); margin-bottom:4px;
-  }
-
-  .pagenav{display:flex; justify-content:space-between; align-items:center; padding:10px 0; margin-top:10px;}
-  .navbtn{
-    width:44px; height:44px; border-radius:50%;
-    background:var(--card); border:1px solid var(--border);
-    color:var(--text); font-size:18px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
-  }
-  .navbtn:active{background:var(--accent); color:var(--accent-text);}
+  .pick{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;background:rgba(127,127,127,0.06);border:1px solid var(--border);color:var(--text);transition:all .2s;}
+  .pick:hover{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
+  .pick svg{width:26px;height:26px;}
+  .pick-title{grid-column:1/-1;text-align:center;font-size:11px;color:var(--accent);font-family:monospace;letter-spacing:.1em;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+  .pagenav{display:flex;justify-content:space-between;align-items:center;padding:10px 0;margin-top:10px;}
+  .navbtn{width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);}
+  .navbtn:active{background:var(--accent);color:var(--accent-text);}
   .spacer30{width:44px;}
-
-  .extras{display:none; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .extras{display:none;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
   body.editing .extras{display:flex;}
-  .exbtn{
-    padding:8px 14px; border-radius:12px;
-    border:1px dashed var(--border); background:transparent;
-    color:var(--sub); font-size:12px; font-family:monospace;
-    cursor:pointer; transition:all .2s;
-  }
-  .exbtn:hover{background:rgba(127,127,127,0.08); color:var(--accent); border-color:var(--accent);}
-
-  #stylePanel{
-    position:fixed;
-    right:14px; top:calc(110px + var(--safe-top));
-    z-index:100000;
-    width:260px;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(24px) saturate(180%);
-    backdrop-filter:blur(24px) saturate(180%);
-    border:1px solid var(--border);
-    border-radius:16px;
-    box-shadow:0 12px 40px rgba(0,0,0,.5);
-    padding:14px;
-    display:none;
-    flex-direction:column;
-    gap:8px;
-    max-height:75vh;
-    overflow-y:auto;
-    font-size:12px;
-  }
+  .exbtn{padding:8px 14px;border-radius:12px;border:1px dashed var(--border);background:transparent;color:var(--sub);font-size:12px;font-family:monospace;cursor:pointer;transition:all .2s;}
+  .exbtn:hover{background:rgba(127,127,127,0.08);color:var(--accent);border-color:var(--accent);}
+  #stylePanel{position:fixed;right:14px;top:calc(110px + var(--safe-top));z-index:100000;width:260px;background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);padding:14px;display:none;flex-direction:column;gap:8px;max-height:75vh;overflow-y:auto;font-size:12px;}
   #stylePanel.show{display:flex;}
-  .sp-title{
-    font-size:11px; color:var(--accent);
-    font-family:monospace; letter-spacing:.1em;
-    padding-bottom:6px; border-bottom:1px solid var(--border);
-    margin-bottom:4px;
-  }
-  .sp-row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;}
-  .sp-row > span{flex-shrink:0; font-size:11px; color:var(--sub);}
-  .sp-row input[type="range"]{flex:1; cursor:pointer; height:22px;}
-  .sp-row input[type="color"]{width:30px; height:30px; border:none; border-radius:8px; cursor:pointer; background:transparent;}
-  .sp-row select{
-    flex:1; padding:5px 8px; border-radius:8px;
-    background:rgba(127,127,127,0.08); color:var(--text);
-    border:1px solid var(--border); font-size:11px; outline:none;
-  }
-  .sp-group{display:flex; gap:4px; flex-wrap:wrap;}
-  .sp-btn{
-    padding:5px 10px; border-radius:8px;
-    border:1px solid var(--border);
-    background:transparent; color:var(--text);
-    font-size:11px; font-family:monospace; cursor:pointer;
-    transition:all .15s;
-  }
+  .sp-title{font-size:11px;color:var(--accent);font-family:monospace;letter-spacing:.1em;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+  .sp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .sp-row > span{flex-shrink:0;font-size:11px;color:var(--sub);}
+  .sp-row input[type="range"]{flex:1;cursor:pointer;height:22px;}
+  .sp-row input[type="color"]{width:30px;height:30px;border:none;border-radius:8px;cursor:pointer;background:transparent;}
+  .sp-row select{flex:1;padding:5px 8px;border-radius:8px;background:rgba(127,127,127,0.08);color:var(--text);border:1px solid var(--border);font-size:11px;outline:none;}
+  .sp-group{display:flex;gap:4px;flex-wrap:wrap;}
+  .sp-btn{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:11px;font-family:monospace;cursor:pointer;transition:all .15s;}
   .sp-btn:hover{background:rgba(127,127,127,0.12);}
-  .sp-btn.on{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
-  .sp-note{
-    font-size:10px; color:var(--sub);
-    line-height:1.5; padding:6px 8px;
-    background:rgba(127,127,127,0.06);
-    border-radius:8px; margin-top:4px;
-  }
-
-  /* ===== 音乐播放面板 ===== */
-  #musicPanel {
-    position: fixed;
-    bottom: calc(20px + var(--safe-bottom));
-    right: calc(14px + 48px + 12px);
-    z-index: 210;
-    background: var(--bar);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    padding: 6px 14px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    display: none;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-  }
+  .sp-btn.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
+  .sp-note{font-size:10px;color:var(--sub);line-height:1.5;padding:6px 8px;background:rgba(127,127,127,0.06);border-radius:8px;margin-top:4px;}
+  #musicPanel{position:fixed;bottom:calc(20px + var(--safe-bottom));right:calc(14px + 48px + 12px);z-index:210;background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255, 255, 255, 0.08);border-radius:999px;padding:6px 14px;box-shadow:0 12px 40px rgba(0, 0, 0, 0.4);display:none;flex-direction:row;align-items:center;gap:10px;}
   #musicPanel.show { display: flex; }
-
   .mp-controls { display: flex; align-items: center; gap: 2px; }
-
-  .mp-ctrl-btn {
-    width: 34px; height: 34px; border-radius: 50%;
-    border: none; background: transparent;
-    color: var(--text); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0; transition: all 0.15s ease;
-  }
+  .mp-ctrl-btn{width:34px;height:34px;border-radius:50%;border:none;background:transparent;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all 0.15s ease;}
   .mp-ctrl-btn svg { width: 16px; height: 16px; }
   .mp-ctrl-btn:hover { background: rgba(127, 127, 127, 0.2); }
-
-  .mp-ctrl-btn.play {
-    background: var(--accent); color: var(--accent-text); margin: 0 2px;
-  }
+  .mp-ctrl-btn.play{background:var(--accent);color:var(--accent-text);margin:0 2px;}
   .mp-ctrl-btn.play:hover { transform: scale(1.05); }
-
-  .mp-vol-container {
-    display: flex; align-items: center; justify-content: center;
-    height: 38px; width: 20px;
-  }
-  #mpVolume {
-    writing-mode: vertical-lr; direction: rtl;
-    -webkit-appearance: slider-vertical; appearance: slider-vertical;
-    width: 4px; height: 38px;
-    background: rgba(127, 127, 127, 0.3);
-    border-radius: 2px; outline: none; cursor: pointer;
-  }
-  #mpVolume::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--text); cursor: pointer;
-  }
-
-  .mp-add {
-    width: 28px; height: 28px; border-radius: 50%;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--sub); font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; padding: 0; transition: all 0.15s;
-  }
+  .mp-vol-container{display:flex;align-items:center;justify-content:center;height:38px;width:20px;}
+  #mpVolume{writing-mode:vertical-lr;direction:rtl;-webkit-appearance:slider-vertical;appearance:slider-vertical;width:4px;height:38px;background:rgba(127, 127, 127, 0.3);border-radius:2px;outline:none;cursor:pointer;}
+  #mpVolume::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--text);cursor:pointer;}
+  .mp-add{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--sub);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:all 0.15s;}
   .mp-add:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* 右下角悬浮球 */
-  #musicBtn {
-    position: fixed; 
-    bottom: calc(20px + var(--safe-bottom)); 
-    right: 14px;
-    width: 48px; height: 48px; 
-    border-radius: 50%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    box-shadow: 0 6px 24px rgba(0,0,0,.35);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text); 
-    font-size: 22px;
-    cursor: pointer; z-index: 220;
-    touch-action: none; user-select: none;
-  }
-
-  #musicBtn.playing {
-    animation: spin 4s linear infinite;
-  }
-
-  body.editing [data-edit]{
-    outline:1px dashed transparent; outline-offset:4px;
-    border-radius:4px; cursor:text; transition:outline .2s;
-  }
+  #musicBtn{position:fixed;bottom:calc(20px + var(--safe-bottom));right:14px;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 6px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:var(--text);font-size:22px;cursor:pointer;z-index:220;touch-action:none;user-select:none;}
+  #musicBtn.playing { animation: spin 4s linear infinite; }
+  body.editing [data-edit]{outline:1px dashed transparent;outline-offset:4px;border-radius:4px;cursor:text;transition:outline .2s;}
   body.editing [data-edit]:hover{outline-color:var(--accent);}
-  body.editing [data-edit]:focus{
-    outline:2px solid var(--accent);
-    background:rgba(74,158,255,0.08);
-  }
-
-  .linktext{
-    cursor:pointer; text-decoration:underline;
-    text-decoration-style:dotted; text-underline-offset:4px;
-  }
+  body.editing [data-edit]:focus{outline:2px solid var(--accent);background:rgba(74,158,255,0.08);}
+  .linktext{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px;}
   .linktext:hover{color:var(--accent);}
-  .linktext::after{content:" ↗"; font-size:.8em; opacity:.7;}
-
-  #picker{
-    position:fixed; left:0; right:0; bottom:0;
-    height:52vh; z-index:100002;
-    background:var(--bar);
-    -webkit-backdrop-filter:blur(24px) saturate(180%);
-    backdrop-filter:blur(24px) saturate(180%);
-    border-top:1px solid var(--border);
-    border-radius:20px 20px 0 0;
-    transform:translateY(100%); transition:transform .3s ease;
-    display:flex; flex-direction:column;
-  }
+  .linktext::after{content:" ↗";font-size:.8em;opacity:.7;}
+  #picker{position:fixed;left:0;right:0;bottom:0;height:52vh;z-index:100002;background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border);border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .3s ease;display:flex;flex-direction:column;}
   #picker.show{transform:translateY(0);}
-  .ph{padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0;}
-  .ptitle{font-size:12px; font-family:monospace; color:var(--accent); letter-spacing:.1em;}
-  .pclose{
-    background:transparent; border:1px solid var(--border);
-    color:var(--text); font-size:20px; width:30px; height:30px;
-    border-radius:8px; cursor:pointer; line-height:1; padding:0;
-  }
-  .pgrid{
-    flex:1; overflow-y:auto; padding:12px;
-    display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
-    padding-bottom:calc(12px + var(--safe-bottom));
-  }
-  .pgrid img{
-    width:100%; aspect-ratio:1; object-fit:cover;
-    border-radius:8px; cursor:pointer;
-    border:2px solid transparent; transition:border-color .2s;
-    background:rgba(127,127,127,0.1);
-  }
+  .ph{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .ptitle{font-size:12px;font-family:monospace;color:var(--accent);letter-spacing:.1em;}
+  .pclose{background:transparent;border:1px solid var(--border);color:var(--text);font-size:20px;width:30px;height:30px;border-radius:8px;cursor:pointer;line-height:1;padding:0;}
+  .pgrid{flex:1;overflow-y:auto;padding:12px;display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;padding-bottom:calc(12px + var(--safe-bottom));}
+  .pgrid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:border-color .2s;background:rgba(127,127,127,0.1);}
   .pgrid img:hover{border-color:var(--accent);}
-
-  #toast{
-    position:fixed; left:50%; bottom:calc(80px + var(--safe-bottom));
-    transform:translateX(-50%) translateY(20px);
-    background:var(--accent); color:var(--accent-text);
-    padding:9px 18px; border-radius:18px;
-    font-size:12px; opacity:0; pointer-events:none;
-    transition:all .3s; z-index:100003;
-  }
-  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-
-  #musicDialog{
-    position:fixed; inset:0; z-index:100004;
-    background:rgba(0,0,0,.5);
-    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
-    display:none; align-items:center; justify-content:center; padding:20px;
-  }
+  #toast{position:fixed;left:50%;bottom:calc(80px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-text);padding:9px 18px;border-radius:18px;font-size:12px;opacity:0;pointer-events:none;transition:all .3s;z-index:100003;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  #musicDialog{position:fixed;inset:0;z-index:100004;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
   #musicDialog.show{display:flex;}
-  .mcard{
-    width:100%; max-width:340px;
-    background:var(--card); border:1px solid var(--border);
-    border-radius:18px; padding:20px;
-    -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
-  }
-  .mcard h3{font-size:13px; color:var(--accent); margin-bottom:12px; font-family:monospace; letter-spacing:.1em; text-align:center;}
-  .mcard input{
-    width:100%; padding:11px 12px; border-radius:10px;
-    border:1px solid var(--border); background:rgba(127,127,127,0.08);
-    color:var(--text); font-size:13px; font-family:monospace; outline:none; margin-bottom:12px;
-  }
-  .mcard .row{display:flex; gap:8px;}
-  .mcard .row button{
-    flex:1; padding:10px; border-radius:10px;
-    border:1px solid var(--border); background:transparent;
-    color:var(--text); font-size:13px; font-family:monospace; cursor:pointer;
-  }
-  .mcard .row button.primary{background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600;}
-
-  /* ===== 卡片操作按钮 ===== */
+  .mcard{width:100%;max-width:340px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);}
+  .mcard h3{font-size:13px;color:var(--accent);margin-bottom:12px;font-family:monospace;letter-spacing:.1em;text-align:center;}
+  .mcard input{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(127,127,127,0.08);color:var(--text);font-size:13px;font-family:monospace;outline:none;margin-bottom:12px;}
+  .mcard .row{display:flex;gap:8px;}
+  .mcard .row button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:13px;font-family:monospace;cursor:pointer;}
+  .mcard .row button.primary{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600;}
   .card-actions { position: absolute; top: 8px; right: 8px; display: none; gap: 4px; z-index: 100; }
   body.editing .card-actions { display: flex !important; }
   .card-actions button { background: #e5484d; color: #fff; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-family: monospace; }
   .card-actions button:hover { transform: scale(1.05); }
-
-  /* ===== 添加新卡片按钮 ===== */
-  .add-card-btn {
-    display: none; width: 100%; padding: 12px; margin: 4px 0 14px 0;
-    border: 1px dashed var(--border); background: rgba(127,127,127,0.05);
-    color: var(--sub); border-radius: 14px; cursor: pointer;
-    font-family: monospace; font-size: 12px; transition: all 0.2s;
-  }
+  .add-card-btn{display:none;width:100%;padding:12px;margin:4px 0 14px 0;border:1px dashed var(--border);background:rgba(127,127,127,0.05);color:var(--sub);border-radius:14px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s;}
   body.editing .add-card-btn { display: block !important; }
   .add-card-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(74,158,255,0.08); }
-
-  /* ==================== 开屏动画样式 ==================== */
-  #splash {
-    position: fixed; inset: 0; z-index: 99999;
-    background: #1c1c1e;
-    overflow: hidden;
-  }
-
-  .splash-card {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 82%; max-width: 420px;
-    aspect-ratio: 4 / 5;
-    background: rgba(25,25,30,0.85);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 28px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 30px; text-align: center; gap: 20px;
-    
-    transform: translate(-50%, -50%) scale(0.9);
-    opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
-  }
-
-  .splash-card.show {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-
+  #splash{position:fixed;inset:0;z-index:99999;background:#1c1c1e;overflow:hidden;}
+  .splash-card{position:absolute;top:50%;left:50%;width:82%;max-width:420px;aspect-ratio:4 / 5;background:rgba(25,25,30,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;gap:20px;transform:translate(-50%, -50%) scale(0.9);opacity:0;transition:transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;}
+  .splash-card.show{transform:translate(-50%, -50%) scale(1);opacity:1;}
   .splash-title { font-size: 48px; font-weight: 800; color: #f0f0f0; }
   .splash-desc { font-size: 14px; color: #999; font-family: monospace; }
-
-  .splash-enter-btn {
-    position: absolute; bottom: 40px; right: 24px;
-    padding: 12px 20px; background: rgba(25,25,30,0.85);
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 999px;
-    color: #f0f0f0; font-size: 13px; font-family: monospace;
-    cursor: pointer; opacity: 0; transition: opacity 0.5s ease 0.4s;
-  }
+  .splash-enter-btn{position:absolute;bottom:40px;right:24px;padding:12px 20px;background:rgba(25,25,30,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:999px;color:#f0f0f0;font-size:13px;font-family:monospace;cursor:pointer;opacity:0;transition:opacity 0.5s ease 0.4s;}
   .splash-enter-btn.show { opacity: 1; }
-
-  /* 编辑模式下，开屏文字可编辑 */
   body.editing .splash-title[data-splash-edit],
   body.editing .splash-desc[data-splash-edit] {
       outline: 2px dashed var(--accent);
@@ -668,8 +201,6 @@
   body.editing .splash-desc[data-splash-edit]:focus {
       background: rgba(74,158,255,0.08);
   }
-
-  /* ==================== 文字特效基础样式 ==================== */
   [data-edit].fx-hidden { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
   [data-edit].fx-visible { opacity: 1; transform: translateY(0); }
   [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -678,12 +209,10 @@
   [data-edit].fx-fade-in.fx-visible { opacity: 1; }
   [data-edit].fx-scale-in { opacity: 0; transform: scale(0.9); transition: opacity 0.8s ease, transform 0.8s ease; }
   [data-edit].fx-scale-in.fx-visible { opacity: 1; transform: scale(1); }
-
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
     html.light #toolbar, html.light #topnav, html.light .card, html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn, html.light #collectionMenu, html.light #shapePicker, html.light #framePicker, html.light #stylePanel, html.light #musicPanel { background-color:rgba(255,255,255,0.97) !important; background-image:none !important; }
   }
-
   @media (max-width:640px){
     body{padding-top:calc(52px + var(--safe-top));}
     #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
@@ -713,15 +242,15 @@
     .bwrap > .row-tools { gap: 6px; }
     .row-tools button { width: 30px; height: 30px; font-size: 15px; }
   }
-  /* ===== 开屏专用工具栏 ===== */
+  /* ===== 开屏专用工具栏（z-index 已修复） ===== */
   #splashToolbar {
     position: fixed;
     top: calc(48px + var(--safe-top));
     left: 0; right: 0;
-    z-index: 101;
+    z-index: 100010;
     height: 44px;
     padding: 0 12px;
-    display: none; /* 默认隐藏 */
+    display: none;
     align-items: center;
     gap: 8px;
     background: var(--bar);
@@ -732,9 +261,8 @@
     scrollbar-width: none;
   }
   #splashToolbar::-webkit-scrollbar { display: none; }
-  #splashToolbar.show { display: flex; }
+  #splashToolbar.show { display: flex !important; }
 
-  /* 开屏浮动元素 */
   .splash-floater {
     position: absolute;
     z-index: 100005;
@@ -760,7 +288,6 @@
     backdrop-filter: none;
     cursor: default;
   }
-
   .splash-floater .splash-fdel {
     position: absolute;
     top: -10px; left: -10px;
@@ -815,7 +342,7 @@
   <button class="btn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
 </div>
 
-<!-- 开屏专用工具栏：只在开屏编辑模式下显示 -->
+<!-- 开屏专用工具栏 -->
 <div id="splashToolbar">
   <button class="btn" id="btnSplashAddFloat"><span class="ico">＋</span><span class="lbl">开屏浮动文本</span></button>
   <span class="spacer"></span>
@@ -906,7 +433,6 @@
     <input type="range" id="spShapeOpacity" min="0" max="100" value="100">
     <span id="spShapeOpacityVal" style="min-width:34px;text-align:right;">100%</span>
   </div>
-  <!-- 新增：开屏标题字号 -->
   <div class="sp-title" style="margin-top:6px;">开屏动画</div>
   <div class="sp-row">
     <span>标题字号</span>
@@ -1138,7 +664,6 @@
       var splashCard = document.getElementById('splashCard');
       var splashBtn = document.getElementById('splashEnterBtn');
       
-      // 1.1 显示卡片
       setTimeout(function() {
           try {
               if (splashCard) splashCard.classList.add('show');
@@ -1146,11 +671,8 @@
           } catch(e) {}
       }, 100);
 
-      // 1.2 强制进入主页函数
       function forceEnter() {
-          // 如果处于编辑模式，点击空白不跳转，避免误触
           if (document.body.classList.contains('editing')) return;
-          
           try {
               if (splash.parentNode) splash.parentNode.removeChild(splash);
           } catch(e) {
@@ -1164,10 +686,8 @@
           }, 100);
       }
 
-      // 1.3 延迟点击计时器，用于区分单击跳转与双击编辑
       var clickTimer = null;
 
-      // 1.4 双击编辑逻辑（直接绑定 dblclick，兼容移动端）
       var editEls = splash.querySelectorAll('[data-splash-edit]');
       for (var i = 0; i < editEls.length; i++) {
           (function(el) {
@@ -1184,33 +704,21 @@
           })(editEls[i]);
       }
 
-      // 1.5 全局点击逻辑
       splash.addEventListener('click', function(e) {
           var target = e.target;
-          
-          // 如果点击的是正在编辑的文字，不处理
           if (target.getAttribute('contenteditable') === 'true') return;
-
-          // 如果点击的是可编辑文字，不触发跳转（等待用户双击或编辑模式）
-          if (target.hasAttribute('data-splash-edit')) {
-              return;
-          }
-
-          // 如果点击的是“进入主页”按钮
+          if (target.hasAttribute('data-splash-edit')) return;
           if (target.closest('#splashEnterBtn')) {
               clearTimeout(clickTimer);
               forceEnter();
               return;
           }
-
-          // 如果不在编辑模式，点击空白处延迟 300ms 跳转
           if (!document.body.classList.contains('editing')) {
               clearTimeout(clickTimer);
               clickTimer = setTimeout(forceEnter, 300);
           }
       });
 
-      // 1.6 按钮单击直接进入（作为双重保险）
       if (splashBtn) {
           splashBtn.addEventListener('click', function(e) {
               e.stopPropagation();
@@ -1309,13 +817,11 @@
     editMode = on; 
     document.body.classList.toggle('editing', on);
     
-    // 主体内容的编辑状态
     document.querySelectorAll('#app [data-edit]').forEach(function(el){ 
         if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); } 
         else el.removeAttribute('contenteditable'); 
     });
     
-    // 开屏文字的编辑状态
     var splashTitle = document.querySelector('.splash-title');
     var splashDesc = document.querySelector('.splash-desc');
     if (splashTitle) {
@@ -1327,7 +833,6 @@
         else { splashDesc.removeAttribute('contenteditable'); }
     }
     
-    // 按钮状态
     var btn = document.getElementById('btnEdit'); 
     if(btn) { 
         btn.classList.toggle('on', on); 
@@ -1440,7 +945,6 @@
   var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
   var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
 
-  // 开屏标题字号修改
   var spSplashTitleSize = document.getElementById('spSplashTitleSize');
   if (spSplashTitleSize) spSplashTitleSize.addEventListener('input', function(e) {
       var size = e.target.value;
@@ -1513,7 +1017,6 @@
   };
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
 
-  // 恢复链接跳转功能（非编辑模式下）
   document.addEventListener('click', function(e){
       if (editMode) return;
       var el = e.target.closest('#app [data-link]');
@@ -1550,113 +1053,23 @@
     sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
- // ==================== 重新打开开屏（供编辑） ====================
-  var btnOpenSplash = document.getElementById('btnOpenSplash');
-  if (btnOpenSplash) btnOpenSplash.addEventListener('click', function() {
-      // 如果已经存在，直接返回
-      if (document.getElementById('splash')) { toast('开屏已经打开'); return; }
-      
-      // 读取已保存的开屏数据
-      var sData = { title: '肆', desc: '双击此文字可修改', titleSize: 48 };
-      try {
-          var savedSplash = localStorage.getItem(K_SPLASH);
-          if (savedSplash) {
-              var parsed = JSON.parse(savedSplash);
-              if (parsed.title) sData.title = parsed.title;
-              if (parsed.desc) sData.desc = parsed.desc;
-              if (parsed.titleSize) sData.titleSize = parsed.titleSize;
-          }
-      } catch(e) {}
-      
-      // 动态创建开屏层
-      var splash = document.createElement('div');
-      splash.id = 'splash';
-      splash.innerHTML = '<div class="splash-card" id="splashCard">' +
-          '<div class="splash-title" data-splash-edit="title">' + sData.title + '</div>' +
-          '<div class="splash-desc" data-splash-edit="desc">' + sData.desc + '</div>' +
-          '</div>' +
-          '<button class="splash-enter-btn" id="splashEnterBtn">' +
-          '<span class="splash-btn-text">进入主页</span>' +
-          '</button>';
-      
-      document.body.appendChild(splash);
-      
-      // 应用标题字号
-      var titleEl = splash.querySelector('.splash-title');
-      if (titleEl) titleEl.style.fontSize = sData.titleSize + 'px';
-      
-      // 同步样式面板滑块
-      var sizeInput = document.getElementById('spSplashTitleSize');
-      if (sizeInput) sizeInput.value = sData.titleSize;
-      var sizeVal = document.getElementById('spSplashTitleSizeVal');
-      if (sizeVal) sizeVal.textContent = sData.titleSize + 'px';
-      
-      // 显示卡片
-      setTimeout(function() {
-          var card = document.getElementById('splashCard');
-          var btn = document.getElementById('splashEnterBtn');
-          if (card) card.classList.add('show');
-          if (btn) btn.classList.add('show');
-      }, 50);
-      
-      // 绑定双击编辑（编辑模式下）
-      var editEls = splash.querySelectorAll('[data-splash-edit]');
-      for (var i = 0; i < editEls.length; i++) {
-          (function(el) {
-              el.addEventListener('dblclick', function(e) {
-                  e.stopPropagation();
-                  el.setAttribute('contenteditable', 'true');
-                  el.focus();
-                  var range = document.createRange(); range.selectNodeContents(el);
-                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-              });
-              el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); saveSplash(); });
-              el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-          })(editEls[i]);
-      }
-      
-      // 绑定关闭逻辑
-      splash.addEventListener('click', function(e) {
-          var target = e.target;
-          if (target.getAttribute('contenteditable') === 'true') return;
-          if (target.hasAttribute('data-splash-edit')) return;
-          if (target.closest('#splashEnterBtn')) {
-              if (splash.parentNode) splash.parentNode.removeChild(splash);
-              saveSplash();
-              return;
-          }
-          // 编辑模式下点击空白不关闭
-          if (document.body.classList.contains('editing')) return;
-          if (splash.parentNode) splash.parentNode.removeChild(splash);
-          saveSplash();
-      });
-      
-      toast('已打开开屏，可直接编辑');
-  });
-   // ==================== 16. 初始化 ====================
-  try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
-  try { refreshCollectionMenu(); } catch(e) {}
-  try { refreshLinkOptions(); } catch(e) {}
-  try { setEdit(false); } catch(e) {}
-  setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
-// ==================== 16. 开屏浮动元素编辑 ====================
-  var splashActiveFloater = null;  // 当前选中的开屏浮动元素
+  // ==================== 16. 开屏浮动元素编辑（唯一版本） ====================
+  var splashActiveFloater = null;
+  var splashToolbar = document.getElementById('splashToolbar');
 
   function getSplashCard() {
       return document.querySelector('#splash .splash-card');
   }
 
-  // 添加开屏浮动文本
   function addSplashFloater() {
       var card = getSplashCard();
-      if (!card) { toast('请先打开开屏'); return; }
+      if (!card) { toast('请先点顶部"🎬 开屏"打开开屏'); return; }
       
       var el = document.createElement('div');
       el.className = 'splash-floater';
       el.contentEditable = 'true';
       el.textContent = '开屏文字';
       el.innerHTML += '<button class="splash-fdel">×</button>';
-      
       el.style.left = '50%';
       el.style.top = '50%';
       el.style.transform = 'translate(-50%, -50%)';
@@ -1664,7 +1077,6 @@
       
       card.appendChild(el);
       
-      // 删除按钮
       var delBtn = el.querySelector('.splash-fdel');
       delBtn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -1674,26 +1086,21 @@
           }
       });
       
-      // 拖动
       makeSplashFloaterMovable(el);
       
-      // 选中时同步到样式面板
-      el.addEventListener('focusin', function() {
-          splashActiveFloater = el;
-          var cs = getComputedStyle(el);
-          var fontSize = parseInt(cs.fontSize) || 16;
-          var sizeInput = document.getElementById('splashFontSize');
-          if (sizeInput) sizeInput.value = fontSize;
-      });
-      
+      el.addEventListener('focusin', function() { selectSplashText(el); });
       el.addEventListener('click', function(e) {
           if (!editMode) return;
           e.stopPropagation();
-          splashActiveFloater = el;
-          var cs = getComputedStyle(el);
-          var sizeInput = document.getElementById('splashFontSize');
-          if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 16;
+          selectSplashText(el);
       });
+      el.addEventListener('dblclick', function(e) {
+          e.stopPropagation();
+          el.focus();
+          var range = document.createRange(); range.selectNodeContents(el);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      });
+      el.addEventListener('blur', function() { saveSplashFloaters(); });
       
       el.focus();
       selectSplashText(el);
@@ -1701,7 +1108,6 @@
       toast('已添加开屏浮动文本');
   }
 
-  // 选中开屏元素，同步样式面板
   function selectSplashText(el) {
       splashActiveFloater = el;
       var cs = getComputedStyle(el);
@@ -1709,7 +1115,6 @@
       if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 14;
   }
 
-  // 拖动逻辑
   function makeSplashFloaterMovable(el) {
       var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
       function down(e) {
@@ -1718,12 +1123,13 @@
           e.preventDefault();
           dragging = true; moved = false;
           
-          // 去掉 transform，改用绝对定位
-          var rect = el.getBoundingClientRect();
-          var parentRect = el.parentNode.getBoundingClientRect();
-          el.style.transform = 'none';
-          el.style.left = (rect.left - parentRect.left) + 'px';
-          el.style.top = (rect.top - parentRect.top) + 'px';
+          if (el.style.transform) {
+              var rect = el.getBoundingClientRect();
+              var parentRect = el.parentNode.getBoundingClientRect();
+              el.style.transform = 'none';
+              el.style.left = (rect.left - parentRect.left) + 'px';
+              el.style.top = (rect.top - parentRect.top) + 'px';
+          }
           
           var p = e.touches ? e.touches[0] : e;
           sx = p.clientX; sy = p.clientY;
@@ -1756,7 +1162,6 @@
       el.addEventListener('touchstart', down, {passive:false});
   }
 
-  // 保存开屏浮动元素
   function saveSplashFloaters() {
       try {
           var card = getSplashCard();
@@ -1764,20 +1169,23 @@
           var floaters = card.querySelectorAll('.splash-floater');
           var data = [];
           floaters.forEach(function(el) {
+              var clone = el.cloneNode(true);
+              var d = clone.querySelector('.splash-fdel');
+              if (d) d.remove();
               data.push({
-                  text: el.textContent.replace('×','').trim(),
+                  text: clone.textContent.trim(),
                   left: el.style.left,
                   top: el.style.top,
                   fontSize: el.style.fontSize,
                   opacity: el.style.opacity,
-                  color: el.style.color
+                  color: el.style.color,
+                  fx: el.dataset.fx || 'none'
               });
           });
           localStorage.setItem('myPage.splashFloaters.v1', JSON.stringify(data));
       } catch(e) {}
   }
 
-  // 恢复开屏浮动元素
   function restoreSplashFloaters() {
       try {
           var data = localStorage.getItem('myPage.splashFloaters.v1');
@@ -1796,6 +1204,7 @@
               el.style.fontSize = item.fontSize || '16px';
               if (item.opacity) el.style.opacity = item.opacity;
               if (item.color) el.style.color = item.color;
+              if (item.fx) el.dataset.fx = item.fx;
               card.appendChild(el);
               
               var delBtn = el.querySelector('.splash-fdel');
@@ -1818,15 +1227,9 @@
       } catch(e) { console.log('恢复开屏浮动元素失败:', e); }
   }
 
-  // 打开/关闭开屏编辑
-  var btnOpenSplash = document.getElementById('btnOpenSplash');
-  var splashToolbar = document.getElementById('splashToolbar');
-  
   function openSplashEditor() {
-      // 如果已经存在，直接返回
       if (document.getElementById('splash')) { toast('开屏已经打开'); return; }
       
-      // 读取已保存的开屏数据
       var sData = { title: '肆', desc: '双击此文字可修改', titleSize: 48 };
       try {
           var savedSplash = localStorage.getItem(K_SPLASH);
@@ -1838,7 +1241,6 @@
           }
       } catch(e) {}
       
-      // 动态创建开屏层
       var splash = document.createElement('div');
       splash.id = 'splash';
       splash.innerHTML = '<div class="splash-card" id="splashCard">' +
@@ -1851,17 +1253,14 @@
       
       document.body.appendChild(splash);
       
-      // 应用标题字号
       var titleEl = splash.querySelector('.splash-title');
       if (titleEl) titleEl.style.fontSize = sData.titleSize + 'px';
       
-      // 同步样式面板滑块
       var sizeInput = document.getElementById('spSplashTitleSize');
       if (sizeInput) sizeInput.value = sData.titleSize;
       var sizeVal = document.getElementById('spSplashTitleSizeVal');
       if (sizeVal) sizeVal.textContent = sData.titleSize + 'px';
       
-      // 显示卡片
       setTimeout(function() {
           var card = document.getElementById('splashCard');
           var btn = document.getElementById('splashEnterBtn');
@@ -1869,7 +1268,6 @@
           if (btn) btn.classList.add('show');
       }, 50);
       
-      // 绑定双击编辑（编辑模式下）
       var editEls = splash.querySelectorAll('[data-splash-edit]');
       for (var i = 0; i < editEls.length; i++) {
           (function(el) {
@@ -1892,7 +1290,6 @@
           })(editEls[i]);
       }
       
-      // 绑定关闭逻辑
       splash.addEventListener('click', function(e) {
           var target = e.target;
           if (target.getAttribute('contenteditable') === 'true') return;
@@ -1912,27 +1309,23 @@
           saveSplashFloaters();
       });
       
-      // 打开开屏工具栏
       if (splashToolbar) splashToolbar.classList.add('show');
       
-      // 恢复已保存的开屏浮动元素
       setTimeout(restoreSplashFloaters, 100);
       
       toast('已打开开屏编辑');
   }
   
+  var btnOpenSplash = document.getElementById('btnOpenSplash');
   if (btnOpenSplash) btnOpenSplash.addEventListener('click', openSplashEditor);
   
-  // 开屏工具栏按钮
   var btnSplashAddFloat = document.getElementById('btnSplashAddFloat');
   if (btnSplashAddFloat) btnSplashAddFloat.addEventListener('click', addSplashFloater);
   
   var btnSplashClose = document.getElementById('btnSplashClose');
   if (btnSplashClose) btnSplashClose.addEventListener('click', function() {
       var splash = document.getElementById('splash');
-      if (splash) {
-          if (splash.parentNode) splash.parentNode.removeChild(splash);
-      }
+      if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       if (splashToolbar) splashToolbar.classList.remove('show');
       saveSplash();
       saveSplashFloaters();
@@ -1942,12 +1335,10 @@
   var splashFontSize = document.getElementById('splashFontSize');
   if (splashFontSize) splashFontSize.addEventListener('input', function(e) {
       var size = e.target.value + 'px';
-      // 优先应用到当前选中的开屏浮动元素
       if (splashActiveFloater) {
           splashActiveFloater.style.fontSize = size;
           saveSplashFloaters();
       } else {
-          // 否则应用到开屏标题
           var splashTitle = document.querySelector('#splash .splash-title');
           if (splashTitle) {
               splashTitle.style.fontSize = size;
@@ -1967,7 +1358,6 @@
       if (val !== 'none') {
           splashActiveFloater.classList.add(val);
           splashActiveFloater.classList.add('fx-hidden');
-          // 立即演示
           setTimeout(function() {
               splashActiveFloater.classList.remove('fx-hidden');
               splashActiveFloater.classList.add('fx-visible');
@@ -1977,307 +1367,14 @@
       toast(val === 'none' ? '已取消特效' : '已应用特效');
   });
 
-  // 关闭编辑模式时，自动关闭开屏编辑
-  var _originalSetEdit = setEdit;
-  window.setEdit = function(on) {
-      _originalSetEdit(on);
-      if (!on) {
-          var splash = document.getElementById('splash');
-          if (splash && splashToolbar && splashToolbar.classList.contains('show')) {
-              // 如果开屏是编辑状态下打开的，退出编辑模式时保留开屏，但隐藏工具栏
-              if (splashToolbar) splashToolbar.classList.remove('show');
-          }
-      }
-  };
-})();
+  // ==================== 17. 初始化 ====================
+  try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
+  try { refreshCollectionMenu(); } catch(e) {}
+  try { refreshLinkOptions(); } catch(e) {}
+  try { setEdit(false); } catch(e) {}
+  setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
 
-// ============================================================
-// ========== 开屏编辑器（独立模块，无需修改原有代码）==========
-// ============================================================
-(function(){
-  'use strict';
-  
-  var TOOLBAR_ID = 'splashToolbar';
-  var STYLE_ID = 'splash-toolbar-style';
-  var FLOATERS_KEY = 'myPage.splashFloaters.v2';
-  var activeEl = null;
-  
-  function injectStyle() {
-    if (document.getElementById(STYLE_ID)) return;
-    var style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = 
-      '#splashToolbar{position:fixed;top:calc(48px + var(--safe-top));left:0;right:0;z-index:50000;height:44px;padding:0 12px;display:none;align-items:center;gap:8px;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}' +
-      '#splashToolbar::-webkit-scrollbar{display:none;}' +
-      '#splashToolbar.show{display:flex !important;}' +
-      '.splash-tool-btn{padding:6px 12px;border-radius:18px;border:1px solid var(--border);background:rgba(127,127,127,0.06);color:var(--text);font-size:12px;font-family:monospace;cursor:pointer;white-space:nowrap;flex-shrink:0;}' +
-      '.splash-tool-btn:active{transform:scale(0.95);}' +
-      '.splash-tool-label{font-size:11px;color:var(--sub);font-family:monospace;flex-shrink:0;}' +
-      '#splashFontSize{width:80px;flex-shrink:0;}' +
-      '#splashFxType{flex-shrink:0;padding:4px 6px;border-radius:8px;background:rgba(127,127,127,0.08);color:var(--text);border:1px solid var(--border);font-size:11px;outline:none;}' +
-      '.splash-floater{position:absolute;z-index:100005;min-width:80px;min-height:30px;padding:8px 12px;border-radius:10px;border:2px dashed var(--accent);background:rgba(25,25,30,0.7);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#f0f0f0;font-size:16px;line-height:1.5;word-break:break-word;cursor:move;outline:none;pointer-events:auto;touch-action:none;user-select:none;}' +
-      'body:not(.editing) .splash-floater{border-color:transparent;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;cursor:default;}' +
-      '.splash-fdel{position:absolute;top:-10px;left:-10px;width:20px;height:20px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:11px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}' +
-      'body.editing .splash-floater .splash-fdel{display:flex;}' +
-      '.splash-floater.fx-hidden{opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease;}' +
-      '.splash-floater.fx-visible{opacity:1;transform:translateY(0);}' +
-      '.splash-floater.fx-slide-up{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s cubic-bezier(0.16,1,0.3,1);}' +
-      '.splash-floater.fx-slide-up.fx-visible{opacity:1;transform:translateY(0);}' +
-      '.splash-floater.fx-fade-in{opacity:0;transition:opacity 1s ease;}' +
-      '.splash-floater.fx-fade-in.fx-visible{opacity:1;}' +
-      '.splash-floater.fx-scale-in{opacity:0;transform:scale(0.9);transition:opacity .8s ease,transform .8s ease;}' +
-      '.splash-floater.fx-scale-in.fx-visible{opacity:1;transform:scale(1);}';
-    document.head.appendChild(style);
-  }
-  
-  function createToolbar() {
-    if (document.getElementById(TOOLBAR_ID)) return;
-    var bar = document.createElement('div');
-    bar.id = TOOLBAR_ID;
-    bar.innerHTML = 
-      '<button class="splash-tool-btn" id="splashAddFloat">＋ 浮动文本</button>' +
-      '<span style="flex:1;min-width:8px;"></span>' +
-      '<span class="splash-tool-label">字号</span>' +
-      '<input type="range" id="splashFontSize" min="10" max="120" value="16">' +
-      '<span class="splash-tool-label" id="splashFontSizeVal" style="min-width:36px;text-align:right;">16px</span>' +
-      '<span class="splash-tool-label">特效</span>' +
-      '<select id="splashFxType">' +
-        '<option value="none">无</option>' +
-        '<option value="fx-slide-up">上滑</option>' +
-        '<option value="fx-fade-in">淡入</option>' +
-        '<option value="fx-scale-in">缩放</option>' +
-      '</select>' +
-      '<button class="splash-tool-btn" id="splashDone">✓ 完成</button>';
-    document.body.appendChild(bar);
-    return bar;
-  }
-  
-  function saveFloaters() {
-    try {
-      var card = document.querySelector('#splash .splash-card');
-      if (!card) return;
-      var arr = [];
-      card.querySelectorAll('.splash-floater').forEach(function(el) {
-        var txt = el.cloneNode(true);
-        var del = txt.querySelector('.splash-fdel');
-        if (del) del.remove();
-        arr.push({
-          text: txt.textContent.trim(),
-          left: el.style.left,
-          top: el.style.top,
-          fontSize: el.style.fontSize,
-          color: el.style.color,
-          fx: el.dataset.fx || 'none'
-        });
-      });
-      localStorage.setItem(FLOATERS_KEY, JSON.stringify(arr));
-    } catch(e) {}
-  }
-  
-  function restoreFloaters() {
-    try {
-      var data = localStorage.getItem(FLOATERS_KEY);
-      if (!data) return;
-      var arr = JSON.parse(data);
-      var card = document.querySelector('#splash .splash-card');
-      if (!card) return;
-      arr.forEach(function(item) {
-        createFloater(card, item.text, item.left, item.top, item.fontSize, item.color, item.fx);
-      });
-    } catch(e) {}
-  }
-  
-  function createFloater(card, text, left, top, fontSize, color, fx) {
-    var el = document.createElement('div');
-    el.className = 'splash-floater';
-    el.contentEditable = 'true';
-    el.textContent = text || '开屏文字';
-    el.dataset.fx = fx || 'none';
-    el.style.left = left || '50%';
-    el.style.top = top || '50%';
-    el.style.fontSize = fontSize || '16px';
-    if (color) el.style.color = color;
-    if (left === '50%' && top === '50%') el.style.transform = 'translate(-50%, -50%)';
-    
-    var del = document.createElement('button');
-    del.className = 'splash-fdel';
-    del.textContent = '×';
-    del.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (confirm('删除这个开屏文字？')) { el.remove(); saveFloaters(); }
-    });
-    el.appendChild(del);
-    
-    el.addEventListener('click', function(e) {
-      if (!document.body.classList.contains('editing')) return;
-      e.stopPropagation(); selectEl(el);
-    });
-    el.addEventListener('focusin', function() { selectEl(el); });
-    el.addEventListener('dblclick', function(e) {
-      e.stopPropagation();
-      el.setAttribute('contenteditable', 'true');
-      el.focus();
-      var range = document.createRange(); range.selectNodeContents(el);
-      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-    });
-    el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); saveFloaters(); });
-    el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-    
-    makeDraggable(el);
-    card.appendChild(el);
-    return el;
-  }
-  
-  function makeDraggable(el) {
-    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
-    function down(e) {
-      if (!document.body.classList.contains('editing')) return;
-      if (e.target.classList.contains('splash-fdel')) return;
-      e.preventDefault();
-      dragging = true; moved = false;
-      if (el.style.transform) {
-        var rect = el.getBoundingClientRect();
-        var pr = el.parentNode.getBoundingClientRect();
-        el.style.transform = 'none';
-        el.style.left = (rect.left - pr.left) + 'px';
-        el.style.top = (rect.top - pr.top) + 'px';
-      }
-      var p = e.touches ? e.touches[0] : e;
-      sx = p.clientX; sy = p.clientY;
-      sl = parseFloat(el.style.left) || 0;
-      st = parseFloat(el.style.top) || 0;
-      document.addEventListener('mousemove', move);
-      document.addEventListener('touchmove', move, {passive:false});
-      document.addEventListener('mouseup', up);
-      document.addEventListener('touchend', up);
-    }
-    function move(e) {
-      if (!dragging) return;
-      e.preventDefault();
-      var p = e.touches ? e.touches[0] : e;
-      var dx = p.clientX - sx, dy = p.clientY - sy;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-      el.style.left = (sl + dx) + 'px';
-      el.style.top = (st + dy) + 'px';
-    }
-    function up() {
-      dragging = false;
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('touchmove', move);
-      document.removeEventListener('mouseup', up);
-      document.removeEventListener('touchend', up);
-      if (moved) saveFloaters();
-    }
-    el.addEventListener('mousedown', down);
-    el.addEventListener('touchstart', down, {passive:false});
-  }
-  
-  function selectEl(el) {
-    activeEl = el;
-    var cs = getComputedStyle(el);
-    var size = parseInt(cs.fontSize) || 16;
-    var sizeInput = document.getElementById('splashFontSize');
-    if (sizeInput) sizeInput.value = size;
-    var sizeVal = document.getElementById('splashFontSizeVal');
-    if (sizeVal) sizeVal.textContent = size + 'px';
-    var fx = document.getElementById('splashFxType');
-    if (fx) fx.value = el.dataset.fx || 'none';
-  }
-  
-  function bindEvents() {
-    var addBtn = document.getElementById('splashAddFloat');
-    if (addBtn) addBtn.addEventListener('click', function() {
-      var card = document.querySelector('#splash .splash-card');
-      if (!card) { alert('请先点顶部"🎬 开屏"打开开屏'); return; }
-      var el = createFloater(card);
-      el.setAttribute('contenteditable', 'true');
-      el.focus();
-      selectEl(el);
-      saveFloaters();
-    });
-    
-    var sizeInput = document.getElementById('splashFontSize');
-    if (sizeInput) sizeInput.addEventListener('input', function(e) {
-      var v = e.target.value;
-      var sizeVal = document.getElementById('splashFontSizeVal');
-      if (sizeVal) sizeVal.textContent = v + 'px';
-      if (activeEl) {
-        activeEl.style.fontSize = v + 'px';
-        saveFloaters();
-      } else {
-        var title = document.querySelector('#splash .splash-title');
-        if (title) {
-          title.style.fontSize = v + 'px';
-          try {
-            var sData = JSON.parse(localStorage.getItem('myPage.splash.v1') || '{}');
-            sData.titleSize = parseInt(v);
-            localStorage.setItem('myPage.splash.v1', JSON.stringify(sData));
-          } catch(err) {}
-        }
-      }
-    });
-    
-    var fxSelect = document.getElementById('splashFxType');
-    if (fxSelect) fxSelect.addEventListener('change', function(e) {
-      var val = e.target.value;
-      if (!activeEl) { alert('请先点击选中一个开屏文字'); return; }
-      activeEl.dataset.fx = val;
-      activeEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
-      if (val !== 'none') {
-        activeEl.classList.add(val);
-        activeEl.classList.add('fx-hidden');
-        setTimeout(function() {
-          activeEl.classList.remove('fx-hidden');
-          activeEl.classList.add('fx-visible');
-        }, 200);
-      }
-      saveFloaters();
-    });
-    
-    var doneBtn = document.getElementById('splashDone');
-    if (doneBtn) doneBtn.addEventListener('click', function() {
-      var splash = document.getElementById('splash');
-      if (splash) splash.remove();
-      var bar = document.getElementById(TOOLBAR_ID);
-      if (bar) bar.classList.remove('show');
-      saveFloaters();
-    });
-  }
-  
-  function watchSplash() {
-    var hasSplash = false;
-    setInterval(function() {
-      var splash = document.getElementById('splash');
-      var bar = document.getElementById(TOOLBAR_ID);
-      if (!bar) return;
-      if (splash && !hasSplash) {
-        hasSplash = true;
-        if (document.body.classList.contains('editing')) {
-          bar.classList.add('show');
-          setTimeout(restoreFloaters, 100);
-        }
-      } else if (!splash && hasSplash) {
-        hasSplash = false;
-        bar.classList.remove('show');
-        saveFloaters();
-      }
-    }, 300);
-  }
-  
-  function init() {
-    injectStyle();
-    createToolbar();
-    bindEvents();
-    watchSplash();
-  }
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
 })();
-
 </script>
 </body>
 </html>
