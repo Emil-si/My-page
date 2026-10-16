@@ -94,17 +94,41 @@
   .divider{padding:8px 0;display:flex;align-items:center;position:relative;}
   .divider .line{height:1px;background:var(--border);width:100%;border-radius:1px;transition:all .2s;}
   body.editing .divider:hover .line{background:var(--accent);}
+  
+  /* ===== 修改部分 1：修复编辑态与保存态的偏移下沉问题 ===== */
+  /* 编辑模式行间距减小 */
   .bwrap { position: relative; padding-right: 0; }
-  body.editing .bwrap { padding-bottom: 20px; }
-  .bwrap > .row-tools {position:absolute;bottom:0;right:0;display:none;flex-direction:row;gap:4px;opacity:0.9;z-index:20;}
+  /* 去掉了原来的 body.editing .bwrap { padding-bottom: 26px; } 避免改变文档流高度导致绝对定位元素偏移 */
+  .bwrap > .row-tools {
+    position: absolute; 
+    top: -28px; /* 将按钮改为悬浮在行上方，不占用文档流空间 */
+    right: 0; 
+    display: none; 
+    flex-direction: row; 
+    gap: 6px; 
+    opacity: 0.9; 
+    z-index: 100; 
+    background: var(--bar); 
+    padding: 2px 4px; 
+    border-radius: 6px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
   body.editing .bwrap > .row-tools { display: flex !important; opacity: 1; }
-  .row-tools button{width:22px;height:22px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:12px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-  .row-tools button.dvd { background: #7d90b8; font-size:13px; }
+  
+  /* ===== 修改部分 2：修复无法删除浮动文本框的蓝色虚线框 ===== */
+  /* 编辑模式下显示红色删除按钮 */
+  body.editing .xdel { display: flex; }
+  /* 非编辑（保存）模式下，隐藏浮动文本框的蓝色虚线边框 */
+  body:not(.editing) .floater { border-color: transparent; }
+
+  .row-tools button{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:13px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .row-tools button.dvd { background: #7d90b8; font-size: 14px; }
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
   .shape{position:absolute;z-index:999999;cursor:move;pointer-events:auto;touch-action:none;user-select:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));display:block;}
   .shape svg{width:100%;height:100%;display:block;pointer-events:none;}
   .frame{position:absolute;z-index:999999;overflow:hidden;background:#333;border:2px solid var(--border);cursor:move;pointer-events:auto;touch-action:none;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.3);display:block;}
+  /* 修复：图片可被点击以替换图片 */
   .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:auto;}
   .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:text;outline:none;pointer-events:auto;touch-action:none;display:block;}
   .xdel{position:absolute;top:-10px;left:-10px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}
@@ -239,8 +263,8 @@
     #stylePanel .sp-note{display:none;}
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
-    .bwrap > .row-tools { gap: 4px; }
-    .row-tools button { width: 20px; height: 20px; font-size: 11px; }
+    .bwrap > .row-tools { gap: 4px; top: -24px; }
+    .row-tools button { width: 22px; height: 22px; font-size: 12px; }
   }
   #splashToolbar {
     position: fixed;
@@ -833,39 +857,16 @@
   } catch(e) {}
   function serialize(){ if(!app) return ''; var clone = app.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); return clone.innerHTML; }
 
-  // 计算浮动元素相对 panel 顶部的偏移
-  function updatePanelOffset(el) {
-      var panelId = el.dataset.panelId || 'panel-0';
-      var panel = document.getElementById(panelId);
-      if (!panel) return;
-      var elTop = parseFloat(el.style.top) || 0;
-      var offset = elTop - panel.offsetTop;
-      el.dataset.panelOffsetY = offset;
-  }
-
-  // 根据 panel 偏移重新定位浮动元素
-  function repositionFloaters() {
-      var activePanel = document.querySelector('.panel.active');
-      if (!activePanel) return;
-      document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
-          if (el.dataset.panelId !== activePanel.id) return;
-          var offsetY = parseFloat(el.dataset.panelOffsetY || '0');
-          el.style.top = (activePanel.offsetTop + offsetY) + 'px';
-      });
-  }
-
   // 保存浮动元素到 localStorage
   function saveFloaters() {
       try {
           var arr = [];
           document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
-              // 更新偏移
-              updatePanelOffset(el);
               var item = {
                   type: el.classList.contains('shape') ? 'shape' : (el.classList.contains('frame') ? 'frame' : 'floater'),
                   panelId: el.dataset.panelId || 'panel-0',
-                  panelOffsetY: el.dataset.panelOffsetY || '0',
                   left: el.style.left || '',
+                  top: el.style.top || '',
                   width: el.style.width || '',
                   height: el.style.height || '',
                   color: el.style.color || '',
@@ -894,25 +895,22 @@
   // 恢复浮动元素
   function restoreFloaters() {
       try {
+          // 先清掉现有的
           document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.remove(); });
+          
           var data = localStorage.getItem(K_FLOATERS);
           if (!data) return;
           var arr = JSON.parse(data);
           if (!arr || !arr.length) return;
-
+          
           arr.forEach(function(item) {
-              var panel = document.getElementById(item.panelId) || document.querySelector('.panel.active');
-              var topY = panel ? (panel.offsetTop + parseFloat(item.panelOffsetY || '0')) : 200;
-
               if (item.type === 'shape') {
                   var el = document.createElement('div');
                   el.className = 'shape';
                   el.dataset.shapeType = item.shapeType;
-                  el.dataset.panelId = item.panelId;
-                  el.dataset.panelOffsetY = item.panelOffsetY;
                   el.style.position = 'absolute';
                   el.style.left = item.left;
-                  el.style.top = topY + 'px';
+                  el.style.top = item.top;
                   el.style.width = item.width;
                   el.style.height = item.height;
                   el.style.zIndex = '999999';
@@ -920,6 +918,7 @@
                   el.style.pointerEvents = 'auto';
                   if (item.color) el.style.color = item.color;
                   if (item.opacity) el.style.opacity = item.opacity;
+                  el.dataset.panelId = item.panelId;
                   el.innerHTML = shapeSVG(item.shapeType) + '<div class="rz"></div><button class="xdel">×</button>';
                   document.body.appendChild(el);
                   el.addEventListener('click', function(e) {
@@ -933,17 +932,16 @@
               else if (item.type === 'frame') {
                   var el = document.createElement('div');
                   el.className = 'frame';
-                  el.dataset.panelId = item.panelId;
-                  el.dataset.panelOffsetY = item.panelOffsetY;
                   el.style.position = 'absolute';
                   el.style.left = item.left;
-                  el.style.top = topY + 'px';
+                  el.style.top = item.top;
                   el.style.width = item.width;
                   el.style.height = item.height;
                   el.style.zIndex = '999999';
                   el.style.display = 'none';
                   el.style.pointerEvents = 'auto';
                   if (item.borderRadius) el.style.borderRadius = item.borderRadius;
+                  el.dataset.panelId = item.panelId;
                   var img = document.createElement('img');
                   img.setAttribute('data-edit-img', '');
                   img.src = item.imgSrc || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%23333%27/%3E%3Ctext x=%2750%27 y=%2755%27 font-size=%2712%27 fill=%27%23999%27 text-anchor=%27middle%27%3E点击换图%3C/text%3E%3C/svg%3E';
@@ -957,15 +955,14 @@
                   var el = document.createElement('div');
                   el.className = 'floater';
                   el.contentEditable = 'true';
-                  el.dataset.panelId = item.panelId;
-                  el.dataset.panelOffsetY = item.panelOffsetY;
                   el.style.position = 'absolute';
                   el.style.left = item.left;
-                  el.style.top = topY + 'px';
+                  el.style.top = item.top;
                   el.style.width = item.width;
                   el.style.zIndex = '999999';
                   el.style.display = 'none';
                   el.style.pointerEvents = 'auto';
+                  el.dataset.panelId = item.panelId;
                   el.textContent = item.text || '自由文本';
                   var rz = document.createElement('div'); rz.className = 'rz';
                   var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
@@ -1026,8 +1023,6 @@
     if(on) { try { bindAll(); } catch(e){} toast('编辑已开启'); }
     else { save(); toast('已保存'); }
     updateFloatersVisibility();
-    // 编辑模式切换后，重算浮动元素位置（等浏览器重排后）
-    setTimeout(function(){ try { repositionFloaters(); saveFloaters(); } catch(e) {} }, 50);
   }
   var btnEdit = document.getElementById('btnEdit');
   if (btnEdit) btnEdit.addEventListener('click', function(){ setEdit(!editMode); });
@@ -1038,15 +1033,8 @@
     var activePanelId = activePanel.id;
     document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
       if (!el.dataset.panelId) el.dataset.panelId = 'panel-0';
-      if (el.dataset.panelId === activePanelId) {
-        el.style.display = 'block';
-        el.style.pointerEvents = 'auto';
-        var offsetY = parseFloat(el.dataset.panelOffsetY || '0');
-        el.style.top = (activePanel.offsetTop + offsetY) + 'px';
-      } else {
-        el.style.display = 'none';
-        el.style.pointerEvents = 'none';
-      }
+      if (el.dataset.panelId === activePanelId) { el.style.display = 'block'; el.style.pointerEvents = 'auto'; }
+      else { el.style.display = 'none'; el.style.pointerEvents = 'none'; }
     });
   }
 
@@ -1141,32 +1129,12 @@
 
   // ==================== 11. 图形创建 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
-
+  function getCenterPos(elWidth, elHeight) { var left = (window.innerWidth / 2) - (elWidth / 2) + window.scrollX; var top = (window.innerHeight / 2) - (elHeight / 2) + window.scrollY; return { left: left, top: top }; }
   function createFloatingElement(className, innerHTML, isContentEditable) {
-      var el = document.createElement('div');
-      el.className = className;
-      if (isContentEditable) el.contentEditable = 'true';
-      el.innerHTML = innerHTML;
-
-      var activePanel = document.querySelector('.panel.active');
-      var panelOffsetY = 0;
-      if (activePanel) {
-          var viewportCenterY = window.innerHeight / 2 + window.scrollY;
-          panelOffsetY = viewportCenterY - activePanel.offsetTop - 50;
-          if (panelOffsetY < 20) panelOffsetY = 20;
-          el.dataset.panelId = activePanel.id;
-          el.dataset.panelOffsetY = panelOffsetY;
-      }
-
-      el.style.position = 'absolute';
-      el.style.left = (window.innerWidth / 2 - 50) + 'px';
-      el.style.top = (activePanel ? (activePanel.offsetTop + panelOffsetY) : (window.scrollY + 200)) + 'px';
-      el.style.zIndex = '999999';
-      el.style.display = 'block';
-      el.style.pointerEvents = 'auto';
-
-      document.body.appendChild(el);
-      return el;
+      var el = document.createElement('div'); el.className = className; if (isContentEditable) el.contentEditable = 'true'; el.innerHTML = innerHTML;
+      var pos = getCenterPos(100, 100); el.style.position = 'absolute'; el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; el.style.zIndex = '999999'; el.style.display = 'block'; el.style.pointerEvents = 'auto';
+      var activePanel = document.querySelector('.panel.active'); if (activePanel) el.dataset.panelId = activePanel.id;
+      document.body.appendChild(el); return el;
   }
   function makeShape(type){ try { var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false); el.dataset.shapeType = type; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.addEventListener('click', function(e) { if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) { e.stopPropagation(); selectFloater(el); if(stylePanel) stylePanel.classList.add('show'); } }); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); } catch(e) { alert('添加图形失败: ' + e.message); } }
   function makeFrame(shape){ try { var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">'; var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = el.querySelector('img'); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); } catch(e) { alert('添加图片框失败: ' + e.message); } }
@@ -1178,55 +1146,36 @@
   document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.remove('show'); }); });
   document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); var fp = document.getElementById('framePicker'); if(fp) fp.classList.remove('show'); }); });
 
-  function makeMovable(el){
-    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
-    function down(e){
-      if(!editMode) return;
-      if(e.target.classList.contains('rz')) return;
-      if(e.target.classList.contains('xdel')) return;
-      // 允许浮动文本内部点击编辑
+  function makeMovable(el){ 
+    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; 
+    function down(e){ 
+      if(!editMode) return; 
+      if(e.target.classList.contains('rz')) return; 
+      if(e.target.classList.contains('xdel')) return; 
+      // 修复：floater 内部点击允许编辑
       if (el.classList.contains('floater') && el.contentEditable === 'true') {
         var rect = el.getBoundingClientRect();
         var pad = 12;
         var cx = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
         var cy = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
         if (cx > rect.left + pad && cx < rect.right - pad && cy > rect.top + pad && cy < rect.bottom - pad) {
-          return;
+          return; // 允许进入编辑
         }
       }
-      e.preventDefault();
-      dragging = true; moved = false;
-      var p = e.touches ? e.touches[0] : e;
-      sx = p.clientX; sy = p.clientY;
-      sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0;
-      document.addEventListener('mousemove', move);
-      document.addEventListener('touchmove', move, {passive:false});
-      document.addEventListener('mouseup', up);
-      document.addEventListener('touchend', up);
-    }
-    function move(e){
-      if(!dragging) return;
-      e.preventDefault();
-      var p = e.touches ? e.touches[0] : e;
-      var dx = p.clientX - sx, dy = p.clientY - sy;
-      if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
-      el.style.left = (sl + dx) + 'px';
-      el.style.top = (st + dy) + 'px';
-    }
-    function up(){
-      dragging = false;
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('touchmove', move);
-      document.removeEventListener('mouseup', up);
-      document.removeEventListener('touchend', up);
-      if (moved) {
-          // 更新相对 panel 偏移
-          updatePanelOffset(el);
-          save();
-      }
-    }
-    el.addEventListener('mousedown', down);
-    el.addEventListener('touchstart', down, {passive:false});
+      e.preventDefault(); 
+      dragging = true; moved = false; 
+      var p = e.touches ? e.touches[0] : e; 
+      sx = p.clientX; sy = p.clientY; 
+      sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; 
+      document.addEventListener('mousemove', move); 
+      document.addEventListener('touchmove', move, {passive:false}); 
+      document.addEventListener('mouseup', up); 
+      document.addEventListener('touchend', up); 
+    } 
+    function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } 
+    function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } 
+    el.addEventListener('mousedown', down); 
+    el.addEventListener('touchstart', down, {passive:false}); 
   }
   function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
   function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
@@ -1625,13 +1574,10 @@
   try { refreshLinkOptions(); } catch(e) {}
   try { setEdit(false); } catch(e) {}
   setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
+  // 页面初始加载时也恢复开屏浮动文本
   setTimeout(function(){ try { restoreSplashFloaters(); } catch(e) {} }, 200);
-  // 页面初始加载时恢复主页浮动元素（等 panel 位置稳定）
+  // 页面初始加载时恢复主页浮动元素
   setTimeout(function(){ try { restoreFloaters(); } catch(e) {} }, 250);
-  // 窗口大小变化时重算
-  window.addEventListener('resize', function() {
-      setTimeout(function(){ try { repositionFloaters(); } catch(e) {} }, 100);
-  });
 
 })();
 </script>
