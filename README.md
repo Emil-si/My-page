@@ -713,6 +713,75 @@
     .bwrap > .row-tools { gap: 6px; }
     .row-tools button { width: 30px; height: 30px; font-size: 15px; }
   }
+  /* ===== 开屏专用工具栏 ===== */
+  #splashToolbar {
+    position: fixed;
+    top: calc(48px + var(--safe-top));
+    left: 0; right: 0;
+    z-index: 101;
+    height: 44px;
+    padding: 0 12px;
+    display: none; /* 默认隐藏 */
+    align-items: center;
+    gap: 8px;
+    background: var(--bar);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #splashToolbar::-webkit-scrollbar { display: none; }
+  #splashToolbar.show { display: flex; }
+
+  /* 开屏浮动元素 */
+  .splash-floater {
+    position: absolute;
+    z-index: 100005;
+    min-width: 80px; min-height: 30px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 2px dashed var(--accent);
+    background: rgba(25,25,30,0.7);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: #f0f0f0;
+    font-size: 14px; line-height: 1.5;
+    word-break: break-word;
+    cursor: move; outline: none;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+  }
+  body:not(.editing) .splash-floater {
+    border-color: transparent;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    cursor: default;
+  }
+
+  .splash-floater .splash-fdel {
+    position: absolute;
+    top: -10px; left: -10px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #e5484d;
+    color: #fff;
+    border: none;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 5;
+  }
+  body.editing .splash-floater:hover .splash-fdel,
+  body.editing .splash-floater:focus-within .splash-fdel {
+    display: flex;
+  }
 </style>
 </head>
 <body>
@@ -744,6 +813,22 @@
   <button class="btn edit-only" id="btnReset"><span class="ico">⟲</span><span class="lbl">重置</span></button>
   <span class="spacer"></span>
   <button class="btn" id="btnTheme"><span class="ico" id="themeIcon">☀</span></button>
+</div>
+
+<!-- 开屏专用工具栏：只在开屏编辑模式下显示 -->
+<div id="splashToolbar">
+  <button class="btn" id="btnSplashAddFloat"><span class="ico">＋</span><span class="lbl">开屏浮动文本</span></button>
+  <span class="spacer"></span>
+  <span style="font-size:11px;color:var(--sub);font-family:monospace;flex-shrink:0;">字号</span>
+  <input type="range" id="splashFontSize" min="10" max="96" value="14" style="width:90px;flex-shrink:0;">
+  <span style="font-size:11px;color:var(--sub);font-family:monospace;flex-shrink:0;">特效</span>
+  <select id="splashFxType" style="flex-shrink:0;padding:4px 6px;border-radius:8px;background:rgba(127,127,127,0.08);color:var(--text);border:1px solid var(--border);font-size:11px;outline:none;">
+    <option value="none">无</option>
+    <option value="fx-slide-up">上滑</option>
+    <option value="fx-fade-in">淡入</option>
+    <option value="fx-scale-in">缩放</option>
+  </select>
+  <button class="btn" id="btnSplashClose" style="flex-shrink:0;"><span class="ico">✓</span><span class="lbl">完成</span></button>
 </div>
 
 <div id="topnav">
@@ -1554,7 +1639,356 @@
   try { refreshLinkOptions(); } catch(e) {}
   try { setEdit(false); } catch(e) {}
   setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
+// ==================== 16. 开屏浮动元素编辑 ====================
+  var splashActiveFloater = null;  // 当前选中的开屏浮动元素
 
+  function getSplashCard() {
+      return document.querySelector('#splash .splash-card');
+  }
+
+  // 添加开屏浮动文本
+  function addSplashFloater() {
+      var card = getSplashCard();
+      if (!card) { toast('请先打开开屏'); return; }
+      
+      var el = document.createElement('div');
+      el.className = 'splash-floater';
+      el.contentEditable = 'true';
+      el.textContent = '开屏文字';
+      el.innerHTML += '<button class="splash-fdel">×</button>';
+      
+      el.style.left = '50%';
+      el.style.top = '50%';
+      el.style.transform = 'translate(-50%, -50%)';
+      el.style.fontSize = '16px';
+      
+      card.appendChild(el);
+      
+      // 删除按钮
+      var delBtn = el.querySelector('.splash-fdel');
+      delBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (confirm('删除这个开屏浮动文本？')) {
+              el.remove();
+              saveSplashFloaters();
+          }
+      });
+      
+      // 拖动
+      makeSplashFloaterMovable(el);
+      
+      // 选中时同步到样式面板
+      el.addEventListener('focusin', function() {
+          splashActiveFloater = el;
+          var cs = getComputedStyle(el);
+          var fontSize = parseInt(cs.fontSize) || 16;
+          var sizeInput = document.getElementById('splashFontSize');
+          if (sizeInput) sizeInput.value = fontSize;
+      });
+      
+      el.addEventListener('click', function(e) {
+          if (!editMode) return;
+          e.stopPropagation();
+          splashActiveFloater = el;
+          var cs = getComputedStyle(el);
+          var sizeInput = document.getElementById('splashFontSize');
+          if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 16;
+      });
+      
+      el.focus();
+      selectSplashText(el);
+      saveSplashFloaters();
+      toast('已添加开屏浮动文本');
+  }
+
+  // 选中开屏元素，同步样式面板
+  function selectSplashText(el) {
+      splashActiveFloater = el;
+      var cs = getComputedStyle(el);
+      var sizeInput = document.getElementById('splashFontSize');
+      if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 14;
+  }
+
+  // 拖动逻辑
+  function makeSplashFloaterMovable(el) {
+      var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false;
+      function down(e) {
+          if (!editMode) return;
+          if (e.target.classList.contains('splash-fdel')) return;
+          e.preventDefault();
+          dragging = true; moved = false;
+          
+          // 去掉 transform，改用绝对定位
+          var rect = el.getBoundingClientRect();
+          var parentRect = el.parentNode.getBoundingClientRect();
+          el.style.transform = 'none';
+          el.style.left = (rect.left - parentRect.left) + 'px';
+          el.style.top = (rect.top - parentRect.top) + 'px';
+          
+          var p = e.touches ? e.touches[0] : e;
+          sx = p.clientX; sy = p.clientY;
+          sl = parseFloat(el.style.left) || 0;
+          st = parseFloat(el.style.top) || 0;
+          
+          document.addEventListener('mousemove', move);
+          document.addEventListener('touchmove', move, {passive:false});
+          document.addEventListener('mouseup', up);
+          document.addEventListener('touchend', up);
+      }
+      function move(e) {
+          if (!dragging) return;
+          e.preventDefault();
+          var p = e.touches ? e.touches[0] : e;
+          var dx = p.clientX - sx, dy = p.clientY - sy;
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+          el.style.left = (sl + dx) + 'px';
+          el.style.top = (st + dy) + 'px';
+      }
+      function up() {
+          dragging = false;
+          document.removeEventListener('mousemove', move);
+          document.removeEventListener('touchmove', move);
+          document.removeEventListener('mouseup', up);
+          document.removeEventListener('touchend', up);
+          if (moved) saveSplashFloaters();
+      }
+      el.addEventListener('mousedown', down);
+      el.addEventListener('touchstart', down, {passive:false});
+  }
+
+  // 保存开屏浮动元素
+  function saveSplashFloaters() {
+      try {
+          var card = getSplashCard();
+          if (!card) return;
+          var floaters = card.querySelectorAll('.splash-floater');
+          var data = [];
+          floaters.forEach(function(el) {
+              data.push({
+                  text: el.textContent.replace('×','').trim(),
+                  left: el.style.left,
+                  top: el.style.top,
+                  fontSize: el.style.fontSize,
+                  opacity: el.style.opacity,
+                  color: el.style.color
+              });
+          });
+          localStorage.setItem('myPage.splashFloaters.v1', JSON.stringify(data));
+      } catch(e) {}
+  }
+
+  // 恢复开屏浮动元素
+  function restoreSplashFloaters() {
+      try {
+          var data = localStorage.getItem('myPage.splashFloaters.v1');
+          if (!data) return;
+          var arr = JSON.parse(data);
+          var card = getSplashCard();
+          if (!card) return;
+          arr.forEach(function(item) {
+              var el = document.createElement('div');
+              el.className = 'splash-floater';
+              el.contentEditable = 'true';
+              el.textContent = item.text || '开屏文字';
+              el.innerHTML += '<button class="splash-fdel">×</button>';
+              el.style.left = item.left || '50%';
+              el.style.top = item.top || '50%';
+              el.style.fontSize = item.fontSize || '16px';
+              if (item.opacity) el.style.opacity = item.opacity;
+              if (item.color) el.style.color = item.color;
+              card.appendChild(el);
+              
+              var delBtn = el.querySelector('.splash-fdel');
+              delBtn.addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  if (confirm('删除这个开屏浮动文本？')) {
+                      el.remove();
+                      saveSplashFloaters();
+                  }
+              });
+              
+              makeSplashFloaterMovable(el);
+              el.addEventListener('focusin', function() { selectSplashText(el); });
+              el.addEventListener('click', function(e) {
+                  if (!editMode) return;
+                  e.stopPropagation();
+                  selectSplashText(el);
+              });
+          });
+      } catch(e) { console.log('恢复开屏浮动元素失败:', e); }
+  }
+
+  // 打开/关闭开屏编辑
+  var btnOpenSplash = document.getElementById('btnOpenSplash');
+  var splashToolbar = document.getElementById('splashToolbar');
+  
+  function openSplashEditor() {
+      // 如果已经存在，直接返回
+      if (document.getElementById('splash')) { toast('开屏已经打开'); return; }
+      
+      // 读取已保存的开屏数据
+      var sData = { title: '肆', desc: '双击此文字可修改', titleSize: 48 };
+      try {
+          var savedSplash = localStorage.getItem(K_SPLASH);
+          if (savedSplash) {
+              var parsed = JSON.parse(savedSplash);
+              if (parsed.title) sData.title = parsed.title;
+              if (parsed.desc) sData.desc = parsed.desc;
+              if (parsed.titleSize) sData.titleSize = parsed.titleSize;
+          }
+      } catch(e) {}
+      
+      // 动态创建开屏层
+      var splash = document.createElement('div');
+      splash.id = 'splash';
+      splash.innerHTML = '<div class="splash-card" id="splashCard">' +
+          '<div class="splash-title" data-splash-edit="title">' + sData.title + '</div>' +
+          '<div class="splash-desc" data-splash-edit="desc">' + sData.desc + '</div>' +
+          '</div>' +
+          '<button class="splash-enter-btn" id="splashEnterBtn">' +
+          '<span class="splash-btn-text">进入主页</span>' +
+          '</button>';
+      
+      document.body.appendChild(splash);
+      
+      // 应用标题字号
+      var titleEl = splash.querySelector('.splash-title');
+      if (titleEl) titleEl.style.fontSize = sData.titleSize + 'px';
+      
+      // 同步样式面板滑块
+      var sizeInput = document.getElementById('spSplashTitleSize');
+      if (sizeInput) sizeInput.value = sData.titleSize;
+      var sizeVal = document.getElementById('spSplashTitleSizeVal');
+      if (sizeVal) sizeVal.textContent = sData.titleSize + 'px';
+      
+      // 显示卡片
+      setTimeout(function() {
+          var card = document.getElementById('splashCard');
+          var btn = document.getElementById('splashEnterBtn');
+          if (card) card.classList.add('show');
+          if (btn) btn.classList.add('show');
+      }, 50);
+      
+      // 绑定双击编辑（编辑模式下）
+      var editEls = splash.querySelectorAll('[data-splash-edit]');
+      for (var i = 0; i < editEls.length; i++) {
+          (function(el) {
+              el.addEventListener('dblclick', function(e) {
+                  e.stopPropagation();
+                  el.setAttribute('contenteditable', 'true');
+                  el.focus();
+                  selectSplashText(el);
+                  var range = document.createRange(); range.selectNodeContents(el);
+                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+              });
+              el.addEventListener('focusin', function() { selectSplashText(el); });
+              el.addEventListener('click', function(e) {
+                  if (!editMode) return;
+                  e.stopPropagation();
+                  selectSplashText(el);
+              });
+              el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); saveSplash(); });
+              el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+          })(editEls[i]);
+      }
+      
+      // 绑定关闭逻辑
+      splash.addEventListener('click', function(e) {
+          var target = e.target;
+          if (target.getAttribute('contenteditable') === 'true') return;
+          if (target.hasAttribute('data-splash-edit')) return;
+          if (target.classList.contains('splash-floater')) return;
+          if (target.closest('.splash-floater')) return;
+          if (target.closest('#splashEnterBtn')) {
+              if (splash.parentNode) splash.parentNode.removeChild(splash);
+              if (splashToolbar) splashToolbar.classList.remove('show');
+              saveSplash();
+              saveSplashFloaters();
+              return;
+          }
+          if (document.body.classList.contains('editing')) return;
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+          saveSplash();
+          saveSplashFloaters();
+      });
+      
+      // 打开开屏工具栏
+      if (splashToolbar) splashToolbar.classList.add('show');
+      
+      // 恢复已保存的开屏浮动元素
+      setTimeout(restoreSplashFloaters, 100);
+      
+      toast('已打开开屏编辑');
+  }
+  
+  if (btnOpenSplash) btnOpenSplash.addEventListener('click', openSplashEditor);
+  
+  // 开屏工具栏按钮
+  var btnSplashAddFloat = document.getElementById('btnSplashAddFloat');
+  if (btnSplashAddFloat) btnSplashAddFloat.addEventListener('click', addSplashFloater);
+  
+  var btnSplashClose = document.getElementById('btnSplashClose');
+  if (btnSplashClose) btnSplashClose.addEventListener('click', function() {
+      var splash = document.getElementById('splash');
+      if (splash) {
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+      }
+      if (splashToolbar) splashToolbar.classList.remove('show');
+      saveSplash();
+      saveSplashFloaters();
+      toast('已保存开屏');
+  });
+  
+  var splashFontSize = document.getElementById('splashFontSize');
+  if (splashFontSize) splashFontSize.addEventListener('input', function(e) {
+      var size = e.target.value + 'px';
+      // 优先应用到当前选中的开屏浮动元素
+      if (splashActiveFloater) {
+          splashActiveFloater.style.fontSize = size;
+          saveSplashFloaters();
+      } else {
+          // 否则应用到开屏标题
+          var splashTitle = document.querySelector('#splash .splash-title');
+          if (splashTitle) {
+              splashTitle.style.fontSize = size;
+              saveSplash();
+          }
+      }
+  });
+  
+  var splashFxType = document.getElementById('splashFxType');
+  if (splashFxType) splashFxType.addEventListener('change', function(e) {
+      var val = e.target.value;
+      if (!splashActiveFloater) {
+          toast('请先选中一个开屏文字');
+          return;
+      }
+      splashActiveFloater.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+      if (val !== 'none') {
+          splashActiveFloater.classList.add(val);
+          splashActiveFloater.classList.add('fx-hidden');
+          // 立即演示
+          setTimeout(function() {
+              splashActiveFloater.classList.remove('fx-hidden');
+              splashActiveFloater.classList.add('fx-visible');
+          }, 200);
+      }
+      saveSplashFloaters();
+      toast(val === 'none' ? '已取消特效' : '已应用特效');
+  });
+
+  // 关闭编辑模式时，自动关闭开屏编辑
+  var _originalSetEdit = setEdit;
+  window.setEdit = function(on) {
+      _originalSetEdit(on);
+      if (!on) {
+          var splash = document.getElementById('splash');
+          if (splash && splashToolbar && splashToolbar.classList.contains('show')) {
+              // 如果开屏是编辑状态下打开的，退出编辑模式时保留开屏，但隐藏工具栏
+              if (splashToolbar) splashToolbar.classList.remove('show');
+          }
+      }
+  };
 })();
 </script>
 </body>
