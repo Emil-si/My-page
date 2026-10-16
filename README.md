@@ -95,9 +95,8 @@
   .divider .line{height:1px;background:var(--border);width:100%;border-radius:1px;transition:all .2s;}
   body.editing .divider:hover .line{background:var(--accent);}
   
-  /* ===== 修复部分 1：编辑态/保存态偏移下沉 ===== */
+  /* ===== 修复：编辑态/保存态偏移下沉 ===== */
   .bwrap { position: relative; padding-right: 0; }
-  /* 去掉原来的 padding-bottom，改为绝对定位悬浮按钮 */
   .bwrap > .row-tools {
     position: absolute; 
     top: -28px; 
@@ -114,9 +113,9 @@
   }
   body.editing .bwrap > .row-tools { display: flex !important; opacity: 1; }
   
-  /* ===== 修复部分 2：浮动文本框无法删除及背景问题 ===== */
-  body.editing .xdel { display: flex; } /* 编辑模式下显示删除按钮 */
-  body:not(.editing) .floater { border-color: transparent; } /* 保存态隐藏虚线框 */
+  /* ===== 修复：浮动文本框删除按钮 ===== */
+  body.editing .xdel { display: flex; }
+  body:not(.editing) .floater { border-color: transparent; }
 
   .row-tools button{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:13px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
   .row-tools button.dvd { background: #7d90b8; font-size: 14px; }
@@ -127,6 +126,18 @@
   .frame{position:absolute;z-index:999999;overflow:hidden;background:#333;border:2px solid var(--border);cursor:move;pointer-events:auto;touch-action:none;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.3);display:block;}
   .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:auto;}
   .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:text;outline:none;pointer-events:auto;touch-action:none;display:block;}
+  
+  /* 新增：主页浮动文本框无背景样式 */
+  .floater.no-bg {
+    border-color: transparent !important;
+    background: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  body:not(.editing) .floater.no-bg {
+    border-color: transparent !important;
+  }
+
   .xdel{position:absolute;top:-10px;left:-10px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}
   .rz{position:absolute;bottom:0;right:0;width:28px;height:28px;background:linear-gradient(135deg, transparent 48%, var(--accent) 48%);cursor:se-resize;z-index:10;border-bottom-right-radius:10px;touch-action:none;}
   .rz::before{content:"";position:absolute;right:-6px;bottom:-6px;width:44px;height:44px;background:transparent;cursor:se-resize;}
@@ -299,13 +310,6 @@
     pointer-events: auto;
     user-select: text;
     -webkit-user-select: text;
-  }
-  /* 新增：无背景样式 */
-  .splash-floater.no-bg {
-    border-color: transparent !important;
-    background: transparent !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
   }
   body:not(.editing) .splash-floater {
     border-color: transparent;
@@ -492,11 +496,13 @@
     <input type="range" id="spShapeOpacity" min="0" max="100" value="100">
     <span id="spShapeOpacityVal" style="min-width:34px;text-align:right;">100%</span>
   </div>
-  <!-- 新增：开屏文本背景开关 -->
-  <div class="sp-row" id="spSplashBgRow" style="display:none;">
-    <span>开屏文本背景</span>
-    <button class="sp-btn" id="spSplashBgToggle" style="width:100%;">显示</button>
+  
+  <!-- 新增：主页浮动文本框的背景控制 -->
+  <div class="sp-row" id="spFloaterBgRow" style="display:none;">
+    <span>文本背景</span>
+    <button class="sp-btn" id="spFloaterBgToggle" style="width:100%;">显示</button>
   </div>
+  
   <div class="sp-title" style="margin-top:6px;">开屏动画</div>
   <div class="sp-row">
     <span>标题字号</span>
@@ -884,7 +890,12 @@
                   height: el.style.height || '',
                   color: el.style.color || '',
                   opacity: el.style.opacity || '',
-                  borderRadius: el.style.borderRadius || ''
+                  borderRadius: el.style.borderRadius || '',
+                  // 新增保存字号、特效、背景状态
+                  fontSize: el.style.fontSize || '',
+                  fx: el.dataset.fx || '',
+                  fxOrder: el.dataset.fxOrder || '0',
+                  noBg: el.classList.contains('no-bg') ? true : false
               };
               if (el.classList.contains('shape')) {
                   item.shapeType = el.dataset.shapeType || 'circle';
@@ -931,6 +942,9 @@
                   el.style.pointerEvents = 'auto';
                   if (item.color) el.style.color = item.color;
                   if (item.opacity) el.style.opacity = item.opacity;
+                  if (item.fontSize) el.style.fontSize = item.fontSize;
+                  if (item.fx) el.dataset.fx = item.fx;
+                  if (item.fxOrder) el.dataset.fxOrder = item.fxOrder;
                   el.dataset.panelId = item.panelId;
                   el.innerHTML = shapeSVG(item.shapeType) + '<div class="rz"></div><button class="xdel">×</button>';
                   document.body.appendChild(el);
@@ -954,6 +968,9 @@
                   el.style.display = 'none';
                   el.style.pointerEvents = 'auto';
                   if (item.borderRadius) el.style.borderRadius = item.borderRadius;
+                  if (item.fontSize) el.style.fontSize = item.fontSize;
+                  if (item.fx) el.dataset.fx = item.fx;
+                  if (item.fxOrder) el.dataset.fxOrder = item.fxOrder;
                   el.dataset.panelId = item.panelId;
                   var img = document.createElement('img');
                   img.setAttribute('data-edit-img', '');
@@ -975,6 +992,10 @@
                   el.style.zIndex = '999999';
                   el.style.display = 'none';
                   el.style.pointerEvents = 'auto';
+                  if (item.fontSize) el.style.fontSize = item.fontSize;
+                  if (item.fx) el.dataset.fx = item.fx;
+                  if (item.fxOrder) el.dataset.fxOrder = item.fxOrder;
+                  if (item.noBg) el.classList.add('no-bg'); // 恢复无背景状态
                   el.dataset.panelId = item.panelId;
                   el.textContent = item.text || '自由文本';
                   var rz = document.createElement('div'); rz.className = 'rz';
@@ -1112,7 +1133,7 @@
     activeTextEl = el; activeFloater = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'none';
     var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'none';
-    var r3 = document.getElementById('spSplashBgRow'); if(r3) r3.style.display = 'none'; // 隐藏开屏背景控制
+    var r3 = document.getElementById('spFloaterBgRow'); if(r3) r3.style.display = 'none'; // 隐藏浮动背景
     var cs = getComputedStyle(el);
     var elSize = document.getElementById('spFontSize'); if(elSize){ elSize.value = parseInt(cs.fontSize) || 14; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = (parseInt(cs.fontSize) || 14) + 'px'; }
     var elColor = document.getElementById('spTextColor'); if(elColor) elColor.value = rgbToHex(cs.color);
@@ -1121,32 +1142,80 @@
     activeFloater = el; activeTextEl = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'flex';
     var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'flex';
-    var r3 = document.getElementById('spSplashBgRow'); if(r3) r3.style.display = 'none';
+    // 显示主页浮动文本框的背景控制
+    var r3 = document.getElementById('spFloaterBgRow'); if(r3) r3.style.display = 'flex';
+    var bgToggle = document.getElementById('spFloaterBgToggle');
+    if (bgToggle) bgToggle.textContent = !el.classList.contains('no-bg') ? '显示' : '隐藏';
+    
     var currentColor = el.style.color || '#4a9eff'; if (currentColor.startsWith('rgb')) currentColor = rgbToHex(currentColor);
     var elColor = document.getElementById('spShapeColor'); if(elColor) elColor.value = currentColor;
     var currentOpacity = el.style.opacity !== '' ? Math.round(parseFloat(el.style.opacity) * 100) : 100;
     var elOp = document.getElementById('spShapeOpacity'); if(elOp) elOp.value = currentOpacity;
     var elOpVal = document.getElementById('spShapeOpacityVal'); if(elOpVal) elOpVal.textContent = currentOpacity + '%';
+
+    // 同步字号
+    var cs = getComputedStyle(el);
+    var elSize = document.getElementById('spFontSize'); if(elSize){ elSize.value = parseInt(cs.fontSize) || 14; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = (parseInt(cs.fontSize) || 14) + 'px'; }
+    
+    // 同步特效
+    var fxSelect = document.getElementById('spFxType');
+    if (fxSelect) {
+        if (el.classList.contains('fx-slide-up')) fxSelect.value = 'fx-slide-up';
+        else if (el.classList.contains('fx-fade-in')) fxSelect.value = 'fx-fade-in';
+        else if (el.classList.contains('fx-scale-in')) fxSelect.value = 'fx-scale-in';
+        else fxSelect.value = 'none';
+    }
+    var orderSelect = document.getElementById('spFxOrder');
+    if (orderSelect) orderSelect.value = el.dataset.fxOrder || '0';
   }
   function rgbToHex(c){ if(!c) return '#f0f0f0'; var m = c.match(/\d+/g); if(!m) return '#f0f0f0'; return '#' + m.slice(0,3).map(function(x){ return ('0'+(+x).toString(16)).slice(-2); }).join(''); }
 
-  var spFontSize = document.getElementById('spFontSize'); if(spFontSize) spFontSize.addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.fontSize = e.target.value + 'px'; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = e.target.value + 'px'; save(); });
+  var spFontSize = document.getElementById('spFontSize'); 
+  if(spFontSize) spFontSize.addEventListener('input', function(e){ 
+      var size = e.target.value + 'px';
+      var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = size;
+      if(activeTextEl) activeTextEl.style.fontSize = size; 
+      if(activeFloater) activeFloater.style.fontSize = size; // 应用到浮动文本
+      save(); 
+  });
+  
   var spTextColor = document.getElementById('spTextColor'); if(spTextColor) spTextColor.addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.color = e.target.value; save(); });
   var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
   var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
 
-  // 新增：开屏文本背景切换逻辑
-  var spSplashBgToggle = document.getElementById('spSplashBgToggle');
-  if (spSplashBgToggle) {
-      spSplashBgToggle.addEventListener('click', function() {
-          if (!splashActiveFloater) return;
-          splashActiveFloater.classList.toggle('no-bg');
-          var hasBg = !splashActiveFloater.classList.contains('no-bg');
+  // 新增：主页浮动文本框背景切换
+  var spFloaterBgToggle = document.getElementById('spFloaterBgToggle');
+  if (spFloaterBgToggle) {
+      spFloaterBgToggle.addEventListener('click', function() {
+          if (!activeFloater) return;
+          activeFloater.classList.toggle('no-bg');
+          var hasBg = !activeFloater.classList.contains('no-bg');
           this.textContent = hasBg ? '显示' : '隐藏';
-          saveSplashFloaters();
+          save();
           toast(hasBg ? '已显示背景' : '已隐藏背景');
       });
   }
+
+  // 新增：文字特效和出场顺序（作用于普通文本和浮动文本）
+  var spFxType = document.getElementById('spFxType');
+  if(spFxType) spFxType.addEventListener('change', function(e){
+      var val = e.target.value;
+      if(activeTextEl) {
+          activeTextEl.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+          if(val !== 'none') { activeTextEl.classList.add(val); activeTextEl.classList.add('fx-hidden'); }
+      }
+      if(activeFloater) {
+          activeFloater.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
+          if(val !== 'none') { activeFloater.classList.add(val); activeFloater.classList.add('fx-hidden'); }
+      }
+      save();
+  });
+  var spFxOrder = document.getElementById('spFxOrder');
+  if(spFxOrder) spFxOrder.addEventListener('change', function(e){
+      if(activeTextEl) activeTextEl.dataset.fxOrder = e.target.value;
+      if(activeFloater) activeFloater.dataset.fxOrder = e.target.value;
+      save();
+  });
 
   var spSplashTitleSize = document.getElementById('spSplashTitleSize');
   if (spSplashTitleSize) spSplashTitleSize.addEventListener('input', function(e) {
@@ -1431,7 +1500,7 @@
                   opacity: el.style.opacity,
                   color: el.style.color,
                   fx: el.dataset.fx || 'none',
-                  hasBg: !el.classList.contains('no-bg') // 记录是否显示背景
+                  hasBg: !el.classList.contains('no-bg') 
               });
           });
           localStorage.setItem('myPage.splashFloaters.v1', JSON.stringify(data));
@@ -1460,7 +1529,6 @@
               if (item.opacity) el.style.opacity = item.opacity;
               if (item.color) el.style.color = item.color;
               if (item.fx) el.dataset.fx = item.fx;
-              // 恢复背景状态
               if (item.hasBg === false) el.classList.add('no-bg');
               card.appendChild(el);
 
