@@ -787,7 +787,7 @@
           var target = e.target;
           if (target.getAttribute('contenteditable') === 'true') return;
           if (target.hasAttribute('data-splash-edit')) return;
-          if (target.closest('.splash-floater')) return; // 防止点到浮动文本触发进入
+          if (target.closest('.splash-floater')) return;
           if (target.closest('#splashEnterBtn')) {
               clearTimeout(clickTimer);
               forceEnter();
@@ -891,7 +891,6 @@
                   color: el.style.color || '',
                   opacity: el.style.opacity || '',
                   borderRadius: el.style.borderRadius || '',
-                  // 新增保存字号、特效、背景状态
                   fontSize: el.style.fontSize || '',
                   fx: el.dataset.fx || '',
                   fxOrder: el.dataset.fxOrder || '0',
@@ -919,7 +918,6 @@
   // 恢复浮动元素
   function restoreFloaters() {
       try {
-          // 先清掉现有的
           document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.remove(); });
           
           var data = localStorage.getItem(K_FLOATERS);
@@ -995,7 +993,7 @@
                   if (item.fontSize) el.style.fontSize = item.fontSize;
                   if (item.fx) el.dataset.fx = item.fx;
                   if (item.fxOrder) el.dataset.fxOrder = item.fxOrder;
-                  if (item.noBg) el.classList.add('no-bg'); // 恢复无背景状态
+                  if (item.noBg) el.classList.add('no-bg');
                   el.dataset.panelId = item.panelId;
                   el.textContent = item.text || '自由文本';
                   var rz = document.createElement('div'); rz.className = 'rz';
@@ -1003,6 +1001,15 @@
                   el.appendChild(rz); el.appendChild(xdel);
                   document.body.appendChild(el);
                   makeMovable(el); bindXDel(el); bindResize(el);
+                  
+                  // 新增：恢复的浮动文本点击时选中
+                  el.addEventListener('click', function(e) {
+                      if (editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) {
+                          e.stopPropagation();
+                          selectFloater(el);
+                          if(stylePanel) stylePanel.classList.add('show');
+                      }
+                  });
               }
           });
           updateFloatersVisibility();
@@ -1065,7 +1072,6 @@
     var activePanel = document.querySelector('.panel.active');
     if (!activePanel) return;
     var activePanelId = activePanel.id;
-    // 如果在开屏状态下，隐藏所有主页浮动元素
     var splashEl = document.getElementById('splash');
     if (splashEl && splashEl.style.display !== 'none' && splashEl.parentNode) {
         document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
@@ -1133,11 +1139,12 @@
     activeTextEl = el; activeFloater = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'none';
     var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'none';
-    var r3 = document.getElementById('spFloaterBgRow'); if(r3) r3.style.display = 'none'; // 隐藏浮动背景
+    var r3 = document.getElementById('spFloaterBgRow'); if(r3) r3.style.display = 'none';
     var cs = getComputedStyle(el);
     var elSize = document.getElementById('spFontSize'); if(elSize){ elSize.value = parseInt(cs.fontSize) || 14; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = (parseInt(cs.fontSize) || 14) + 'px'; }
     var elColor = document.getElementById('spTextColor'); if(elColor) elColor.value = rgbToHex(cs.color);
   }
+  
   function selectFloater(el) {
     activeFloater = el; activeTextEl = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'flex';
@@ -1175,7 +1182,7 @@
       var size = e.target.value + 'px';
       var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = size;
       if(activeTextEl) activeTextEl.style.fontSize = size; 
-      if(activeFloater) activeFloater.style.fontSize = size; // 应用到浮动文本
+      if(activeFloater) activeFloater.style.fontSize = size;
       save(); 
   });
   
@@ -1183,7 +1190,7 @@
   var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
   var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
 
-  // 新增：主页浮动文本框背景切换
+  // 主页浮动文本框背景切换
   var spFloaterBgToggle = document.getElementById('spFloaterBgToggle');
   if (spFloaterBgToggle) {
       spFloaterBgToggle.addEventListener('click', function() {
@@ -1196,7 +1203,6 @@
       });
   }
 
-  // 新增：文字特效和出场顺序（作用于普通文本和浮动文本）
   var spFxType = document.getElementById('spFxType');
   if(spFxType) spFxType.addEventListener('change', function(e){
       var val = e.target.value;
@@ -1230,7 +1236,15 @@
       if (splashEl) saveSplash(splashEl);
   });
 
-  document.addEventListener('focusin', function(e){ if(!editMode || isReadonly) return; var el = e.target.closest('#app [contenteditable="true"]'); if(el){ selectText(el); if(stylePanel) stylePanel.classList.add('show'); } });
+  // 修改 focusin 逻辑，使其能够处理浮动文本框
+  document.addEventListener('focusin', function(e){
+      if(!editMode || isReadonly) return;
+      var el = e.target.closest('#app [contenteditable="true"]');
+      if(el){ selectText(el); if(stylePanel) stylePanel.classList.add('show'); return; }
+      // 新增：浮动文本
+      var floater = e.target.closest('.floater');
+      if(floater){ selectFloater(floater); if(stylePanel) stylePanel.classList.add('show'); }
+  });
 
   // ==================== 11. 图形创建 ====================
   function shapeSVG(type){ var s = { circle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>', square:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" fill="currentColor"/></svg>', rounded:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="5" y="5" width="90" height="90" rx="20" fill="currentColor"/></svg>', triangle:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,95 5,95" fill="currentColor"/></svg>', star:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 61,38 96,38 68,59 79,92 50,72 21,92 32,59 4,38 39,38" fill="currentColor"/></svg>', heart:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50,88 C20,65 5,45 5,30 C5,15 18,5 32,5 C41,5 48,10 50,18 C52,10 59,5 68,5 C82,5 95,15 95,30 C95,45 80,65 50,88 Z" fill="currentColor"/></svg>', arrow:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M5,40 L60,40 L60,15 L95,50 L60,85 L60,60 L5,60 Z" fill="currentColor"/></svg>', diamond:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 95,50 50,95 5,50" fill="currentColor"/></svg>', hexagon:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill="currentColor"/></svg>', cross:'<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M35,5 L65,5 L65,35 L95,35 L95,65 L65,65 L65,95 L35,95 L35,65 L5,65 L5,35 L35,35 Z" fill="currentColor"/></svg>' }; return s[type] || s.circle; }
@@ -1243,7 +1257,30 @@
   }
   function makeShape(type){ try { var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false); el.dataset.shapeType = type; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.addEventListener('click', function(e) { if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) { e.stopPropagation(); selectFloater(el); if(stylePanel) stylePanel.classList.add('show'); } }); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); } catch(e) { alert('添加图形失败: ' + e.message); } }
   function makeFrame(shape){ try { var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">'; var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = el.querySelector('img'); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); } catch(e) { alert('添加图片框失败: ' + e.message); } }
-  function makeFloater(){ try { var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true); el.style.width = '160px'; makeMovable(el); bindXDel(el); bindResize(el); setTimeout(function(){ el.focus(); }, 150); save(); toast('已添加浮动文本'); } catch(e) { alert('添加浮动文本失败: ' + e.message); } }
+  
+  function makeFloater(){
+      try {
+          var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true);
+          el.style.width = '160px';
+          makeMovable(el); bindXDel(el); bindResize(el);
+          
+          // 新增：点击时选中
+          el.addEventListener('click', function(e) {
+              if (editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) {
+                  e.stopPropagation();
+                  selectFloater(el);
+                  if(stylePanel) stylePanel.classList.add('show');
+              }
+          });
+
+          // 新增：创建后自动选中并弹出样式面板
+          selectFloater(el);
+          if(stylePanel) stylePanel.classList.add('show');
+
+          setTimeout(function(){ el.focus(); }, 150);
+          save(); toast('已添加浮动文本');
+      } catch(e) { alert('添加浮动文本失败: ' + e.message); }
+  }
 
   var btnAddShape = document.getElementById('btnAddShape'); if (btnAddShape) btnAddShape.addEventListener('click', function(e){ e.stopPropagation(); var fp = document.getElementById('framePicker'); if(fp) fp.classList.remove('show'); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.toggle('show'); });
   var btnAddFrame = document.getElementById('btnAddFrame'); if (btnAddFrame) btnAddFrame.addEventListener('click', function(e){ e.stopPropagation(); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.remove('show'); var fp = document.getElementById('framePicker'); if(fp) fp.classList.toggle('show'); });
@@ -1257,6 +1294,13 @@
       if(!editMode) return; 
       if(e.target.classList.contains('rz')) return; 
       if(e.target.classList.contains('xdel')) return; 
+
+      // 新增：只要按下浮动文本框，就立刻选中并显示样式面板
+      if (el.classList.contains('floater')) {
+          selectFloater(el);
+          if(stylePanel) stylePanel.classList.add('show');
+      }
+
       if (el.classList.contains('floater') && el.contentEditable === 'true') {
         var rect = el.getBoundingClientRect();
         var pad = 12;
@@ -1421,7 +1465,6 @@
       var cs = getComputedStyle(el);
       var sizeInput = document.getElementById('splashFontSize');
       if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 14;
-      // 显示开屏背景控制行
       var r3 = document.getElementById('spSplashBgRow');
       if (r3) r3.style.display = 'flex';
       var bgToggle = document.getElementById('spSplashBgToggle');
@@ -1582,7 +1625,6 @@
           }, 50);
       }
 
-      // 隐藏主页浮动元素
       document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = 'none'; });
 
       if (!splash.dataset.editBound) {
@@ -1622,7 +1664,6 @@
                   saveSplashFloaters();
                   if (splash.parentNode) splash.parentNode.removeChild(splash);
                   if (splashToolbar) splashToolbar.classList.remove('show');
-                  // 恢复主页浮动元素
                   document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
                   updateFloatersVisibility();
                   return;
@@ -1631,7 +1672,6 @@
               saveSplash(splash);
               saveSplashFloaters();
               if (splash.parentNode) splash.parentNode.removeChild(splash);
-              // 恢复主页浮动元素
               document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
               updateFloatersVisibility();
           });
@@ -1655,7 +1695,6 @@
       saveSplashFloaters();
       if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       if (splashToolbar) splashToolbar.classList.remove('show');
-      // 恢复主页浮动元素
       document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
       updateFloatersVisibility();
       toast('已保存开屏');
@@ -1700,9 +1739,7 @@
   try { refreshLinkOptions(); } catch(e) {}
   try { setEdit(false); } catch(e) {}
   setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
-  // 页面初始加载时也恢复开屏浮动文本
   setTimeout(function(){ try { restoreSplashFloaters(); } catch(e) {} }, 200);
-  // 页面初始加载时恢复主页浮动元素
   setTimeout(function(){ try { restoreFloaters(); } catch(e) {} }, 250);
 
 })();
