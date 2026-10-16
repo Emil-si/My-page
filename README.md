@@ -95,13 +95,12 @@
   .divider .line{height:1px;background:var(--border);width:100%;border-radius:1px;transition:all .2s;}
   body.editing .divider:hover .line{background:var(--accent);}
   
-  /* ===== 修改部分 1：修复编辑态与保存态的偏移下沉问题 ===== */
-  /* 编辑模式行间距减小 */
+  /* ===== 修复部分 1：编辑态/保存态偏移下沉 ===== */
   .bwrap { position: relative; padding-right: 0; }
-  /* 去掉了原来的 body.editing .bwrap { padding-bottom: 26px; } 避免改变文档流高度导致绝对定位元素偏移 */
+  /* 去掉原来的 padding-bottom，改为绝对定位悬浮按钮 */
   .bwrap > .row-tools {
     position: absolute; 
-    top: -28px; /* 将按钮改为悬浮在行上方，不占用文档流空间 */
+    top: -28px; 
     right: 0; 
     display: none; 
     flex-direction: row; 
@@ -115,11 +114,9 @@
   }
   body.editing .bwrap > .row-tools { display: flex !important; opacity: 1; }
   
-  /* ===== 修改部分 2：修复无法删除浮动文本框的蓝色虚线框 ===== */
-  /* 编辑模式下显示红色删除按钮 */
-  body.editing .xdel { display: flex; }
-  /* 非编辑（保存）模式下，隐藏浮动文本框的蓝色虚线边框 */
-  body:not(.editing) .floater { border-color: transparent; }
+  /* ===== 修复部分 2：浮动文本框无法删除及背景问题 ===== */
+  body.editing .xdel { display: flex; } /* 编辑模式下显示删除按钮 */
+  body:not(.editing) .floater { border-color: transparent; } /* 保存态隐藏虚线框 */
 
   .row-tools button{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:13px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
   .row-tools button.dvd { background: #7d90b8; font-size: 14px; }
@@ -128,7 +125,6 @@
   .shape{position:absolute;z-index:999999;cursor:move;pointer-events:auto;touch-action:none;user-select:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));display:block;}
   .shape svg{width:100%;height:100%;display:block;pointer-events:none;}
   .frame{position:absolute;z-index:999999;overflow:hidden;background:#333;border:2px solid var(--border);cursor:move;pointer-events:auto;touch-action:none;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.3);display:block;}
-  /* 修复：图片可被点击以替换图片 */
   .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:auto;}
   .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:text;outline:none;pointer-events:auto;touch-action:none;display:block;}
   .xdel{position:absolute;top:-10px;left:-10px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}
@@ -303,6 +299,13 @@
     pointer-events: auto;
     user-select: text;
     -webkit-user-select: text;
+  }
+  /* 新增：无背景样式 */
+  .splash-floater.no-bg {
+    border-color: transparent !important;
+    background: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   body:not(.editing) .splash-floater {
     border-color: transparent;
@@ -488,6 +491,11 @@
     <span>透明度</span>
     <input type="range" id="spShapeOpacity" min="0" max="100" value="100">
     <span id="spShapeOpacityVal" style="min-width:34px;text-align:right;">100%</span>
+  </div>
+  <!-- 新增：开屏文本背景开关 -->
+  <div class="sp-row" id="spSplashBgRow" style="display:none;">
+    <span>开屏文本背景</span>
+    <button class="sp-btn" id="spSplashBgToggle" style="width:100%;">显示</button>
   </div>
   <div class="sp-title" style="margin-top:6px;">开屏动画</div>
   <div class="sp-row">
@@ -742,6 +750,10 @@
           } catch(e) {
               try { splash.remove(); } catch(err) {}
           }
+          // 恢复主页浮动元素
+          document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
+          updateFloatersVisibility();
+          
           setTimeout(function() {
               try {
                   if (typeof playMusic === 'function') { playMusic(); }
@@ -769,6 +781,7 @@
           var target = e.target;
           if (target.getAttribute('contenteditable') === 'true') return;
           if (target.hasAttribute('data-splash-edit')) return;
+          if (target.closest('.splash-floater')) return; // 防止点到浮动文本触发进入
           if (target.closest('#splashEnterBtn')) {
               clearTimeout(clickTimer);
               forceEnter();
@@ -1031,6 +1044,14 @@
     var activePanel = document.querySelector('.panel.active');
     if (!activePanel) return;
     var activePanelId = activePanel.id;
+    // 如果在开屏状态下，隐藏所有主页浮动元素
+    var splashEl = document.getElementById('splash');
+    if (splashEl && splashEl.style.display !== 'none' && splashEl.parentNode) {
+        document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
+            el.style.display = 'none';
+        });
+        return;
+    }
     document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
       if (!el.dataset.panelId) el.dataset.panelId = 'panel-0';
       if (el.dataset.panelId === activePanelId) { el.style.display = 'block'; el.style.pointerEvents = 'auto'; }
@@ -1091,6 +1112,7 @@
     activeTextEl = el; activeFloater = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'none';
     var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'none';
+    var r3 = document.getElementById('spSplashBgRow'); if(r3) r3.style.display = 'none'; // 隐藏开屏背景控制
     var cs = getComputedStyle(el);
     var elSize = document.getElementById('spFontSize'); if(elSize){ elSize.value = parseInt(cs.fontSize) || 14; var v = document.getElementById('spFontSizeVal'); if(v) v.textContent = (parseInt(cs.fontSize) || 14) + 'px'; }
     var elColor = document.getElementById('spTextColor'); if(elColor) elColor.value = rgbToHex(cs.color);
@@ -1099,6 +1121,7 @@
     activeFloater = el; activeTextEl = null;
     var r1 = document.getElementById('spShapeColorRow'); if(r1) r1.style.display = 'flex';
     var r2 = document.getElementById('spShapeOpacityRow'); if(r2) r2.style.display = 'flex';
+    var r3 = document.getElementById('spSplashBgRow'); if(r3) r3.style.display = 'none';
     var currentColor = el.style.color || '#4a9eff'; if (currentColor.startsWith('rgb')) currentColor = rgbToHex(currentColor);
     var elColor = document.getElementById('spShapeColor'); if(elColor) elColor.value = currentColor;
     var currentOpacity = el.style.opacity !== '' ? Math.round(parseFloat(el.style.opacity) * 100) : 100;
@@ -1111,6 +1134,19 @@
   var spTextColor = document.getElementById('spTextColor'); if(spTextColor) spTextColor.addEventListener('input', function(e){ if(!activeTextEl) return; activeTextEl.style.color = e.target.value; save(); });
   var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
   var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
+
+  // 新增：开屏文本背景切换逻辑
+  var spSplashBgToggle = document.getElementById('spSplashBgToggle');
+  if (spSplashBgToggle) {
+      spSplashBgToggle.addEventListener('click', function() {
+          if (!splashActiveFloater) return;
+          splashActiveFloater.classList.toggle('no-bg');
+          var hasBg = !splashActiveFloater.classList.contains('no-bg');
+          this.textContent = hasBg ? '显示' : '隐藏';
+          saveSplashFloaters();
+          toast(hasBg ? '已显示背景' : '已隐藏背景');
+      });
+  }
 
   var spSplashTitleSize = document.getElementById('spSplashTitleSize');
   if (spSplashTitleSize) spSplashTitleSize.addEventListener('input', function(e) {
@@ -1152,14 +1188,13 @@
       if(!editMode) return; 
       if(e.target.classList.contains('rz')) return; 
       if(e.target.classList.contains('xdel')) return; 
-      // 修复：floater 内部点击允许编辑
       if (el.classList.contains('floater') && el.contentEditable === 'true') {
         var rect = el.getBoundingClientRect();
         var pad = 12;
         var cx = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
         var cy = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
         if (cx > rect.left + pad && cx < rect.right - pad && cy > rect.top + pad && cy < rect.bottom - pad) {
-          return; // 允许进入编辑
+          return; 
         }
       }
       e.preventDefault(); 
@@ -1317,6 +1352,14 @@
       var cs = getComputedStyle(el);
       var sizeInput = document.getElementById('splashFontSize');
       if (sizeInput) sizeInput.value = parseInt(cs.fontSize) || 14;
+      // 显示开屏背景控制行
+      var r3 = document.getElementById('spSplashBgRow');
+      if (r3) r3.style.display = 'flex';
+      var bgToggle = document.getElementById('spSplashBgToggle');
+      if (bgToggle) {
+          var hasBg = !el.classList.contains('no-bg');
+          bgToggle.textContent = hasBg ? '显示' : '隐藏';
+      }
   }
 
   function makeSplashFloaterMovable(el) {
@@ -1387,7 +1430,8 @@
                   fontSize: el.style.fontSize,
                   opacity: el.style.opacity,
                   color: el.style.color,
-                  fx: el.dataset.fx || 'none'
+                  fx: el.dataset.fx || 'none',
+                  hasBg: !el.classList.contains('no-bg') // 记录是否显示背景
               });
           });
           localStorage.setItem('myPage.splashFloaters.v1', JSON.stringify(data));
@@ -1416,6 +1460,8 @@
               if (item.opacity) el.style.opacity = item.opacity;
               if (item.color) el.style.color = item.color;
               if (item.fx) el.dataset.fx = item.fx;
+              // 恢复背景状态
+              if (item.hasBg === false) el.classList.add('no-bg');
               card.appendChild(el);
 
               var delBtn = el.querySelector('.splash-fdel');
@@ -1468,6 +1514,9 @@
           }, 50);
       }
 
+      // 隐藏主页浮动元素
+      document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = 'none'; });
+
       if (!splash.dataset.editBound) {
           splash.dataset.editBound = '1';
           var editEls = splash.querySelectorAll('[data-splash-edit]');
@@ -1505,12 +1554,18 @@
                   saveSplashFloaters();
                   if (splash.parentNode) splash.parentNode.removeChild(splash);
                   if (splashToolbar) splashToolbar.classList.remove('show');
+                  // 恢复主页浮动元素
+                  document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
+                  updateFloatersVisibility();
                   return;
               }
               if (document.body.classList.contains('editing')) return;
               saveSplash(splash);
               saveSplashFloaters();
               if (splash.parentNode) splash.parentNode.removeChild(splash);
+              // 恢复主页浮动元素
+              document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
+              updateFloatersVisibility();
           });
       }
 
@@ -1532,6 +1587,9 @@
       saveSplashFloaters();
       if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       if (splashToolbar) splashToolbar.classList.remove('show');
+      // 恢复主页浮动元素
+      document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
+      updateFloatersVisibility();
       toast('已保存开屏');
   });
 
