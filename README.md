@@ -737,6 +737,7 @@
   <button class="btn edit-only" id="btnAddFloat"><span class="ico">＋</span><span class="lbl">浮动文本</span></button>
   <button class="btn edit-only" id="btnAddShape"><span class="ico">◆</span><span class="lbl">图形</span></button>
   <button class="btn edit-only" id="btnAddFrame"><span class="ico">🖼️</span><span class="lbl">图片框</span></button>
+  <button class="btn edit-only" id="btnOpenSplash"><span class="ico">🎬</span><span class="lbl">开屏</span></button>
   <button class="btn edit-only" id="btnAddPanel"><span class="ico">📄</span><span class="lbl">新页面</span></button>
   <button class="btn edit-only" id="btnExport"><span class="ico">⬇</span><span class="lbl">导出</span></button>
   <button class="btn edit-only" id="btnImport"><span class="ico">⬆</span><span class="lbl">导入</span></button>
@@ -1464,7 +1465,90 @@
     sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
-  // ==================== 16. 初始化 ====================
+ // ==================== 重新打开开屏（供编辑） ====================
+  var btnOpenSplash = document.getElementById('btnOpenSplash');
+  if (btnOpenSplash) btnOpenSplash.addEventListener('click', function() {
+      // 如果已经存在，直接返回
+      if (document.getElementById('splash')) { toast('开屏已经打开'); return; }
+      
+      // 读取已保存的开屏数据
+      var sData = { title: '肆', desc: '双击此文字可修改', titleSize: 48 };
+      try {
+          var savedSplash = localStorage.getItem(K_SPLASH);
+          if (savedSplash) {
+              var parsed = JSON.parse(savedSplash);
+              if (parsed.title) sData.title = parsed.title;
+              if (parsed.desc) sData.desc = parsed.desc;
+              if (parsed.titleSize) sData.titleSize = parsed.titleSize;
+          }
+      } catch(e) {}
+      
+      // 动态创建开屏层
+      var splash = document.createElement('div');
+      splash.id = 'splash';
+      splash.innerHTML = '<div class="splash-card" id="splashCard">' +
+          '<div class="splash-title" data-splash-edit="title">' + sData.title + '</div>' +
+          '<div class="splash-desc" data-splash-edit="desc">' + sData.desc + '</div>' +
+          '</div>' +
+          '<button class="splash-enter-btn" id="splashEnterBtn">' +
+          '<span class="splash-btn-text">进入主页</span>' +
+          '</button>';
+      
+      document.body.appendChild(splash);
+      
+      // 应用标题字号
+      var titleEl = splash.querySelector('.splash-title');
+      if (titleEl) titleEl.style.fontSize = sData.titleSize + 'px';
+      
+      // 同步样式面板滑块
+      var sizeInput = document.getElementById('spSplashTitleSize');
+      if (sizeInput) sizeInput.value = sData.titleSize;
+      var sizeVal = document.getElementById('spSplashTitleSizeVal');
+      if (sizeVal) sizeVal.textContent = sData.titleSize + 'px';
+      
+      // 显示卡片
+      setTimeout(function() {
+          var card = document.getElementById('splashCard');
+          var btn = document.getElementById('splashEnterBtn');
+          if (card) card.classList.add('show');
+          if (btn) btn.classList.add('show');
+      }, 50);
+      
+      // 绑定双击编辑（编辑模式下）
+      var editEls = splash.querySelectorAll('[data-splash-edit]');
+      for (var i = 0; i < editEls.length; i++) {
+          (function(el) {
+              el.addEventListener('dblclick', function(e) {
+                  e.stopPropagation();
+                  el.setAttribute('contenteditable', 'true');
+                  el.focus();
+                  var range = document.createRange(); range.selectNodeContents(el);
+                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+              });
+              el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); saveSplash(); });
+              el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+          })(editEls[i]);
+      }
+      
+      // 绑定关闭逻辑
+      splash.addEventListener('click', function(e) {
+          var target = e.target;
+          if (target.getAttribute('contenteditable') === 'true') return;
+          if (target.hasAttribute('data-splash-edit')) return;
+          if (target.closest('#splashEnterBtn')) {
+              if (splash.parentNode) splash.parentNode.removeChild(splash);
+              saveSplash();
+              return;
+          }
+          // 编辑模式下点击空白不关闭
+          if (document.body.classList.contains('editing')) return;
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+          saveSplash();
+      });
+      
+      toast('已打开开屏，可直接编辑');
+  });
+   // ==================== 16. 初始化 ====================
   try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
   try { refreshCollectionMenu(); } catch(e) {}
   try { refreshLinkOptions(); } catch(e) {}
