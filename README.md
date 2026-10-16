@@ -34,7 +34,7 @@
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--text); min-height:100vh;
-    padding-top:calc(58px + var(--safe-top));
+    padding-top:calc(48px + var(--safe-top));
     padding-bottom:calc(30px + var(--safe-bottom));
     padding-left:var(--safe-left); padding-right:var(--safe-right);
   }
@@ -48,12 +48,10 @@
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
   
-  /* 修复：将导航栏改为 fixed 布局，彻底解决偏移和下沉问题 */
+  /* 修复：导航栏改为 sticky 定位，紧贴工具栏下方，彻底解决下沉 */
   #topnav{
-    position:fixed;
+    position:sticky;
     top:calc(48px + var(--safe-top));
-    left:0;
-    right:0;
     z-index:90;
     max-width:640px;
     margin:0 auto;
@@ -80,11 +78,11 @@
   .citem.active{background:var(--accent);color:var(--accent-text);}
   .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
   
-  /* 修复：移除 min-height:80vh，改为由导航栏高度决定的 padding-top */
+  /* 修复：移除多余的 padding-top，只保留正常间距 */
   #app{
     max-width:640px;
     margin:0 auto;
-    padding: calc(48px + 14px) 14px 14px 14px; /* 预留固定导航栏的高度 */
+    padding: 14px;
     position:relative;
     z-index:10;
   }
@@ -267,9 +265,7 @@
     position: fixed;
     inset: 0;
     z-index: 99999;
-    /* 使用渐变兜底，避免图片加载失败时黑屏 */
     background: linear-gradient(135deg, #1c1c1e 0%, #2a2a2e 100%);
-    /* 替换为您真实的图片地址 */
     background-image: url('https://emil-si.github.io/My-page/IMG_2138.png'); 
     background-size: cover;
     background-position: center;
@@ -278,9 +274,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    touch-action: none; /* 防止移动端触摸滚动穿透 */
+    touch-action: none;
   }
-  /* 暗色遮罩增强文字可读性 */
   #splash::before {
     content: "";
     position: absolute;
@@ -297,7 +292,6 @@
     width: 85%;
     max-width: 380px;
     padding: 32px 24px;
-    /* 玻璃质感 */
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 24px;
@@ -305,7 +299,6 @@
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
     text-align: center;
-    /* 缓入动画 */
     transform: translateY(30px) scale(0.95);
     opacity: 0;
     transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
@@ -338,7 +331,6 @@
     letter-spacing: 2px;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(74, 158, 255, 0.4);
-    /* 延迟出现动画 */
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.8s ease 0.6s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s;
@@ -429,7 +421,7 @@
 
   /* ==================== 移动端适配修复 ==================== */
   @media (max-width:640px){
-    body{padding-top:calc(52px + var(--safe-top));}
+    body{padding-top:calc(44px + var(--safe-top));}
     #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
     .btn{padding:5px 9px; font-size:11px;}
     .btn .lbl{display:none;}
@@ -438,7 +430,7 @@
     #topnav{top:calc(44px + var(--safe-top)); padding:8px 10px; gap:4px;}
     .navlink{padding:6px 11px; font-size:10px;}
     /* 移动端主体内容顶部内边距修正，避免被固定导航栏遮挡 */
-    #app{padding: calc(44px + 10px) 10px 10px 10px;}
+    #app{padding: 10px;}
     .card{padding:14px; border-radius:16px; margin-bottom:10px;}
     .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
     .avatar{width:64px; height:64px; border-width:2px;}
