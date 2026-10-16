@@ -155,7 +155,8 @@
     pointer-events:none;
   }
 
-  .profile{display:flex; align-items:flex-end; gap:12px; margin-top:-40px; position:relative; z-index:2; padding-bottom:10px;}
+  /* 修复：名字上浮过高 */
+  .profile{display:flex; align-items:flex-end; gap:12px; margin-top:-28px; position:relative; z-index:2; padding-bottom:10px;}
   .avatar{
     width:76px; height:76px; border-radius:50%;
     border:3px solid var(--card); overflow:hidden; flex-shrink:0;
@@ -226,8 +227,10 @@
   }
   body.editing .divider:hover .line{background:var(--accent);}
 
-  /* ===== 修复：按钮水平排列，只有编辑模式才显示 ===== */
-  .bwrap { position: relative; padding-right: 0; padding-bottom: 42px; }
+  /* ===== 修复：非编辑模式下彻底消除多余间距 ===== */
+  .bwrap { position: relative; padding-right: 0; }
+  body.editing .bwrap { padding-bottom: 42px; } /* 只有编辑模式才需要底部留白 */
+
   .bwrap > .row-tools {
     position: absolute;
     bottom: 0;
@@ -684,7 +687,7 @@
     .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
     .avatar{width:64px; height:64px; border-width:2px;}
     .name{font-size:18px;}
-    .profile{margin-top:-32px;}
+    .profile{margin-top:-22px;} /* 移动端名字上浮程度降低 */
     .pgrid{grid-template-columns:repeat(3, 1fr);}
     .pick{width:38px; height:38px;}
     .pick svg{width:22px; height:22px;}
@@ -1059,33 +1062,34 @@
       // 1.3 延迟点击计时器，用于区分单击跳转与双击编辑
       var clickTimer = null;
 
-      // 1.4 绑定点击逻辑
+      // 1.4 双击编辑逻辑（直接绑定 dblclick，兼容移动端）
+      var editEls = splash.querySelectorAll('[data-splash-edit]');
+      for (var i = 0; i < editEls.length; i++) {
+          (function(el) {
+              el.addEventListener('dblclick', function(e) {
+                  e.stopPropagation(); // 阻止事件冒泡到 splash，防止触发跳转
+                  clearTimeout(clickTimer);
+                  el.setAttribute('contenteditable', 'true');
+                  el.focus();
+                  // 全选文字方便覆盖
+                  var range = document.createRange(); range.selectNodeContents(el);
+                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+              });
+              el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
+              el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+          })(editEls[i]);
+      }
+
+      // 1.5 全局点击逻辑
       splash.addEventListener('click', function(e) {
           var target = e.target;
           
           // 如果点击的是正在编辑的文字，不处理
           if (target.getAttribute('contenteditable') === 'true') return;
 
-          // 如果点击的是可编辑文字（双击进入编辑模式）
+          // 如果点击的是可编辑文字，不触发跳转（等待用户双击）
           if (target.hasAttribute('data-splash-edit')) {
-              clearTimeout(clickTimer);
-              if (e.detail === 2) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  target.setAttribute('contenteditable', 'true');
-                  target.focus();
-                  // 全选文字方便覆盖
-                  var range = document.createRange(); range.selectNodeContents(target);
-                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-                  return;
-              } else {
-                  // 单击文字，允许延迟（或者不跳转），只要不触发全局跳转即可
-                  // 我们设定一个延迟，如果在 300ms 内再次点击则视为双击
-                  clickTimer = setTimeout(function() {
-                      // 单击文字不跳转，等待用户是否双击
-                  }, 300);
-                  return;
-              }
+              return;
           }
 
           // 如果点击的是“进入主页”按钮
@@ -1095,12 +1099,12 @@
               return;
           }
 
-          // 点击其他空白区域：延迟 300ms 跳转，如果 300ms 内触发了双击则取消跳转
+          // 点击其他空白区域：延迟 300ms 跳转
           clearTimeout(clickTimer);
           clickTimer = setTimeout(forceEnter, 300);
       });
 
-      // 1.5 按钮单击直接进入（作为双重保险）
+      // 1.6 按钮单击直接进入（作为双重保险）
       if (splashBtn) {
           splashBtn.addEventListener('click', function(e) {
               e.stopPropagation();
@@ -1109,12 +1113,7 @@
           });
       }
 
-      // 1.6 终极兜底：3秒后自动进入（防止用户长时间不操作）
-      setTimeout(function() {
-          if (document.getElementById('splash')) {
-              forceEnter();
-          }
-      }, 3000);
+      // 注意：这里没有 setTimeout 自动跳转了！必须手动点击才能进入。
   })();
 
   // ==================== 2. 全局变量定义 ====================
@@ -1151,7 +1150,6 @@
   try {
       var savedContent = localStorage.getItem(K_CONTENT);
       if(savedContent && app) {
-          // 安全解析：只提取 #app 内部的内容，且清除掉任何可能混入的 #splash
           var tempDiv = document.createElement('div');
           tempDiv.innerHTML = savedContent;
           var oldSplash = tempDiv.querySelector('#splash');
@@ -1358,7 +1356,7 @@
     sorted.forEach(function(el, index) { var delay = index * 400; var timer = setTimeout(function() { el.classList.remove('fx-hidden'); el.classList.add('fx-visible'); }, 300 + delay); window.__fxTimers.push(timer); });
   }
 
-  // ==================== 15. 初始化（防御性包裹，防止一处报错全盘崩溃） ====================
+  // ==================== 15. 初始化 ====================
   try { bindAll(); } catch(e) { console.log('bindAll 出错:', e); }
   try { refreshCollectionMenu(); } catch(e) {}
   try { refreshLinkOptions(); } catch(e) {}
