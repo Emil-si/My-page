@@ -32,12 +32,13 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{max-width:100vw;overflow-x:hidden;background:transparent;}
   
-  /* ===== 布局修复核心：body 不再负责顶部内边距，仅保留底部和两侧安全区域 ===== */
+  /* ===== 布局修复核心：body 负责避开顶部工具栏，底部留空 ===== */
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--text); min-height:100vh;
-    padding-bottom:calc(30px + var(--safe-bottom));
-    padding-left:var(--safe-left); padding-right:var(--safe-right);
+    padding-top: calc(48px + var(--safe-top)); /* 让出顶部工具栏高度 */
+    padding-bottom: calc(30px + var(--safe-bottom));
+    padding-left: var(--safe-left); padding-right: var(--safe-right);
   }
   #bgLayer{position:fixed;inset:0;z-index:0;background-color:var(--bg);background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;transition:background-color .3s;}
   #toolbar{position:fixed;top:0;left:0;right:0;z-index:100;height:calc(48px + var(--safe-top));padding-top:var(--safe-top);padding-left:12px;padding-right:12px;display:flex;align-items:center;gap:6px;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
@@ -49,17 +50,15 @@
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
   
-  /* ===== 布局修复核心：导航栏改为 fixed，强制贴在工具栏下方，绝不产生空隙 ===== */
+  /* ===== 布局修复核心：导航栏作为普通文档流，通过 sticky 自然吸附 ===== */
   #topnav{
-    position:fixed;
-    top:calc(48px + var(--safe-top));
-    left:0;
-    right:0;
+    position:sticky;
+    top: 0; /* 因为 body 有 padding-top，这里 top:0 就会紧贴工具栏下方 */
     z-index:90;
     max-width:640px;
     margin:0 auto;
-    height:48px; /* 固定高度，方便 #app 精确计算 padding-top */
-    padding:0 14px;
+    height: 48px; /* 固定高度，保持布局稳定 */
+    padding: 0 14px;
     display:flex;
     gap:6px;
     background:var(--bar);
@@ -82,11 +81,11 @@
   .citem.active{background:var(--accent);color:var(--accent-text);}
   .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
   
-  /* ===== 布局修复核心：内容区预留出工具栏+导航栏的精准高度 ===== */
+  /* ===== 布局修复核心：内容区取消 padding-top，紧贴导航栏 ===== */
   #app{
     max-width:640px;
     margin:0 auto;
-    padding: calc(48px + 48px + 14px + var(--safe-top)) 14px 14px 14px;
+    padding: 14px; /* 恢复正常的全方向 padding */
     position:relative;
     z-index:10;
   }
@@ -425,9 +424,10 @@
 
   /* ==================== 移动端适配修复 ==================== */
   @media (max-width:640px){
-    #topnav{top:calc(44px + var(--safe-top)); padding:0 10px; gap:4px; height:44px;}
+    body{padding-top:calc(44px + var(--safe-top));}
+    #topnav{height:44px; padding:0 10px; gap:4px;}
     .navlink{padding:6px 11px; font-size:10px;}
-    #app{padding: calc(44px + 44px + 10px + var(--safe-top)) 10px 10px 10px;}
+    #app{padding: 10px;}
     .card{padding:14px; border-radius:16px; margin-bottom:10px;}
     .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
     .avatar{width:64px; height:64px; border-width:2px;}
