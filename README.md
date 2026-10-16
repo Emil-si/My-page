@@ -187,9 +187,27 @@
   body.editing [data-edit]{outline:1px dashed transparent;outline-offset:4px;border-radius:4px;cursor:text;transition:outline .2s;}
   body.editing [data-edit]:hover{outline-color:var(--accent);}
   body.editing [data-edit]:focus{outline:2px solid var(--accent);background:rgba(74,158,255,0.08);}
-  .linktext{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px;}
-  .linktext:hover{color:var(--accent);}
-  .linktext::after{content:" ↗";font-size:.8em;opacity:.7;}
+  
+  /* ===== 增强：链接提示样式（支持普通文本、浮动文本） ===== */
+  [data-link] {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 4px;
+  }
+  [data-link]:hover {
+    color: var(--accent);
+  }
+  [data-link]::after {
+    content: " ↗";
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+  /* 兼容原版 linktext 类 */
+  .linktext { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px; }
+  .linktext:hover { color: var(--accent); }
+  .linktext::after { content: " ↗"; font-size: .8em; opacity: .7; }
+
   #picker{position:fixed;left:0;right:0;bottom:0;height:52vh;z-index:100002;background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border);border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .3s ease;display:flex;flex-direction:column;}
   #picker.show{transform:translateY(0);}
   .ph{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -215,94 +233,109 @@
   .add-card-btn{display:none;width:100%;padding:12px;margin:4px 0 14px 0;border:1px dashed var(--border);background:rgba(127,127,127,0.05);color:var(--sub);border-radius:14px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s;}
   body.editing .add-card-btn { display: block !important; }
   .add-card-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(74,158,255,0.08); }
-  #splash{position:fixed;inset:0;z-index:99999;background:#1c1c1e;overflow:hidden;}
-  .splash-card{position:absolute;top:50%;left:50%;width:82%;max-width:420px;aspect-ratio:4 / 5;background:rgba(25,25,30,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;gap:20px;transform:translate(-50%, -50%) scale(0.9);opacity:0;transition:transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;}
-  .splash-card.show{transform:translate(-50%, -50%) scale(1);opacity:1;}
-  .splash-title { font-size: 48px; font-weight: 800; color: #f0f0f0; }
-  .splash-desc { font-size: 14px; color: #999; font-family: monospace; }
-  .splash-enter-btn{position:absolute;bottom:40px;right:24px;padding:12px 20px;background:rgba(25,25,30,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:999px;color:#f0f0f0;font-size:13px;font-family:monospace;cursor:pointer;opacity:0;transition:opacity 0.5s ease 0.4s;}
-  .splash-enter-btn.show { opacity: 1; }
-  body.editing .splash-title[data-splash-edit],
-  body.editing .splash-desc[data-splash-edit] {
-      outline: 2px dashed var(--accent);
-      outline-offset: 4px;
-      cursor: text;
-  }
-  body.editing .splash-title[data-splash-edit]:focus,
-  body.editing .splash-desc[data-splash-edit]:focus {
-      background: rgba(74,158,255,0.08);
-  }
-  [data-edit].fx-hidden { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
-  [data-edit].fx-visible { opacity: 1; transform: translateY(0); }
-  [data-edit].fx-slide-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-  [data-edit].fx-slide-up.fx-visible { opacity: 1; transform: translateY(0); }
-  [data-edit].fx-fade-in { opacity: 0; transition: opacity 1s ease; }
-  [data-edit].fx-fade-in.fx-visible { opacity: 1; }
-  [data-edit].fx-scale-in { opacity: 0; transform: scale(0.9); transition: opacity 0.8s ease, transform 0.8s ease; }
-  [data-edit].fx-scale-in.fx-visible { opacity: 1; transform: scale(1); }
-  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    #toolbar, #topnav, .card, #musicBtn, #picker, .mcard, .navbtn, #collectionMenu, #shapePicker, #framePicker, #stylePanel, #musicPanel { background-color:rgba(20,20,25,0.96) !important; background-image:none !important; }
-    html.light #toolbar, html.light #topnav, html.light .card, html.light #musicBtn, html.light #picker, html.light .mcard, html.light .navbtn, html.light #collectionMenu, html.light #shapePicker, html.light #framePicker, html.light #stylePanel, html.light #musicPanel { background-color:rgba(255,255,255,0.97) !important; background-image:none !important; }
-  }
-  @media (max-width:640px){
-    body{padding-top:calc(52px + var(--safe-top));}
-    #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
-    .btn{padding:5px 9px; font-size:11px;}
-    .btn .lbl{display:none;}
-    .btn .ico{font-size:15px;}
-    #topnav{top:calc(44px + var(--safe-top)); padding:8px 10px; gap:4px;}
-    .navlink{padding:6px 11px; font-size:10px;}
-    #app{padding:10px;}
-    .card{padding:14px; border-radius:16px; margin-bottom:10px;}
-    .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
-    .avatar{width:64px; height:64px; border-width:2px;}
-    .name{font-size:18px;}
-    .profile{margin-top:-22px;}
-    .pgrid{grid-template-columns:repeat(3, 1fr);}
-    .pick{width:38px; height:38px;}
-    .pick svg{width:22px; height:22px;}
-    #stylePanel{ top:auto !important; bottom:0 !important; left:0 !important; right:0 !important; width:100vw !important; max-width:100vw !important; max-height:38vh; border-radius:20px 20px 0 0 !important; padding:10px 14px calc(10px + var(--safe-bottom)) 14px; transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1); display:flex !important; visibility:hidden; font-size:11px; }
-    #stylePanel.show{transform:translateY(0); visibility:visible;}
-    #stylePanel .sp-title{margin-top:4px;padding-bottom:3px;}
-    #stylePanel .sp-row{margin-bottom:4px;gap:6px;}
-    #stylePanel .sp-row > span{font-size:10px; min-width:48px;}
-    #stylePanel .sp-btn{padding:4px 8px; font-size:10px;}
-    #stylePanel .sp-note{display:none;}
-    .sp-row > span{font-size:11px; min-width:52px;}
-    .sp-btn{padding:6px 12px; font-size:11px;}
-    .bwrap > .row-tools { gap: 4px; top: -24px; }
-    .row-tools button { width: 22px; height: 22px; font-size: 12px; }
-  }
-  #splashToolbar {
-    position: fixed;
-    top: calc(48px + var(--safe-top));
-    left: 0; right: 0;
-    z-index: 100010;
-    height: 44px;
-    padding: 0 12px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-    background: var(--bar);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  #splashToolbar::-webkit-scrollbar { display: none; }
-  #splashToolbar.show { display: flex !important; }
 
+  /* ==================== 开屏动画重做 ==================== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: #1c1c1e;
+    /* 这里替换为您想要的背景图URL */
+    background-image: url('https://i.imgur.com/YourImageUrl.jpg'); 
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 暗色遮罩增强文字可读性 */
+  #splash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1;
+  }
+
+  .splash-card {
+    position: relative;
+    z-index: 2;
+    width: 85%;
+    max-width: 380px;
+    padding: 32px 24px;
+    /* 玻璃质感 */
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    text-align: center;
+    /* 缓入动画 */
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+  }
+  .splash-card.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .splash-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #f0f0f0;
+    letter-spacing: 0.05em;
+    font-weight: 300;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .splash-enter-btn {
+    position: relative;
+    z-index: 2;
+    margin-top: 40px;
+    padding: 14px 32px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: 999px; /* 胶囊形状 */
+    font-size: 15px;
+    font-family: inherit;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(74, 158, 255, 0.4);
+    /* 延迟出现动画 */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease 0.6s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s;
+  }
+  .splash-enter-btn.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .splash-enter-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* 开屏浮动文本编辑样式 */
+  body.editing .splash-floater {
+    border: 2px dashed var(--accent);
+    background: rgba(25,25,30,0.7);
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
   .splash-floater {
     position: absolute;
     z-index: 100005;
     min-width: 80px; min-height: 30px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 2px dashed var(--accent);
-    background: rgba(25,25,30,0.7);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    border: 2px dashed transparent;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     color: #f0f0f0;
     font-size: 14px; line-height: 1.5;
     word-break: break-word;
@@ -310,13 +343,6 @@
     pointer-events: auto;
     user-select: text;
     -webkit-user-select: text;
-  }
-  body:not(.editing) .splash-floater {
-    border-color: transparent;
-    background: transparent;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    cursor: default;
   }
   .splash-text {
     outline: none;
@@ -339,7 +365,7 @@
     font-size: 12px;
     line-height: 1;
     cursor: move;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -348,9 +374,7 @@
     user-select: none;
     -webkit-user-select: none;
   }
-  body:not(.editing) .splash-fmove {
-    display: none;
-  }
+  body.editing .splash-fmove { display: flex; }
   .splash-floater .splash-fdel {
     position: absolute;
     top: -10px; left: -10px;
@@ -371,20 +395,17 @@
     user-select: none;
     -webkit-user-select: none;
   }
-  body.editing .splash-floater .splash-fdel {
-    display: flex;
-  }
+  body.editing .splash-floater .splash-fdel { display: flex; }
 </style>
 </head>
 <body>
 
 <div id="splash">
   <div class="splash-card" id="splashCard">
-    <div class="splash-title" data-splash-edit="title">肆</div>
-    <div class="splash-desc" data-splash-edit="desc">双击此文字可修改</div>
+    <div class="splash-text" id="splashMainText">口头的爱太缥缈了，所以要恨，要抹不去的执念，在幸福千里之遥的时候，触手可及的恨才是漫天的委屈。</div>
   </div>
   <button class="splash-enter-btn" id="splashEnterBtn">
-    <span class="splash-btn-text">进入主页</span>
+    <span class="splash-btn-text">认识我 ⟶</span>
   </button>
 </div>
 
@@ -732,25 +753,26 @@
       if (!splash) return;
       var splashCard = document.getElementById('splashCard');
       var splashBtn = document.getElementById('splashEnterBtn');
+      
+      // 延迟出现玻璃卡片和按钮
       setTimeout(function() {
           try {
               if (splashCard) splashCard.classList.add('show');
               if (splashBtn) splashBtn.classList.add('show');
           } catch(e) {}
       }, 100);
+
       function forceEnter() {
           if (document.body.classList.contains('editing')) return;
+          
+          // 保存开屏主文本
           try {
-              var st = splash.querySelector('.splash-title');
-              var sd = splash.querySelector('.splash-desc');
-              var sizeInput = document.getElementById('spSplashTitleSize');
-              var data = {
-                  title: st ? st.textContent : '肆',
-                  desc: sd ? sd.textContent : '双击此文字可修改',
-                  titleSize: sizeInput ? parseInt(sizeInput.value) : 48
-              };
-              localStorage.setItem('myPage.splash.v1', JSON.stringify(data));
+              var mainTextEl = document.getElementById('splashMainText');
+              if (mainTextEl) {
+                  localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim());
+              }
           } catch(e) {}
+
           try {
               if (splash.parentNode) splash.parentNode.removeChild(splash);
           } catch(e) {
@@ -767,37 +789,44 @@
               } catch(err) {}
           }, 100);
       }
+
       var clickTimer = null;
-      var editEls = splash.querySelectorAll('[data-splash-edit]');
-      for (var i = 0; i < editEls.length; i++) {
-          (function(el) {
-              el.addEventListener('dblclick', function(e) {
-                  e.stopPropagation();
-                  clearTimeout(clickTimer);
-                  el.setAttribute('contenteditable', 'true');
-                  el.focus();
-                  var range = document.createRange(); range.selectNodeContents(el);
-                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-              });
-              el.addEventListener('blur', function() { el.removeAttribute('contenteditable'); });
-              el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-          })(editEls[i]);
+      var mainTextEl = document.getElementById('splashMainText');
+      
+      // 恢复主文本内容
+      try {
+          var savedMainText = localStorage.getItem('myPage.splash.mainText.v1');
+          if (savedMainText && mainTextEl) mainTextEl.textContent = savedMainText;
+      } catch(e) {}
+
+      if (mainTextEl) {
+          mainTextEl.addEventListener('dblclick', function(e) {
+              e.stopPropagation();
+              clearTimeout(clickTimer);
+              mainTextEl.setAttribute('contenteditable', 'true');
+              mainTextEl.focus();
+              var range = document.createRange(); range.selectNodeContents(mainTextEl);
+              var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+          });
+          mainTextEl.addEventListener('blur', function() { 
+              mainTextEl.removeAttribute('contenteditable');
+              try { localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim()); } catch(e) {}
+          });
+          mainTextEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); mainTextEl.blur(); } });
       }
+
       splash.addEventListener('click', function(e) {
           var target = e.target;
           if (target.getAttribute('contenteditable') === 'true') return;
-          if (target.hasAttribute('data-splash-edit')) return;
           if (target.closest('.splash-floater')) return; 
           if (target.closest('#splashEnterBtn')) {
               clearTimeout(clickTimer);
               forceEnter();
               return;
           }
-          if (!document.body.classList.contains('editing')) {
-              clearTimeout(clickTimer);
-              clickTimer = setTimeout(forceEnter, 300);
-          }
+          // 点击背景不跳转，只有点击按钮才跳转，以适应新布局
       });
+      
       if (splashBtn) {
           splashBtn.addEventListener('click', function(e) {
               e.stopPropagation();
@@ -829,40 +858,7 @@
   function setBg(url){ if(bgLayer) { if(url) bgLayer.style.backgroundImage = 'url(' + url + ')'; else bgLayer.style.backgroundImage = 'none'; } }
   try { var savedBg = localStorage.getItem(K_BG); if(savedBg) setBg(savedBg); } catch(e){}
 
-  // ==================== 4. 开屏内容恢复 ====================
-  try {
-      var savedSplash = localStorage.getItem(K_SPLASH);
-      if (savedSplash) {
-          var sData = JSON.parse(savedSplash);
-          var splashTitle = document.querySelector('.splash-title');
-          var splashDesc = document.querySelector('.splash-desc');
-          if (splashTitle && sData.title) splashTitle.textContent = sData.title;
-          if (splashDesc && sData.desc) splashDesc.textContent = sData.desc;
-          if (sData.titleSize) {
-              if (splashTitle) splashTitle.style.fontSize = sData.titleSize + 'px';
-              var el = document.getElementById('spSplashTitleSize'); if(el) el.value = sData.titleSize;
-              var v = document.getElementById('spSplashTitleSizeVal'); if(v) v.textContent = sData.titleSize + 'px';
-          }
-      }
-  } catch(e) {}
-
-  function saveSplash(targetSplash) {
-      try {
-          var splashEl = targetSplash || document.getElementById('splash');
-          if (!splashEl) return;
-          var splashTitle = splashEl.querySelector('.splash-title');
-          var splashDesc = splashEl.querySelector('.splash-desc');
-          var sizeInput = document.getElementById('spSplashTitleSize');
-          var data = {
-              title: splashTitle ? splashTitle.textContent : '肆',
-              desc: splashDesc ? splashDesc.textContent : '双击此文字可修改',
-              titleSize: sizeInput ? parseInt(sizeInput.value) : 48
-          };
-          localStorage.setItem(K_SPLASH, JSON.stringify(data));
-      } catch(e) {}
-  }
-
-  // ==================== 5. 内容恢复 ====================
+  // ==================== 4. 内容恢复 ====================
   try {
       var savedContent = localStorage.getItem(K_CONTENT);
       if(savedContent && app) {
@@ -924,7 +920,6 @@
   // 恢复浮动元素
   function restoreFloaters() {
       try {
-          // 先清掉现有的
           document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.remove(); });
           
           var data = localStorage.getItem(K_FLOATERS);
@@ -1042,19 +1037,13 @@
         if(on){ el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'false'); }
         else el.removeAttribute('contenteditable');
     });
-    var splashEl = document.getElementById('splash');
-    if (splashEl) {
-        var splashTitle = splashEl.querySelector('.splash-title');
-        var splashDesc = splashEl.querySelector('.splash-desc');
-        if (splashTitle) {
-            if (on) { splashTitle.setAttribute('contenteditable', 'true'); splashTitle.setAttribute('spellcheck', 'false'); }
-            else { splashTitle.removeAttribute('contenteditable'); }
-        }
-        if (splashDesc) {
-            if (on) { splashDesc.setAttribute('contenteditable', 'true'); splashDesc.setAttribute('spellcheck', 'false'); }
-            else { splashDesc.removeAttribute('contenteditable'); }
-        }
+    
+    var mainTextEl = document.getElementById('splashMainText');
+    if (mainTextEl) {
+        if (on) { mainTextEl.setAttribute('contenteditable', 'true'); mainTextEl.setAttribute('spellcheck', 'false'); }
+        else { mainTextEl.removeAttribute('contenteditable'); }
     }
+
     var btn = document.getElementById('btnEdit');
     if(btn) {
         btn.classList.toggle('on', on);
@@ -1063,7 +1052,6 @@
     }
     if(!on) {
         var sp = document.getElementById('stylePanel'); if(sp) sp.classList.remove('show');
-        if (splashEl) saveSplash(splashEl);
     }
     if(on) { try { bindAll(); } catch(e){} toast('编辑已开启'); }
     else { save(); toast('已保存'); }
@@ -1242,7 +1230,6 @@
       save(); 
   });
 
-  // 新增：字体切换
   var spFontFamily = document.getElementById('spFontFamily');
   if (spFontFamily) spFontFamily.addEventListener('change', function(e) {
       var font = e.target.value === 'default' ? '' : e.target.value;
@@ -1251,7 +1238,6 @@
       save();
   });
 
-  // 新增：对齐方式
   document.querySelectorAll('.sp-btn[data-align]').forEach(function(btn) {
       btn.addEventListener('click', function() {
           var align = this.dataset.align;
@@ -1263,7 +1249,6 @@
       });
   });
 
-  // 新增：加粗、斜体、下划线
   var spBold = document.getElementById('spBold');
   if (spBold) spBold.addEventListener('click', function() {
       if (!activeTextEl && !activeFloater) return;
@@ -1292,7 +1277,6 @@
       save();
   });
 
-  // ==================== 修复：链接到页面 ====================
   var spLink = document.getElementById('spLink');
   if (spLink) spLink.addEventListener('change', function(e) {
       var val = e.target.value;
@@ -1307,7 +1291,6 @@
       save();
   });
 
-  // 新增：文字特效和出场顺序
   var spFxType = document.getElementById('spFxType');
   if (spFxType) spFxType.addEventListener('change', function(e) {
       var val = e.target.value;
@@ -1331,7 +1314,6 @@
   var spShapeColor = document.getElementById('spShapeColor'); if(spShapeColor) spShapeColor.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.color = e.target.value; save(); });
   var spShapeOpacity = document.getElementById('spShapeOpacity'); if(spShapeOpacity) spShapeOpacity.addEventListener('input', function(e){ if(!activeFloater) return; activeFloater.style.opacity = e.target.value / 100; var v = document.getElementById('spShapeOpacityVal'); if(v) v.textContent = e.target.value + '%'; save(); });
 
-  // 主页浮动文本框背景切换
   var spFloaterBgToggle = document.getElementById('spFloaterBgToggle');
   if (spFloaterBgToggle) {
       spFloaterBgToggle.addEventListener('click', function() {
@@ -1347,14 +1329,10 @@
   var spSplashTitleSize = document.getElementById('spSplashTitleSize');
   if (spSplashTitleSize) spSplashTitleSize.addEventListener('input', function(e) {
       var size = e.target.value;
-      var splashEl = document.getElementById('splash');
-      if (splashEl) {
-          var splashTitle = splashEl.querySelector('.splash-title');
-          if (splashTitle) splashTitle.style.fontSize = size + 'px';
-      }
+      var mainTextEl = document.getElementById('splashMainText');
+      if (mainTextEl) mainTextEl.style.fontSize = size + 'px';
       var v = document.getElementById('spSplashTitleSizeVal');
       if (v) v.textContent = size + 'px';
-      if (splashEl) saveSplash(splashEl);
   });
 
   document.addEventListener('focusin', function(e){ if(!editMode || isReadonly) return; var el = e.target.closest('#app [contenteditable="true"]'); if(el){ selectText(el); if(stylePanel) stylePanel.classList.add('show'); } });
@@ -1448,11 +1426,9 @@
   };
   document.querySelectorAll('.navlink[data-panel]').forEach(function(n){ n.addEventListener('click', function(){ window.switchTab(this.getAttribute('data-panel')); }); });
   
-  // ==================== 修复：点击文字跳转（支持浮动文本和主页文本） ====================
+  // 点击文字跳转（支持浮动文本和主页文本）
   document.addEventListener('click', function(e){
-      if (editMode) return; // 编辑模式下不跳转，避免影响编辑
-      
-      // 使用 [data-link] 而不是 #app [data-link]，以便支持 body 下的浮动文本框
+      if (editMode) return;
       var el = e.target.closest('[data-link]');
       if (el) {
           var t = el.getAttribute('data-link');
@@ -1474,7 +1450,7 @@
 
   // ==================== 14. 重置、导出、导入 ====================
   var btnReset = document.getElementById('btnReset'); if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; if(app) app.innerHTML = DEFAULT_HTML; document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el){ el.remove(); }); try { localStorage.removeItem(K_FLOATERS); } catch(e){} bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
-  var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); var splashEl = document.getElementById('splash'); if(splashEl) saveSplash(splashEl); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '', currentSplash = '', currentFloaters = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; currentSplash = localStorage.getItem(K_SPLASH) || ''; currentFloaters = localStorage.getItem(K_FLOATERS) || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';var _s=' + JSON.stringify(currentSplash) + ';var _f=' + JSON.stringify(currentFloaters) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);if(_s)localStorage.setItem("myPage.splash.v1",_s);if(_f)localStorage.setItem("myPage.floaters.v1",_f);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
+  var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '', currentFloaters = '', currentSplashMain = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; currentFloaters = localStorage.getItem(K_FLOATERS) || ''; currentSplashMain = localStorage.getItem('myPage.splash.mainText.v1') || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';var _f=' + JSON.stringify(currentFloaters) + ';var _sm=' + JSON.stringify(currentSplashMain) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);if(_f)localStorage.setItem("myPage.floaters.v1",_f);if(_sm)localStorage.setItem("myPage.splash.mainText.v1",_sm);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
   var btnImport = document.getElementById('btnImport'); if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); if(app) app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
 
   // ==================== 15. 文字特效 ====================
@@ -1520,7 +1496,7 @@
 
       var el = document.createElement('div');
       el.className = 'splash-floater';
-      el.innerHTML = '<div class="splash-text" contenteditable="true">开屏文字</div>' +
+      el.innerHTML = '<div class="splash-text" contenteditable="true">开屏浮动文字</div>' +
                      '<button class="splash-fdel">×</button>' +
                      '<button class="splash-fmove" title="拖动">✥</button>';
       el.style.left = '50%';
@@ -1683,22 +1659,19 @@
           splash = document.createElement('div');
           splash.id = 'splash';
           splash.innerHTML = '<div class="splash-card" id="splashCard">' +
-              '<div class="splash-title" data-splash-edit="title">' + sData.title + '</div>' +
-              '<div class="splash-desc" data-splash-edit="desc">' + sData.desc + '</div>' +
+              '<div class="splash-text" id="splashMainText">口头的爱太缥缈了，所以要恨，要抹不去的执念，在幸福千里之遥的时候，触手可及的恨才是漫天的委屈。</div>' +
               '</div>' +
               '<button class="splash-enter-btn" id="splashEnterBtn">' +
-              '<span class="splash-btn-text">进入主页</span>' +
+              '<span class="splash-btn-text">认识我 ⟶</span>' +
               '</button>';
 
           document.body.appendChild(splash);
 
-          var titleEl = splash.querySelector('.splash-title');
-          if (titleEl) titleEl.style.fontSize = sData.titleSize + 'px';
-
-          var sizeInput = document.getElementById('spSplashTitleSize');
-          if (sizeInput) sizeInput.value = sData.titleSize;
-          var sizeVal = document.getElementById('spSplashTitleSizeVal');
-          if (sizeVal) sizeVal.textContent = sData.titleSize + 'px';
+          var mainTextEl = document.getElementById('splashMainText');
+          try {
+              var savedMainText = localStorage.getItem('myPage.splash.mainText.v1');
+              if (savedMainText && mainTextEl) mainTextEl.textContent = savedMainText;
+          } catch(e) {}
 
           setTimeout(function() {
               var card = document.getElementById('splashCard');
@@ -1712,38 +1685,32 @@
 
       if (!splash.dataset.editBound) {
           splash.dataset.editBound = '1';
-          var editEls = splash.querySelectorAll('[data-splash-edit]');
-          for (var i = 0; i < editEls.length; i++) {
-              (function(el) {
-                  el.addEventListener('dblclick', function(e) {
-                      e.stopPropagation();
-                      el.setAttribute('contenteditable', 'true');
-                      el.focus();
-                      selectSplashText(el);
-                      var range = document.createRange(); range.selectNodeContents(el);
-                      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-                  });
-                  el.addEventListener('focusin', function() { selectSplashText(el); });
-                  el.addEventListener('click', function(e) {
-                      if (!editMode) return;
-                      e.stopPropagation();
-                      selectSplashText(el);
-                  });
-                  el.addEventListener('blur', function() {
-                      el.removeAttribute('contenteditable');
-                      saveSplash(splash);
-                  });
-                  el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-              })(editEls[i]);
+          
+          var mainTextEl = document.getElementById('splashMainText');
+          if (mainTextEl) {
+              mainTextEl.addEventListener('dblclick', function(e) {
+                  e.stopPropagation();
+                  mainTextEl.setAttribute('contenteditable', 'true');
+                  mainTextEl.focus();
+                  var range = document.createRange(); range.selectNodeContents(mainTextEl);
+                  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+              });
+              mainTextEl.addEventListener('blur', function() { 
+                  mainTextEl.removeAttribute('contenteditable');
+                  try { localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim()); } catch(e) {}
+              });
+              mainTextEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); mainTextEl.blur(); } });
           }
 
           splash.addEventListener('click', function(e) {
               var target = e.target;
               if (target.getAttribute('contenteditable') === 'true') return;
-              if (target.hasAttribute('data-splash-edit')) return;
               if (target.closest('.splash-floater')) return;
               if (target.closest('#splashEnterBtn')) {
-                  saveSplash(splash);
+                  try {
+                      var mainTextEl = document.getElementById('splashMainText');
+                      if (mainTextEl) localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim());
+                  } catch(e) {}
                   saveSplashFloaters();
                   if (splash.parentNode) splash.parentNode.removeChild(splash);
                   if (splashToolbar) splashToolbar.classList.remove('show');
@@ -1752,7 +1719,10 @@
                   return;
               }
               if (document.body.classList.contains('editing')) return;
-              saveSplash(splash);
+              try {
+                  var mainTextEl = document.getElementById('splashMainText');
+                  if (mainTextEl) localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim());
+              } catch(e) {}
               saveSplashFloaters();
               if (splash.parentNode) splash.parentNode.removeChild(splash);
               document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
@@ -1773,9 +1743,12 @@
 
   var btnSplashClose = document.getElementById('btnSplashClose');
   if (btnSplashClose) btnSplashClose.addEventListener('click', function() {
-      var splash = document.getElementById('splash');
-      if (splash) saveSplash(splash);
+      try {
+          var mainTextEl = document.getElementById('splashMainText');
+          if (mainTextEl) localStorage.setItem('myPage.splash.mainText.v1', mainTextEl.textContent.trim());
+      } catch(e) {}
       saveSplashFloaters();
+      var splash = document.getElementById('splash');
       if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       if (splashToolbar) splashToolbar.classList.remove('show');
       document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.style.display = ''; });
@@ -1790,19 +1763,15 @@
           splashActiveFloater.style.fontSize = size;
           saveSplashFloaters();
       } else {
-          var splashTitle = document.querySelector('#splash .splash-title');
-          if (splashTitle) {
-              splashTitle.style.fontSize = size;
-              var splashEl = document.getElementById('splash');
-              if (splashEl) saveSplash(splashEl);
-          }
+          var mainTextEl = document.getElementById('splashMainText');
+          if (mainTextEl) mainTextEl.style.fontSize = size;
       }
   });
 
   var splashFxType = document.getElementById('splashFxType');
   if (splashFxType) splashFxType.addEventListener('change', function(e) {
       var val = e.target.value;
-      if (!splashActiveFloater) { toast('请先选中一个开屏文字'); return; }
+      if (!splashActiveFloater) { toast('请先选中一个开屏浮动文字'); return; }
       splashActiveFloater.classList.remove('fx-slide-up', 'fx-fade-in', 'fx-scale-in', 'fx-visible', 'fx-hidden');
       if (val !== 'none') {
           splashActiveFloater.classList.add(val);
