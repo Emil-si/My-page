@@ -94,19 +94,21 @@
   .divider{padding:8px 0;display:flex;align-items:center;position:relative;}
   .divider .line{height:1px;background:var(--border);width:100%;border-radius:1px;transition:all .2s;}
   body.editing .divider:hover .line{background:var(--accent);}
+  /* 编辑模式行间距减小 */
   .bwrap { position: relative; padding-right: 0; }
-  body.editing .bwrap { padding-bottom: 42px; }
-  .bwrap > .row-tools {position:absolute;bottom:0;right:0;display:none;flex-direction:row;gap:8px;opacity:0.8;z-index:20;}
+  body.editing .bwrap { padding-bottom: 26px; }
+  .bwrap > .row-tools {position:absolute;bottom:0;right:0;display:none;flex-direction:row;gap:6px;opacity:0.9;z-index:20;}
   body.editing .bwrap > .row-tools { display: flex !important; opacity: 1; }
-  .row-tools button{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:16px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-  .row-tools button.dvd { background: #7d90b8; font-size: 18px; }
+  .row-tools button{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:var(--accent-text);font-size:13px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .row-tools button.dvd { background: #7d90b8; font-size: 14px; }
   .row-tools button.del { background: #e5484d; }
   .row-tools button:hover { transform: scale(1.1); }
   .shape{position:absolute;z-index:999999;cursor:move;pointer-events:auto;touch-action:none;user-select:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));display:block;}
   .shape svg{width:100%;height:100%;display:block;pointer-events:none;}
   .frame{position:absolute;z-index:999999;overflow:hidden;background:#333;border:2px solid var(--border);cursor:move;pointer-events:auto;touch-action:none;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.3);display:block;}
-  .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
-  .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:move;outline:none;pointer-events:auto;touch-action:none;display:block;}
+  /* 修复：图片可被点击以替换图片 */
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:auto;}
+  .floater{position:absolute;z-index:999999;min-width:100px;min-height:40px;padding:12px;border-radius:12px;border:2px dashed var(--accent);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--text);font-size:14px;line-height:1.5;word-break:break-word;cursor:text;outline:none;pointer-events:auto;touch-action:none;display:block;}
   .xdel{position:absolute;top:-10px;left:-10px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;display:none;align-items:center;justify-content:center;padding:0;z-index:5;}
   .rz{position:absolute;bottom:0;right:0;width:28px;height:28px;background:linear-gradient(135deg, transparent 48%, var(--accent) 48%);cursor:se-resize;z-index:10;border-bottom-right-radius:10px;touch-action:none;}
   .rz::before{content:"";position:absolute;right:-6px;bottom:-6px;width:44px;height:44px;background:transparent;cursor:se-resize;}
@@ -239,8 +241,8 @@
     #stylePanel .sp-note{display:none;}
     .sp-row > span{font-size:11px; min-width:52px;}
     .sp-btn{padding:6px 12px; font-size:11px;}
-    .bwrap > .row-tools { gap: 6px; }
-    .row-tools button { width: 30px; height: 30px; font-size: 15px; }
+    .bwrap > .row-tools { gap: 4px; }
+    .row-tools button { width: 22px; height: 22px; font-size: 12px; }
   }
   #splashToolbar {
     position: fixed;
@@ -702,7 +704,6 @@
       }, 100);
       function forceEnter() {
           if (document.body.classList.contains('editing')) return;
-          // 保存开屏数据
           try {
               var st = splash.querySelector('.splash-title');
               var sd = splash.querySelector('.splash-desc');
@@ -771,7 +772,7 @@
   var isReadonly = false;
   try { var qp = new URLSearchParams(location.search); isReadonly = qp.has('view') || qp.has('readonly'); } catch(e){}
   if(isReadonly && document.body) document.body.classList.add('readonly');
-  var K_THEME = 'myPage.theme.v5', K_BG = 'myPage.bg.v5', K_CONTENT = 'myPage.content.v6', K_MUSIC = 'myPage.music.v5', K_ALPHA = 'myPage.alpha.v2', K_SPLASH = 'myPage.splash.v1';
+  var K_THEME = 'myPage.theme.v5', K_BG = 'myPage.bg.v5', K_CONTENT = 'myPage.content.v6', K_MUSIC = 'myPage.music.v5', K_ALPHA = 'myPage.alpha.v2', K_SPLASH = 'myPage.splash.v1', K_FLOATERS = 'myPage.floaters.v1';
   var app = document.getElementById('app');
   var bgLayer = document.getElementById('bgLayer');
   var toastEl = document.getElementById('toast');
@@ -804,7 +805,6 @@
       }
   } catch(e) {}
 
-  // saveSplash 接收元素参数，避免元素被移除后取不到值
   function saveSplash(targetSplash) {
       try {
           var splashEl = targetSplash || document.getElementById('splash');
@@ -834,8 +834,136 @@
       }
   } catch(e) {}
   function serialize(){ if(!app) return ''; var clone = app.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); return clone.innerHTML; }
+
+  // 保存浮动元素到 localStorage
+  function saveFloaters() {
+      try {
+          var arr = [];
+          document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
+              var item = {
+                  type: el.classList.contains('shape') ? 'shape' : (el.classList.contains('frame') ? 'frame' : 'floater'),
+                  panelId: el.dataset.panelId || 'panel-0',
+                  left: el.style.left || '',
+                  top: el.style.top || '',
+                  width: el.style.width || '',
+                  height: el.style.height || '',
+                  color: el.style.color || '',
+                  opacity: el.style.opacity || '',
+                  borderRadius: el.style.borderRadius || ''
+              };
+              if (el.classList.contains('shape')) {
+                  item.shapeType = el.dataset.shapeType || 'circle';
+              }
+              if (el.classList.contains('frame')) {
+                  var img = el.querySelector('img');
+                  item.imgSrc = img ? img.src : '';
+              }
+              if (el.classList.contains('floater')) {
+                  var clone = el.cloneNode(true);
+                  var rz = clone.querySelector('.rz'); if (rz) rz.remove();
+                  var xdel = clone.querySelector('.xdel'); if (xdel) xdel.remove();
+                  item.text = clone.textContent.trim();
+              }
+              arr.push(item);
+          });
+          localStorage.setItem(K_FLOATERS, JSON.stringify(arr));
+      } catch(e) {}
+  }
+
+  // 恢复浮动元素
+  function restoreFloaters() {
+      try {
+          // 先清掉现有的
+          document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) { el.remove(); });
+          
+          var data = localStorage.getItem(K_FLOATERS);
+          if (!data) return;
+          var arr = JSON.parse(data);
+          if (!arr || !arr.length) return;
+          
+          arr.forEach(function(item) {
+              if (item.type === 'shape') {
+                  var el = document.createElement('div');
+                  el.className = 'shape';
+                  el.dataset.shapeType = item.shapeType;
+                  el.style.position = 'absolute';
+                  el.style.left = item.left;
+                  el.style.top = item.top;
+                  el.style.width = item.width;
+                  el.style.height = item.height;
+                  el.style.zIndex = '999999';
+                  el.style.display = 'none';
+                  el.style.pointerEvents = 'auto';
+                  if (item.color) el.style.color = item.color;
+                  if (item.opacity) el.style.opacity = item.opacity;
+                  el.dataset.panelId = item.panelId;
+                  el.innerHTML = shapeSVG(item.shapeType) + '<div class="rz"></div><button class="xdel">×</button>';
+                  document.body.appendChild(el);
+                  el.addEventListener('click', function(e) {
+                      if (editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) {
+                          e.stopPropagation(); selectFloater(el);
+                          if(stylePanel) stylePanel.classList.add('show');
+                      }
+                  });
+                  makeMovable(el); bindXDel(el); bindResize(el);
+              }
+              else if (item.type === 'frame') {
+                  var el = document.createElement('div');
+                  el.className = 'frame';
+                  el.style.position = 'absolute';
+                  el.style.left = item.left;
+                  el.style.top = item.top;
+                  el.style.width = item.width;
+                  el.style.height = item.height;
+                  el.style.zIndex = '999999';
+                  el.style.display = 'none';
+                  el.style.pointerEvents = 'auto';
+                  if (item.borderRadius) el.style.borderRadius = item.borderRadius;
+                  el.dataset.panelId = item.panelId;
+                  var img = document.createElement('img');
+                  img.setAttribute('data-edit-img', '');
+                  img.src = item.imgSrc || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%23333%27/%3E%3Ctext x=%2750%27 y=%2755%27 font-size=%2712%27 fill=%27%23999%27 text-anchor=%27middle%27%3E点击换图%3C/text%3E%3C/svg%3E';
+                  var rz = document.createElement('div'); rz.className = 'rz';
+                  var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+                  el.appendChild(img); el.appendChild(rz); el.appendChild(xdel);
+                  document.body.appendChild(el);
+                  makeMovable(el); bindXDel(el); bindResize(el); bindImg(img);
+              }
+              else if (item.type === 'floater') {
+                  var el = document.createElement('div');
+                  el.className = 'floater';
+                  el.contentEditable = 'true';
+                  el.style.position = 'absolute';
+                  el.style.left = item.left;
+                  el.style.top = item.top;
+                  el.style.width = item.width;
+                  el.style.zIndex = '999999';
+                  el.style.display = 'none';
+                  el.style.pointerEvents = 'auto';
+                  el.dataset.panelId = item.panelId;
+                  el.textContent = item.text || '自由文本';
+                  var rz = document.createElement('div'); rz.className = 'rz';
+                  var xdel = document.createElement('button'); xdel.className = 'xdel'; xdel.textContent = '×';
+                  el.appendChild(rz); el.appendChild(xdel);
+                  document.body.appendChild(el);
+                  makeMovable(el); bindXDel(el); bindResize(el);
+              }
+          });
+          updateFloatersVisibility();
+      } catch(e) { console.log('恢复浮动元素失败:', e); }
+  }
+
   var saveTimer;
-  function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ if(!app) return; try { localStorage.setItem(K_CONTENT, serialize()); } catch(e){ alert('保存失败：浏览器存储空间已满'); } }, 300); }
+  function save(){
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function(){
+          if(!app) return;
+          try {
+              localStorage.setItem(K_CONTENT, serialize());
+              saveFloaters();
+          } catch(e){ alert('保存失败：浏览器存储空间已满'); }
+      }, 300);
+  }
   if (app) app.addEventListener('input', function(){ if(editMode) save(); });
 
   // ==================== 6. 编辑模式 ====================
@@ -881,7 +1009,7 @@
     var activePanel = document.querySelector('.panel.active');
     if (!activePanel) return;
     var activePanelId = activePanel.id;
-    document.querySelectorAll('.shape, .frame, .floater').forEach(function(el) {
+    document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el) {
       if (!el.dataset.panelId) el.dataset.panelId = 'panel-0';
       if (el.dataset.panelId === activePanelId) { el.style.display = 'block'; el.style.pointerEvents = 'auto'; }
       else { el.style.display = 'none'; el.style.pointerEvents = 'none'; }
@@ -986,7 +1114,7 @@
       var activePanel = document.querySelector('.panel.active'); if (activePanel) el.dataset.panelId = activePanel.id;
       document.body.appendChild(el); return el;
   }
-  function makeShape(type){ try { var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.addEventListener('click', function(e) { if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) { e.stopPropagation(); selectFloater(el); if(stylePanel) stylePanel.classList.add('show'); } }); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); } catch(e) { alert('添加图形失败: ' + e.message); } }
+  function makeShape(type){ try { var el = createFloatingElement('shape', shapeSVG(type) + '<div class="rz"></div><button class="xdel">×</button>', false); el.dataset.shapeType = type; el.style.width = '80px'; el.style.height = '80px'; el.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4a9eff'; el.addEventListener('click', function(e) { if(editMode && !e.target.classList.contains('rz') && !e.target.classList.contains('xdel')) { e.stopPropagation(); selectFloater(el); if(stylePanel) stylePanel.classList.add('show'); } }); makeMovable(el); bindXDel(el); bindResize(el); save(); toast('已添加图形'); } catch(e) { alert('添加图形失败: ' + e.message); } }
   function makeFrame(shape){ try { var imgHtml = '<img data-edit-img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23333\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23999\' text-anchor=\'middle\' font-family=\'sans-serif\'%3E点击换图%3C/text%3E%3C/svg%3E" alt="图片">'; var el = createFloatingElement('frame', imgHtml + '<div class="rz"></div><button class="xdel">×</button>', false); el.style.width = '120px'; el.style.height = '120px'; if(shape === 'circle') el.style.borderRadius = '50%'; else if(shape === 'rounded') el.style.borderRadius = '16px'; var img = el.querySelector('img'); makeMovable(el); bindXDel(el); bindResize(el); bindImg(img); save(); toast('已添加图片框'); } catch(e) { alert('添加图片框失败: ' + e.message); } }
   function makeFloater(){ try { var el = createFloatingElement('floater', '自由文本<div class="rz"></div><button class="xdel">×</button>', true); el.style.width = '160px'; makeMovable(el); bindXDel(el); bindResize(el); setTimeout(function(){ el.focus(); }, 150); save(); toast('已添加浮动文本'); } catch(e) { alert('添加浮动文本失败: ' + e.message); } }
 
@@ -996,7 +1124,37 @@
   document.querySelectorAll('#shapePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeShape(this.dataset.shape); var sp = document.getElementById('shapePicker'); if(sp) sp.classList.remove('show'); }); });
   document.querySelectorAll('#framePicker .pick').forEach(function(p){ p.addEventListener('click', function(){ makeFrame(this.dataset.frame); var fp = document.getElementById('framePicker'); if(fp) fp.classList.remove('show'); }); });
 
-  function makeMovable(el){ var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; function down(e){ if(!editMode) return; if(e.target.classList.contains('rz')) return; if(e.target.classList.contains('xdel')) return; e.preventDefault(); dragging = true; moved = false; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive:false}); }
+  function makeMovable(el){ 
+    var dragging = false, sx = 0, sy = 0, sl = 0, st = 0, moved = false; 
+    function down(e){ 
+      if(!editMode) return; 
+      if(e.target.classList.contains('rz')) return; 
+      if(e.target.classList.contains('xdel')) return; 
+      // 修复：floater 内部点击允许编辑
+      if (el.classList.contains('floater') && el.contentEditable === 'true') {
+        var rect = el.getBoundingClientRect();
+        var pad = 12;
+        var cx = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        var cy = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        if (cx > rect.left + pad && cx < rect.right - pad && cy > rect.top + pad && cy < rect.bottom - pad) {
+          return; // 允许进入编辑
+        }
+      }
+      e.preventDefault(); 
+      dragging = true; moved = false; 
+      var p = e.touches ? e.touches[0] : e; 
+      sx = p.clientX; sy = p.clientY; 
+      sl = parseFloat(el.style.left) || 0; st = parseFloat(el.style.top) || 0; 
+      document.addEventListener('mousemove', move); 
+      document.addEventListener('touchmove', move, {passive:false}); 
+      document.addEventListener('mouseup', up); 
+      document.addEventListener('touchend', up); 
+    } 
+    function move(e){ if(!dragging) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; var dx = p.clientX - sx, dy = p.clientY - sy; if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true; el.style.left = (sl + dx) + 'px'; el.style.top = (st + dy) + 'px'; } 
+    function up(){ dragging = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); if(moved) save(); } 
+    el.addEventListener('mousedown', down); 
+    el.addEventListener('touchstart', down, {passive:false}); 
+  }
   function bindResize(el){ var rz = el.querySelector('.rz'); if(!rz) return; var rs = false, sw = 0, sh = 0, sx = 0, sy = 0; function down(e){ e.preventDefault(); e.stopPropagation(); rs = true; var p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; sw = el.offsetWidth; sh = el.offsetHeight; document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', up); document.addEventListener('touchend', up); } function move(e){ if(!rs) return; e.preventDefault(); var p = e.touches ? e.touches[0] : e; el.style.width = Math.max(30, sw + (p.clientX - sx)) + 'px'; el.style.height = Math.max(30, sh + (p.clientY - sy)) + 'px'; } function up(){ rs = false; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', up); document.removeEventListener('touchend', up); save(); } rz.addEventListener('mousedown', down); rz.addEventListener('touchstart', down, {passive:false}); }
   function bindXDel(el){ var d = el.querySelector('.xdel'); if(!d) return; d.addEventListener('click', function(e){ e.stopPropagation(); if(confirm('确定删除吗？')){ el.remove(); save(); toast('已删除'); } }); }
 
@@ -1055,8 +1213,8 @@
   window.goBack = function(){ var prev = navHistory.pop(); if(prev) window.switchTab(prev); else window.switchTab('panel-0'); };
 
   // ==================== 14. 重置、导出、导入 ====================
-  var btnReset = document.getElementById('btnReset'); if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; if(app) app.innerHTML = DEFAULT_HTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
-  var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); var splashEl = document.getElementById('splash'); if(splashEl) saveSplash(splashEl); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '', currentSplash = '', currentFloaters = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; currentSplash = localStorage.getItem(K_SPLASH) || ''; currentFloaters = localStorage.getItem('myPage.splashFloaters.v1') || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';var _s=' + JSON.stringify(currentSplash) + ';var _f=' + JSON.stringify(currentFloaters) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);if(_s)localStorage.setItem("myPage.splash.v1",_s);if(_f)localStorage.setItem("myPage.splashFloaters.v1",_f);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
+  var btnReset = document.getElementById('btnReset'); if (btnReset) btnReset.addEventListener('click', function(){ if(!confirm('确定恢复初始内容吗？所有修改将丢失！')) return; if(app) app.innerHTML = DEFAULT_HTML; document.querySelectorAll('body > .shape, body > .frame, body > .floater').forEach(function(el){ el.remove(); }); try { localStorage.removeItem(K_FLOATERS); } catch(e){} bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('已重置'); });
+  var btnExport = document.getElementById('btnExport'); if (btnExport) btnExport.addEventListener('click', function(){ save(); var splashEl = document.getElementById('splash'); if(splashEl) saveSplash(splashEl); var clone = document.documentElement.cloneNode(true); clone.querySelector('body').classList.remove('editing'); clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); }); clone.querySelectorAll('.style-panel').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#picker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#collectionMenu').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#shapePicker, #framePicker').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('#musicDialog').forEach(function(el){ el.classList.remove('show'); }); clone.querySelectorAll('.panel').forEach(function(p, i){ p.classList.toggle('active', i === 0); }); clone.querySelectorAll('.navlink[data-panel]').forEach(function(n, i){ n.classList.toggle('active', i === 0); }); var currentContent = serialize(), currentBg = '', currentAlpha = '', currentTheme = '', currentMusic = '', currentSplash = '', currentFloaters = ''; try { currentBg = localStorage.getItem(K_BG) || ''; currentAlpha = localStorage.getItem(K_ALPHA) || '55'; currentTheme = localStorage.getItem(K_THEME) || 'light'; currentMusic = localStorage.getItem(K_MUSIC) || ''; currentSplash = localStorage.getItem(K_SPLASH) || ''; currentFloaters = localStorage.getItem(K_FLOATERS) || ''; } catch(e){} var injectScript = document.createElement('script'); injectScript.textContent = '(function(){try{var _c=' + JSON.stringify(currentContent) + ';var _bg=' + JSON.stringify(currentBg) + ';var _a=' + JSON.stringify(currentAlpha) + ';var _t=' + JSON.stringify(currentTheme) + ';var _m=' + JSON.stringify(currentMusic) + ';var _s=' + JSON.stringify(currentSplash) + ';var _f=' + JSON.stringify(currentFloaters) + ';localStorage.setItem("myPage.content.v6",_c);if(_bg)localStorage.setItem("myPage.bg.v5",_bg);if(_a)localStorage.setItem("myPage.alpha.v2",_a);if(_t)localStorage.setItem("myPage.theme.v5",_t);if(_m)localStorage.setItem("myPage.music.v5",_m);if(_s)localStorage.setItem("myPage.splash.v1",_s);if(_f)localStorage.setItem("myPage.floaters.v1",_f);}catch(e){}})();'; clone.querySelector('head').insertBefore(injectScript, clone.querySelector('head').firstChild); var html = '<!DOCTYPE html>\n' + clone.outerHTML; var d = new Date(); var pad = function(n){ return String(n).padStart(2, '0'); }; var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds()); var fileName = 'p' + stamp.replace(/[-:]/g,'').slice(2) + '.html'; var blob = new Blob([html], {type:'text/html;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000); toast('已导出 ' + fileName); setTimeout(function(){ alert('已导出：' + fileName + '\n\n下一步：\n1. 打开 GitHub 仓库\n2. Add file → Upload files\n3. 上传这个文件\n4. 分享链接：\n   https://emil-si.github.io/My-page/' + fileName); }, 400); });
   var btnImport = document.getElementById('btnImport'); if (btnImport) btnImport.addEventListener('click', function(){ var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.html,.htm,text/html'; inp.onchange = function(){ var f = inp.files && inp.files[0]; if(!f) return; var reader = new FileReader(); reader.onload = function(ev){ try { var doc = new DOMParser().parseFromString(ev.target.result, 'text/html'); var imported = doc.getElementById('app'); if(!imported) throw new Error('no app'); if(app) app.innerHTML = imported.innerHTML; bindAll(); setEdit(false); save(); refreshCollectionMenu(); refreshLinkOptions(); toast('导入成功'); } catch(err){ alert('导入失败：文件里没有识别到内容'); } }; reader.readAsText(f); }; inp.click(); });
 
   // ==================== 15. 文字特效 ====================
@@ -1222,7 +1380,6 @@
           if (!arr || !arr.length) return;
           var card = getSplashCard();
           if (!card) return;
-          // 清掉已经存在的浮动元素，避免重复
           card.querySelectorAll('.splash-floater').forEach(function(el) { el.remove(); });
           arr.forEach(function(item) {
               var el = document.createElement('div');
@@ -1250,7 +1407,6 @@
   function openSplashEditor() {
       var splash = document.getElementById('splash');
       if (!splash) {
-          // 创建新开屏
           var sData = { title: '肆', desc: '双击此文字可修改', titleSize: 48 };
           try {
               var savedSplash = localStorage.getItem(K_SPLASH);
@@ -1290,10 +1446,8 @@
           }, 50);
       }
 
-      // 绑定编辑事件（如果还没绑定过）
       if (!splash.dataset.editBound) {
           splash.dataset.editBound = '1';
-
           var editEls = splash.querySelectorAll('[data-splash-edit]');
           for (var i = 0; i < editEls.length; i++) {
               (function(el) {
@@ -1325,7 +1479,6 @@
               if (target.hasAttribute('data-splash-edit')) return;
               if (target.closest('.splash-floater')) return;
               if (target.closest('#splashEnterBtn')) {
-                  // 先保存再移除
                   saveSplash(splash);
                   saveSplashFloaters();
                   if (splash.parentNode) splash.parentNode.removeChild(splash);
@@ -1333,7 +1486,6 @@
                   return;
               }
               if (document.body.classList.contains('editing')) return;
-              // 先保存再移除
               saveSplash(splash);
               saveSplashFloaters();
               if (splash.parentNode) splash.parentNode.removeChild(splash);
@@ -1354,7 +1506,6 @@
   var btnSplashClose = document.getElementById('btnSplashClose');
   if (btnSplashClose) btnSplashClose.addEventListener('click', function() {
       var splash = document.getElementById('splash');
-      // 先保存再移除
       if (splash) saveSplash(splash);
       saveSplashFloaters();
       if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
@@ -1401,8 +1552,10 @@
   try { refreshLinkOptions(); } catch(e) {}
   try { setEdit(false); } catch(e) {}
   setTimeout(function(){ try { updateFloatersVisibility(); } catch(e) {} }, 100);
-  // 页面初始加载时也恢复开屏浮动文本（让刷新后也能看到）
+  // 页面初始加载时也恢复开屏浮动文本
   setTimeout(function(){ try { restoreSplashFloaters(); } catch(e) {} }, 200);
+  // 页面初始加载时恢复主页浮动元素
+  setTimeout(function(){ try { restoreFloaters(); } catch(e) {} }, 250);
 
 })();
 </script>
