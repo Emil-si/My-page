@@ -47,7 +47,27 @@
   .edit-only{display:none !important;}
   body.editing .edit-only{display:flex !important;}
   .spacer{flex:1;}
-  #topnav{max-width:640px;margin:0 auto;padding:10px 14px;display:flex;gap:6px;position:sticky;top:calc(48px + var(--safe-top));z-index:90;background:var(--bar);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;align-items:center;}
+  
+  /* 修复：将导航栏改为 fixed 布局，彻底解决偏移和下沉问题 */
+  #topnav{
+    position:fixed;
+    top:calc(48px + var(--safe-top));
+    left:0;
+    right:0;
+    z-index:90;
+    max-width:640px;
+    margin:0 auto;
+    padding:10px 14px;
+    display:flex;
+    gap:6px;
+    background:var(--bar);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+    scrollbar-width:none;
+    align-items:center;
+  }
   #topnav::-webkit-scrollbar{display:none;}
   .navlink{flex:1 0 auto;text-align:center;padding:7px 14px;border-radius:18px;background:rgba(127,127,127,0.06);border:1px solid var(--border);color:var(--sub);text-decoration:none;font-size:11px;font-family:monospace;letter-spacing:.08em;cursor:pointer;white-space:nowrap;transition:all .2s;}
   .navlink.active{background:var(--accent);color:var(--accent-text);border-color:var(--accent);}
@@ -59,7 +79,15 @@
   .citem:hover{background:rgba(127,127,127,0.15);}
   .citem.active{background:var(--accent);color:var(--accent-text);}
   .cempty{padding:8px 12px;font-size:11px;color:var(--sub);text-align:center;}
-  #app{max-width:640px;margin:0 auto;padding:14px;position:relative;z-index:10;min-height:80vh;}
+  
+  /* 修复：移除 min-height:80vh，改为由导航栏高度决定的 padding-top */
+  #app{
+    max-width:640px;
+    margin:0 auto;
+    padding: calc(48px + 14px) 14px 14px 14px; /* 预留固定导航栏的高度 */
+    position:relative;
+    z-index:10;
+  }
   .panel{display:none;}
   .panel.active{display:block;}
   .card{background:var(--card);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:14px;position:relative;word-break:break-word;}
@@ -398,6 +426,39 @@
     -webkit-user-select: none;
   }
   body.editing .splash-floater .splash-fdel { display: flex; }
+
+  /* ==================== 移动端适配修复 ==================== */
+  @media (max-width:640px){
+    body{padding-top:calc(52px + var(--safe-top));}
+    #toolbar{height:calc(44px + var(--safe-top)); padding:0 8px; gap:5px;}
+    .btn{padding:5px 9px; font-size:11px;}
+    .btn .lbl{display:none;}
+    .btn .ico{font-size:15px;}
+    /* 移动端导航栏位置和高度修正 */
+    #topnav{top:calc(44px + var(--safe-top)); padding:8px 10px; gap:4px;}
+    .navlink{padding:6px 11px; font-size:10px;}
+    /* 移动端主体内容顶部内边距修正，避免被固定导航栏遮挡 */
+    #app{padding: calc(44px + 10px) 10px 10px 10px;}
+    .card{padding:14px; border-radius:16px; margin-bottom:10px;}
+    .cover{height:150px; margin:-14px -14px 0 -14px; width:calc(100% + 28px);}
+    .avatar{width:64px; height:64px; border-width:2px;}
+    .name{font-size:18px;}
+    .profile{margin-top:-22px;}
+    .pgrid{grid-template-columns:repeat(3, 1fr);}
+    .pick{width:38px; height:38px;}
+    .pick svg{width:22px; height:22px;}
+    #stylePanel{ top:auto !important; bottom:0 !important; left:0 !important; right:0 !important; width:100vw !important; max-width:100vw !important; max-height:38vh; border-radius:20px 20px 0 0 !important; padding:10px 14px calc(10px + var(--safe-bottom)) 14px; transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1); display:flex !important; visibility:hidden; font-size:11px; }
+    #stylePanel.show{transform:translateY(0); visibility:visible;}
+    #stylePanel .sp-title{margin-top:4px;padding-bottom:3px;}
+    #stylePanel .sp-row{margin-bottom:4px;gap:6px;}
+    #stylePanel .sp-row > span{font-size:10px; min-width:48px;}
+    #stylePanel .sp-btn{padding:4px 8px; font-size:10px;}
+    #stylePanel .sp-note{display:none;}
+    .sp-row > span{font-size:11px; min-width:52px;}
+    .sp-btn{padding:6px 12px; font-size:11px;}
+    .bwrap > .row-tools { gap: 4px; top: -24px; }
+    .row-tools button { width: 22px; height: 22px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -826,7 +887,7 @@
               forceEnter();
               return;
           }
-          // 【已删除】点击背景不跳转，只有点击按钮才跳转
+          // 删除点击背景自动跳转的逻辑，只有点击按钮才跳转
       });
       
       if (splashBtn) {
